@@ -25,7 +25,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
      * @param context     Context приложения
      */
 
-    fun getMyTargetAd(context: Context) : Fragment {
+    fun getMyTargetAd(context: Context, fragmentState: FragmentState) : Fragment {
         val myTargetFragment = MyTargetFragment()
         val myTargetLoader = MyTargetLoader(context)
         myTargetLoader.loadAd()
@@ -33,14 +33,15 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
             override fun onLoaded(instreamAd: InstreamAd) {
                 myTargetFragment.setInstreamAd(instreamAd)
                 myTargetFragment.initializePlaying()
+                fragmentState.onSuccessState(myTargetFragment)
             }
 
             override fun onError() {
-                TODO("Not yet implemented")
+                fragmentState.onErrorState("Во время рекламы произошла ошибка")
             }
 
             override fun onNoAd() {
-                Log.d(TAG, "onNoAd called")
+                fragmentState.onNoAdState("Мы не смогли найти рекламу. Попробуйте позже")
             }
         })
         return myTargetFragment
