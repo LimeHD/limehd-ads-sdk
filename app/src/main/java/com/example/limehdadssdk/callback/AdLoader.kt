@@ -1,4 +1,4 @@
-package com.example.limehdadssdk
+package com.example.limehdadssdk.callback
 
 import com.my.target.instreamads.InstreamAd
 

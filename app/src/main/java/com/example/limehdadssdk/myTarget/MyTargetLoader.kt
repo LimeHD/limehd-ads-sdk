@@ -1,6 +1,7 @@
-package com.example.limehdadssdk
+package com.example.limehdadssdk.myTarget
 
 import android.content.Context
+import com.example.limehdadssdk.callback.AdLoader
 import com.my.target.instreamads.InstreamAd
 
 class MyTargetLoader constructor(private val context: Context) : InstreamAd.InstreamAdListener {
