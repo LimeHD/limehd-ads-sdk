@@ -76,8 +76,7 @@ class Constants {
                 "        }\n" +
                 "    }" +
                 "}"
+        val jsonObject = JSONObject(json)
     }
-
-    val jsonObject = JSONObject(json)
 
 }
