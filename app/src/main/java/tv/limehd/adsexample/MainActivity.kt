@@ -6,8 +6,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.json.JSONObject
-import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.LimeAds
+import tv.limehd.adsmodule.interfaces.FragmentState
 
 class MainActivity : AppCompatActivity() {
 
