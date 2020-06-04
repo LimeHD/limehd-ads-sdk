@@ -2,9 +2,11 @@ package tv.limehd.adsmodule
 
 import android.content.Context
 import android.util.Log
+import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
+import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
@@ -21,6 +23,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
     companion object {
         private const val TAG = "LimeAds"
+        const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
     }
 
     private var myTargetFragment = MyTargetFragment()
@@ -57,5 +60,11 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
             }
         })
     }
+
+    fun getImaAd(context: Context, atTagUrl: String, container: ViewGroup, fragmentState: FragmentState) {
+        val imaLoader = ImaLoader(context, atTagUrl, container)
+        imaLoader.loadImaAd(fragmentState)
+    }
+
 }
 
