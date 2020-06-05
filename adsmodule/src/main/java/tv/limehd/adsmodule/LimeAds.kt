@@ -27,6 +27,14 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
     }
 
     private var myTargetFragment = MyTargetFragment()
+    private lateinit var viewGroup: ViewGroup
+
+    fun getAd(resId: Int, fragmentState: FragmentState, viewGroup: ViewGroup) {
+        // 1. Делаем запрос сначала на myTarget. Просим там рекламу.
+        // 2. Если ошибка, то идём на IMA и грузим рекламу там
+        this.viewGroup = viewGroup
+        getMyTargetAd(context, resId, fragmentState)
+    }
 
     /**
      * Получить рекламу от площадки myTarget
@@ -36,7 +44,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
      * @param fragmentState     callback
      */
 
-    fun getMyTargetAd(context: Context, resId: Int, fragmentState: FragmentState) {
+    private fun getMyTargetAd(context: Context, resId: Int, fragmentState: FragmentState) {
         val myTargetLoader = MyTargetLoader(context)
         val activity = context as FragmentActivity
         val fragmentManager = activity.supportFragmentManager
@@ -55,8 +63,8 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
             override fun onNoAd() {
                 Log.d(TAG, "onNoAd called")
-                fragmentState.onErrorState("NoAd")
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
+                getImaAd(context, testAdTagUrl, viewGroup, fragmentState)
             }
         })
     }
@@ -70,7 +78,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
      * @param fragmentState     callback
      */
 
-    fun getImaAd(context: Context, atTagUrl: String, container: ViewGroup, fragmentState: FragmentState) {
+    private fun getImaAd(context: Context, atTagUrl: String, container: ViewGroup, fragmentState: FragmentState) {
         val imaLoader = ImaLoader(context, atTagUrl, container)
         imaLoader.loadImaAd(fragmentState)
     }

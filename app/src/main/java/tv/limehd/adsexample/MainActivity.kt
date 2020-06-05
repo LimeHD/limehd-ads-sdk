@@ -20,8 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val limeAds = LimeAds(this, JSONObject())
-//        limeAds.getMyTargetAd(this, R.id.main_container, fragmentStateCallback)
-        limeAds.getImaAd(this, LimeAds.testAdTagUrl, main_container, fragmentStateCallback)
+        limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container)
     }
 
     private val fragmentStateCallback = object : FragmentState {
