@@ -61,6 +61,15 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         })
     }
 
+    /**
+     * Получить рекламу от площадки IMA
+     *
+     * @param context     Context приложения
+     * @param atTagUrl    Url для показа рекламы
+     * @param container       контейнер, куда нужно будет поместить фрагмент
+     * @param fragmentState     callback
+     */
+
     fun getImaAd(context: Context, atTagUrl: String, container: ViewGroup, fragmentState: FragmentState) {
         val imaLoader = ImaLoader(context, atTagUrl, container)
         imaLoader.loadImaAd(fragmentState)
