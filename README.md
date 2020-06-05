@@ -2,7 +2,7 @@
 
 ![Release](https://img.shields.io/github/v/release/LimeHD/limehd-ads-sdk)
 
-LimeHD-Ads-Sdk помагает разработчикам интегрировать рекламу в их приложения. Библиотека поддерживает несколько рекламных площадок IMA SDK, Yandex, Google, myTarget
+LimeHD-Ads-Sdk помогает разработчикам интегрировать рекламу в их приложения. Библиотека поддерживает несколько рекламных площадок IMA SDK, Yandex, Google, myTarget
 
 ## Интеграция
 
@@ -28,17 +28,17 @@ dependencies {
 ``` kotlin
 LimeAds limeAds = new LimeAds(context, new JSONobject())
 ```
-### 1. Полчить рекламу myTarget
-- **context**: Контекст приложения
-- **resId**: Место, куда приложение хочет вставить фрагмент с рекламой ***(R.id.main_container)***
+### 1. Получить рекламу от библиотеки
+- **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
 - **fragmentStateCallback**: Callback с положительным и отрицательным результатом
+- **main_container**: ViewGroup, куда приложение хочет вставить фрагмент с рекламой
 ``` js
-limeAds.getMyTargetAd(context, resId, fragmentStateCallback);
+limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container);
 ```
 ### 2. Добавить FragmentState
 Callback, который является одним из параметров в функции 
 ``` js
-limeAds.getMyTargetAd(context, resId, fragmentStateCallback);
+limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container);
 ```
 ``` kotlin
 private FragmentState fragmentStateCallback = new FragmentState() {

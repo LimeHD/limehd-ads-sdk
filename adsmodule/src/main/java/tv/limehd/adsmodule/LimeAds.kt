@@ -2,9 +2,11 @@ package tv.limehd.adsmodule
 
 import android.content.Context
 import android.util.Log
+import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
+import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
@@ -21,9 +23,18 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
     companion object {
         private const val TAG = "LimeAds"
+        const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
     }
 
     private var myTargetFragment = MyTargetFragment()
+    private lateinit var viewGroup: ViewGroup
+
+    fun getAd(resId: Int, fragmentState: FragmentState, viewGroup: ViewGroup) {
+        // 1. Делаем запрос сначала на myTarget. Просим там рекламу.
+        // 2. Если ошибка, то идём на IMA и грузим рекламу там
+        this.viewGroup = viewGroup
+        getMyTargetAd(context, resId, fragmentState)
+    }
 
     /**
      * Получить рекламу от площадки myTarget
@@ -33,7 +44,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
      * @param fragmentState     callback
      */
 
-    fun getMyTargetAd(context: Context, resId: Int, fragmentState: FragmentState) {
+    private fun getMyTargetAd(context: Context, resId: Int, fragmentState: FragmentState) {
         val myTargetLoader = MyTargetLoader(context)
         val activity = context as FragmentActivity
         val fragmentManager = activity.supportFragmentManager
@@ -52,10 +63,25 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
             override fun onNoAd() {
                 Log.d(TAG, "onNoAd called")
-                fragmentState.onErrorState("NoAd")
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
+                getImaAd(context, testAdTagUrl, viewGroup, fragmentState)
             }
         })
     }
+
+    /**
+     * Получить рекламу от площадки IMA
+     *
+     * @param context     Context приложения
+     * @param atTagUrl    Url для показа рекламы
+     * @param container       контейнер, куда нужно будет поместить фрагмент
+     * @param fragmentState     callback
+     */
+
+    private fun getImaAd(context: Context, atTagUrl: String, container: ViewGroup, fragmentState: FragmentState) {
+        val imaLoader = ImaLoader(context, atTagUrl, container)
+        imaLoader.loadImaAd(fragmentState)
+    }
+
 }
 

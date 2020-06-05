@@ -17,10 +17,12 @@ drawable ic_launcher_background
 drawable ic_launcher_foreground
 id btn_off_ads
 id btn_skip
+id imaFragmentAdContainer
 id learn_more
 id root_container
 id time_left
 id video_container
+layout fragment_ima
 layout fragment_instream
 string ads_off
 string app_name
