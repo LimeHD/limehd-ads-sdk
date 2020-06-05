@@ -1,26 +1,34 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
-INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
-INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
-INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
-INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
-INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
-INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
+ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
 	package
 		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:2:5-34
 		INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
-		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
+		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
 		INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
 	android:versionCode
 		INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
-		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-2:37
+		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:1-7:12
 		INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:1:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:4:5-66
+	android:name
+		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:4:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:5:5-78
+	android:name
+		ADDED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml:5:22-76
 uses-sdk
 INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\kyani\AndroidStudioProjects\limehd-ads-sdk\adsmodule\src\main\AndroidManifest.xml
