@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.FragmentState
@@ -19,11 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val limeAds = LimeAds(this, JSONObject())
-        limeAds.getMyTargetAd(this, R.id.main_container, fragmentStateCallback)
+        limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container)
     }
 
-    private val fragmentStateCallback = object :
-        FragmentState {
+    private val fragmentStateCallback = object : FragmentState {
         override fun onSuccessState(fragment: Fragment) {
             Log.d(TAG, "onSuccessState called")
             supportFragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit()
