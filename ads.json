@@ -41,6 +41,34 @@
       "code": "",
       "enable_cache": true,
       "window": 99
+    },
+    {
+      "id": 1,
+      "url": "mytarget url",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "mytarget",
+      "type_identity": "mytarget",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
+    },
+    {
+      "id": 1,
+      "url": "google",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "google",
+      "type_identity": "google",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
     }
   ]
 }
