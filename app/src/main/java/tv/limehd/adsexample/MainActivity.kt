@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import tv.limehd.adsmodule.Constants
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.FragmentState
 
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val limeAds = LimeAds(this, JSONObject())
+        val limeAds = LimeAds(this, JSONObject(Constants.json))
         limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container)
     }
 

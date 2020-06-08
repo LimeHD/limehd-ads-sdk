@@ -47,11 +47,30 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
     }
 
+    /**
+     * Load ad in correct order. That depends on the adsList
+     */
+
     fun getAd(resId: Int, fragmentState: FragmentState, viewGroup: ViewGroup) {
-        // 1. Делаем запрос сначала на myTarget. Просим там рекламу.
-        // 2. Если ошибка, то идём на IMA и грузим рекламу там
         this.viewGroup = viewGroup
-        getMyTargetAd(context, resId, fragmentState)
+        when(adsList[0].type_sdk){
+            "google" -> {
+                // load google ad
+                Log.d(TAG, "Load google ad")
+            }
+            "ima" -> {
+                // load ima ad
+                Log.d(TAG, "Load ima ad")
+            }
+            "yandex" -> {
+                // load yandex ad
+                Log.d(TAG, "Load yandex ad")
+            }
+            "mytarget" -> {
+                // load mytarget ad
+                Log.d(TAG, "Load mytarget ad")
+            }
+        }
     }
 
     /**
