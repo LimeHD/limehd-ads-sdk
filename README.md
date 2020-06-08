@@ -22,6 +22,21 @@ dependencies {
   implementation 'com.github.LimeHD:limehd-ads-sdk:X.X.X'
 }
 ```
+
+### 2. Добавить compileOptions в build.gradle
+``` gradle
+compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+}
+```
+
+### 3. Добавить uses-permission в AndroidManifest
+``` xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+
 ## Примеры использования
 ### 0. Инициализация библиотеки `LimeAds`
 Для использования библиотеки необходимо создать экземпляр
