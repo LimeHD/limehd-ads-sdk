@@ -4,11 +4,13 @@ import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
+import com.google.gson.GsonBuilder
 import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
 import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.FragmentState
+import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
@@ -24,10 +26,26 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
     companion object {
         private const val TAG = "LimeAds"
         const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
+        var adsList = listOf<Ad>()
     }
 
     private var myTargetFragment = MyTargetFragment()
     private lateinit var viewGroup: ViewGroup
+
+    init {
+        getAdsList()
+    }
+
+    /**
+     * Get ads list from param JSONObject. This list
+     * already has the correct order in which library will
+     * load ad
+     */
+
+    private fun getAdsList() {
+        val gson = GsonBuilder().create()
+        adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
+    }
 
     fun getAd(resId: Int, fragmentState: FragmentState, viewGroup: ViewGroup) {
         // 1. Делаем запрос сначала на myTarget. Просим там рекламу.
