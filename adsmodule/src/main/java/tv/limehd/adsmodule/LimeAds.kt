@@ -66,11 +66,11 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         }
         Log.d(TAG, "Next ad after '$currentAd' is '$nextAd'")
         when(nextAd){
-            "google" -> getGoogleAd()
-            "ima" -> getImaAd()
-            "yandex" -> getYandexAd()
-            "mytarget" -> getMyTargetAd()
-            "ima-device" -> getImaDeviceAd()
+            AdType.Google.typeSdk -> getGoogleAd()
+            AdType.IMA.typeSdk -> getImaAd()
+            AdType.Yandex.typeSdk -> getYandexAd()
+            AdType.MyTarget.typeSdk -> getMyTargetAd()
+            AdType.IMADEVICE.typeSdk -> getImaDeviceAd()
         }
     }
 
@@ -83,10 +83,11 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         this.fragmentState = fragmentState
         this.resId = resId
         when(adsList[0].type_sdk){
-            "google" -> getGoogleAd()
-            "ima" -> getImaAd()
-            "yandex" -> getYandexAd()
-            "mytarget" -> getMyTargetAd()
+            AdType.Google.typeSdk -> getGoogleAd()
+            AdType.IMA.typeSdk -> getImaAd()
+            AdType.Yandex.typeSdk -> getYandexAd()
+            AdType.MyTarget.typeSdk -> getMyTargetAd()
+            AdType.IMADEVICE.typeSdk -> getImaDeviceAd()
         }
     }
 
@@ -115,10 +116,10 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
             override fun onNoAd() {
                 Log.d(TAG, "MyTarget onNoAd called")
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
-                if(lastAd == "mytarget"){
+                if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
                 }else {
-                    getNextAd("mytarget")
+                    getNextAd(AdType.MyTarget.typeSdk)
                 }
             }
         })
@@ -146,10 +147,10 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
         Log.d(TAG, "GoogleAd onNoAd called")
 
-        if(lastAd == "google"){
+        if(lastAd == AdType.Google.typeSdk){
             fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
         }else {
-            getNextAd("google")
+            getNextAd(AdType.Google.typeSdk)
         }
     }
 
@@ -165,10 +166,10 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
         Log.d(TAG, "YandexAd onNoAd called")
 
-        if(lastAd == "yandex"){
+        if(lastAd == AdType.Yandex.typeSdk){
             fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
         }else {
-            getNextAd("yandex")
+            getNextAd(AdType.Yandex.typeSdk)
         }
     }
 
@@ -180,10 +181,10 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
 
         Log.d(TAG, "Ima-Device onNoAd called")
 
-        if(lastAd == "ima-device"){
+        if(lastAd == AdType.IMADEVICE.typeSdk){
             fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
         }else {
-            getNextAd("ima-device")
+            getNextAd(AdType.IMADEVICE.typeSdk)
         }
     }
 

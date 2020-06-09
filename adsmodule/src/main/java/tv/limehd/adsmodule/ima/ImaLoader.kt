@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
+import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.FragmentState
@@ -85,10 +86,10 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called")
         isTimeout = false
-        if(limeAds.lastAd == "ima"){
+        if(limeAds.lastAd == AdType.IMA.typeSdk){
             fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
         }else {
-            limeAds.getNextAd("ima")
+            limeAds.getNextAd(AdType.IMA.typeSdk)
         }
     }
 
