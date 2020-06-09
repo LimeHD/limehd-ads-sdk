@@ -27,7 +27,6 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         private const val TAG = "LimeAds"
         const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
         var adsList = listOf<Ad>()
-        var lastAd: String = ""
     }
 
     private var myTargetFragment = MyTargetFragment()
@@ -117,7 +116,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
                 Log.d(TAG, "MyTarget onNoAd called")
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == "mytarget"){
-                    fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
                 }else {
                     getNextAd("mytarget")
                 }
@@ -148,7 +147,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         Log.d(TAG, "GoogleAd onNoAd called")
 
         if(lastAd == "google"){
-            fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
         }else {
             getNextAd("google")
         }
@@ -167,7 +166,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         Log.d(TAG, "YandexAd onNoAd called")
 
         if(lastAd == "yandex"){
-            fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
         }else {
             getNextAd("yandex")
         }
@@ -182,7 +181,7 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         Log.d(TAG, "Ima-Device onNoAd called")
 
         if(lastAd == "ima-device"){
-            fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
         }else {
             getNextAd("ima-device")
         }

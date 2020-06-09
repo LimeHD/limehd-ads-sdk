@@ -8,6 +8,7 @@ import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
 import tv.limehd.adsmodule.LimeAds
+import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.FragmentState
 
 class ImaLoader constructor(private val context: Context, private val adTagUrl: String, private val container: ViewGroup, private val limeAds: LimeAds)
@@ -39,7 +40,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
-                    fragmentState.onErrorState("TIMEOUT OCCURRED")
+                    fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
                 }
             }
         }

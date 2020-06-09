@@ -43,7 +43,7 @@ class Constants {
                 "            \"url\": \"https://px.adhigh.net/p/direct_vast?pid=172&tid=instream_spbtv\",\n" +
                 "            \"is_onl\": 1,\n" +
                 "            \"is_arh\": 1,\n" +
-                "            \"type_sdk\": \"mytarget\",\n" +
+                "            \"type_sdk\": \"ima\",\n" +
                 "            \"type_identity\": \"mytarget\",\n" +
                 "            \"type_block\": 10,\n" +
                 "            \"type_device\": 10,\n" +
@@ -71,7 +71,7 @@ class Constants {
                 "            \"url\": \"https://data.videonow.ru/?profile_id=2535934&format=vast&container=preroll\",\n" +
                 "            \"is_onl\": 1,\n" +
                 "            \"is_arh\": 1,\n" +
-                "            \"type_sdk\": \"ima\",\n" +
+                "            \"type_sdk\": \"mytarget\",\n" +
                 "            \"type_identity\": \"videonow\",\n" +
                 "            \"type_block\": 10,\n" +
                 "            \"type_device\": 10,\n" +

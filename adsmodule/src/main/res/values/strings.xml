@@ -2,4 +2,6 @@
     <string name="app_name">LimeHdAdsSdk</string>
     <string name="ads_off">Отключить рекламу</string>
     <string name="more_text">Подробнее</string>
+    <string name="timeout_occurred">TIMEOUT OCCURRED</string>
+    <string name="no_ad_found_at_all">We checked all of the ads, but no ad was found</string>
 </resources>

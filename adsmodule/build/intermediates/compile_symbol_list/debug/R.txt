@@ -1083,8 +1083,10 @@ int string exo_track_surround_5_point_1 0x0
 int string exo_track_surround_7_point_1 0x0
 int string exo_track_unknown 0x0
 int string more_text 0x0
+int string no_ad_found_at_all 0x0
 int string search_menu_title 0x0
 int string status_bar_notification_info_overflow 0x0
+int string timeout_occurred 0x0
 int style AlertDialog_AppCompat 0x0
 int style AlertDialog_AppCompat_Light 0x0
 int style Animation_AppCompat_Dialog 0x0

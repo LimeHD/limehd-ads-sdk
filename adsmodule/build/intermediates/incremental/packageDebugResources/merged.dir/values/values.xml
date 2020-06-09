@@ -13,8 +13,10 @@
     <string name="ads_off">Отключить рекламу</string>
     <string name="app_name">LimeHdAdsSdk</string>
     <string name="more_text">Подробнее</string>
+    <string name="no_ad_found_at_all">We checked all of the ads, but no ad was found</string>
+    <string name="timeout_occurred">TIMEOUT OCCURRED</string>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
