@@ -61,4 +61,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:1.10.19'
     androidTestImplementation 'org.mockito:mockito-android:2.7.22'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+    // JSONObject mocking
+    testImplementation 'org.json:json:20140107'
 }
