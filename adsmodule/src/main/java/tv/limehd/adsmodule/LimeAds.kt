@@ -27,10 +27,13 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         private const val TAG = "LimeAds"
         const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
         var adsList = listOf<Ad>()
+        var lastAd: String = ""
     }
 
     private var myTargetFragment = MyTargetFragment()
     private lateinit var viewGroup: ViewGroup
+    private lateinit var fragmentState: FragmentState
+    private var resId: Int = -1
 
     init {
         getAdsList()
@@ -47,41 +50,53 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
     }
 
+    val lastAd: String get() = adsList.last().type_sdk
+
+    /**
+     * Получить/вызвать слудующию рекламу после currentAd
+     *
+     * @param   currentAd   реклама на которой сейчас произошла загрузка
+     */
+
+    fun getNextAd(currentAd: String) {
+        var nextAd: String? = null
+        for(i in adsList.indices){
+            if(adsList[i].type_sdk == currentAd){
+                nextAd = adsList[i + 1].type_sdk
+            }
+        }
+        Log.d(TAG, "Next ad after '$currentAd' is '$nextAd'")
+        when(nextAd){
+            "google" -> getGoogleAd()
+            "ima" -> getImaAd()
+            "yandex" -> getYandexAd()
+            "mytarget" -> getMyTargetAd()
+            "ima-device" -> getImaDeviceAd()
+        }
+    }
+
     /**
      * Load ad in correct order. That depends on the adsList
      */
 
     fun getAd(resId: Int, fragmentState: FragmentState, viewGroup: ViewGroup) {
         this.viewGroup = viewGroup
+        this.fragmentState = fragmentState
+        this.resId = resId
         when(adsList[0].type_sdk){
-            "google" -> {
-                // load google ad
-                Log.d(TAG, "Load google ad")
-            }
-            "ima" -> {
-                // load ima ad
-                Log.d(TAG, "Load ima ad")
-            }
-            "yandex" -> {
-                // load yandex ad
-                Log.d(TAG, "Load yandex ad")
-            }
-            "mytarget" -> {
-                // load mytarget ad
-                Log.d(TAG, "Load mytarget ad")
-            }
+            "google" -> getGoogleAd()
+            "ima" -> getImaAd()
+            "yandex" -> getYandexAd()
+            "mytarget" -> getMyTargetAd()
         }
     }
 
     /**
      * Получить рекламу от площадки myTarget
-     *
-     * @param context     Context приложения
-     * @param resId       Id контейнера, куда нужно будет поместить фрагмент
-     * @param fragmentState     callback
      */
 
-    private fun getMyTargetAd(context: Context, resId: Int, fragmentState: FragmentState) {
+    private fun getMyTargetAd() {
+        Log.d(TAG, "Load mytarget ad")
         val myTargetLoader = MyTargetLoader(context)
         val activity = context as FragmentActivity
         val fragmentManager = activity.supportFragmentManager
@@ -99,9 +114,13 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
             }
 
             override fun onNoAd() {
-                Log.d(TAG, "onNoAd called")
+                Log.d(TAG, "MyTarget onNoAd called")
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
-                getImaAd(context, testAdTagUrl, viewGroup, fragmentState)
+                if(lastAd == "mytarget"){
+                    fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+                }else {
+                    getNextAd("mytarget")
+                }
             }
         })
     }
@@ -109,15 +128,64 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
     /**
      * Получить рекламу от площадки IMA
      *
-     * @param context     Context приложения
-     * @param atTagUrl    Url для показа рекламы
-     * @param container       контейнер, куда нужно будет поместить фрагмент
-     * @param fragmentState     callback
      */
 
-    private fun getImaAd(context: Context, atTagUrl: String, container: ViewGroup, fragmentState: FragmentState) {
-        val imaLoader = ImaLoader(context, atTagUrl, container)
+    private fun getImaAd() {
+        Log.d(TAG, "Load IMA ad")
+        val imaLoader = ImaLoader(context, testAdTagUrl, viewGroup, this)
         imaLoader.loadImaAd(fragmentState)
+    }
+
+    /**
+     * Получить рекламу для площадки Google
+     */
+
+    private fun getGoogleAd() {
+        Log.d(TAG, "Load google ad")
+        // If success then give AdFragment
+        // Otherwise, onNoAd callback will be occurred
+
+        Log.d(TAG, "GoogleAd onNoAd called")
+
+        if(lastAd == "google"){
+            fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+        }else {
+            getNextAd("google")
+        }
+    }
+
+    /**
+     * Получить рекламу для площадки Yandex
+     */
+
+    private fun getYandexAd() {
+        Log.d(TAG, "Load yandex ad")
+
+        // If success then give AdFragment
+        // Otherwise, onNoAd callback will be occurred
+
+        Log.d(TAG, "YandexAd onNoAd called")
+
+        if(lastAd == "yandex"){
+            fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+        }else {
+            getNextAd("yandex")
+        }
+    }
+
+    private fun getImaDeviceAd() {
+        Log.d(TAG, "Load Ima-Device ad")
+
+        // If success then give AdFragment
+        // Otherwise, onNoAd callback will be occurred
+
+        Log.d(TAG, "Ima-Device onNoAd called")
+
+        if(lastAd == "ima-device"){
+            fragmentState.onErrorState("We checked all of the ads, but no ad was found")
+        }else {
+            getNextAd("ima-device")
+        }
     }
 
 }
