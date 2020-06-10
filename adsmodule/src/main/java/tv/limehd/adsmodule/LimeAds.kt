@@ -1,5 +1,6 @@
 package tv.limehd.adsmodule
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
@@ -78,8 +79,9 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
      * Load ad in correct order. That depends on the adsList
      */
 
-    fun getAd(resId: Int, fragmentState: FragmentState, viewGroup: ViewGroup) {
-        this.viewGroup = viewGroup
+    fun getAd(resId: Int, fragmentState: FragmentState) {
+        val activity = context as Activity
+        this.viewGroup = activity.findViewById(resId)
         this.fragmentState = fragmentState
         this.resId = resId
         when(adsList[0].type_sdk){
