@@ -33,6 +33,12 @@ mockito.core = "org.mockito:mockito-core:1.10.19"
 mockito.android = "org.mockito:mockito-android:2.7.22"
 mockito.mockito_kotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
+def buildVersions = [:]
+buildVersions.compileSdkVersion = 29
+buildVersions.buildToolsVersion = "29.0.3"
+buildVersions.minSdkVersion = 21
+buildVersions.targetSdkVersion = 29
+
 deps.support = support
 deps.test = test
 deps.myTarget = myTarget
@@ -40,3 +46,4 @@ deps.gson = gson
 deps.kotlin = kotlin
 deps.ima = ima
 deps.mockito = mockito
+deps.buildVersions = buildVersions
