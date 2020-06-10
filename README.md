@@ -46,14 +46,13 @@ LimeAds limeAds = new LimeAds(context, new JSONobject())
 ### 1. Получить рекламу от библиотеки
 - **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
 - **fragmentStateCallback**: Callback с положительным и отрицательным результатом
-- **main_container**: ViewGroup, куда приложение хочет вставить фрагмент с рекламой
 ``` js
-limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container);
+limeAds.getAd(R.id.main_container, fragmentStateCallback);
 ```
 ### 2. Добавить FragmentState
 Callback, который является одним из параметров в функции 
 ``` js
-limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container);
+limeAds.getAd(R.id.main_container, fragmentStateCallback);
 ```
 ``` kotlin
 private FragmentState fragmentStateCallback = new FragmentState() {
