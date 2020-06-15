@@ -36,7 +36,7 @@ mockito.mockito_kotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 def buildVersions = [:]
 buildVersions.compileSdkVersion = 29
 buildVersions.buildToolsVersion = "29.0.3"
-buildVersions.minSdkVersion = 21
+buildVersions.minSdkVersion = 16
 buildVersions.targetSdkVersion = 29
 
 deps.support = support
