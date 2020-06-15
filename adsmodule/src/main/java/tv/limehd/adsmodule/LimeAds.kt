@@ -36,6 +36,9 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
     var adsList = listOf<Ad>()
 
     init {
+        if(json.isNull("ads") || json.isNull("ads_global") || json.getJSONArray("ads").length() == 0){
+            throw IllegalArgumentException("JSONObject is empty!")
+        }
         getAdsList()
     }
 
