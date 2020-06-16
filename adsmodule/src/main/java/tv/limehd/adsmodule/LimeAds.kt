@@ -17,29 +17,55 @@ import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
 /**
  * Класс для работы с рекламой
- *
- * @param context   Context приложения
- * @param json      Json, который даёт сервер. Со всеми необходимыми объектами
  */
 
-class LimeAds constructor(private val context: Context, private val json: JSONObject) {
+class LimeAds {
 
     companion object {
         private const val TAG = "LimeAds"
-        const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
-    }
+        private const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
+        private var myTargetFragment = MyTargetFragment()
+        private lateinit var viewGroup: ViewGroup
+        private lateinit var fragmentState: FragmentState
+        private var resId: Int = -1
+        var adsList = listOf<Ad>()
+        var limeAds: LimeAds? = null
+        private lateinit var json: JSONObject
+        private lateinit var context: Context
 
-    private var myTargetFragment = MyTargetFragment()
-    private lateinit var viewGroup: ViewGroup
-    private lateinit var fragmentState: FragmentState
-    private var resId: Int = -1
-    var adsList = listOf<Ad>()
+        /**
+         * Init LimeAds library
+         *
+         * @param   json    JSONObject which server gives to library to load ads
+         */
 
-    init {
-        if(json.isNull("ads") || json.isNull("ads_global") || json.getJSONArray("ads").length() == 0){
-            throw IllegalArgumentException("JSONObject is empty!")
+        fun init(json: JSONObject) {
+            if(json.isNull("ads") || json.isNull("ads_global") || json.getJSONArray("ads").length() == 0){
+                throw IllegalArgumentException("JSONObject is empty!")
+            }
+            this.json = json
+            limeAds = LimeAds()
+            limeAds?.getAdsList()
         }
-        getAdsList()
+
+        /**
+         * Load ad in correct order. That depends on the adsList
+         */
+
+        fun getAd(context: Context, resId: Int, fragmentState: FragmentState) {
+            this.context = context
+            val activity = context as Activity
+            this.viewGroup = activity.findViewById(resId)
+            this.fragmentState = fragmentState
+            this.resId = resId
+            when(adsList[0].type_sdk){
+                AdType.Google.typeSdk -> limeAds?.getGoogleAd()
+                AdType.IMA.typeSdk -> limeAds?.getImaAd()
+                AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
+                AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
+                AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+            }
+        }
     }
 
     /**
@@ -70,24 +96,6 @@ class LimeAds constructor(private val context: Context, private val json: JSONOb
         }
         Log.d(TAG, "Next ad after '$currentAd' is '$nextAd'")
         when(nextAd){
-            AdType.Google.typeSdk -> getGoogleAd()
-            AdType.IMA.typeSdk -> getImaAd()
-            AdType.Yandex.typeSdk -> getYandexAd()
-            AdType.MyTarget.typeSdk -> getMyTargetAd()
-            AdType.IMADEVICE.typeSdk -> getImaDeviceAd()
-        }
-    }
-
-    /**
-     * Load ad in correct order. That depends on the adsList
-     */
-
-    fun getAd(resId: Int, fragmentState: FragmentState) {
-        val activity = context as Activity
-        this.viewGroup = activity.findViewById(resId)
-        this.fragmentState = fragmentState
-        this.resId = resId
-        when(adsList[0].type_sdk){
             AdType.Google.typeSdk -> getGoogleAd()
             AdType.IMA.typeSdk -> getImaAd()
             AdType.Yandex.typeSdk -> getYandexAd()
