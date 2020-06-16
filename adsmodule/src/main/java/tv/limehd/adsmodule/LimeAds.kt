@@ -40,6 +40,7 @@ class LimeAds {
          * @param   json    JSONObject which server gives to library to load ads
          */
 
+        @JvmStatic
         fun init(json: JSONObject) {
             if(json.isNull("ads") || json.isNull("ads_global") || json.getJSONArray("ads").length() == 0){
                 throw IllegalArgumentException("JSONObject is empty!")
@@ -54,6 +55,7 @@ class LimeAds {
          * Load ad in correct order. That depends on the adsList
          */
 
+        @JvmStatic
         fun getAd(context: Context, resId: Int, fragmentState: FragmentState) {
             this.context = context
             val activity = context as Activity
@@ -69,6 +71,7 @@ class LimeAds {
             }
         }
 
+        @JvmStatic
         fun isInitialized() : Boolean = isInitialized
     }
 
