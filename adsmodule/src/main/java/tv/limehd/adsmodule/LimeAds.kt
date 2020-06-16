@@ -32,6 +32,7 @@ class LimeAds {
         var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
         private lateinit var context: Context
+        private var isInitialized = false
 
         /**
          * Init LimeAds library
@@ -46,6 +47,7 @@ class LimeAds {
             this.json = json
             limeAds = LimeAds()
             limeAds?.getAdsList()
+            isInitialized = true
         }
 
         /**
@@ -66,6 +68,8 @@ class LimeAds {
                 AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
             }
         }
+
+        fun isInitialized() : Boolean = isInitialized
     }
 
     /**
