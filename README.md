@@ -42,22 +42,23 @@ compileOptions {
 Для использования библиотеки необходимо создать экземпляр
 ``` kotlin
 try {
-    LimeAds limeAds = new LimeAds(context, new JSONObject(Constants.json));
-    limeAds.getAd(R.id.main_container, fragmentStateCallback);
-}catch (IllegalArgumentException error) {
+    LimeAds limeAds = new LimeAds(new JSONObject(Constants.json));
+    limeAds.getAd(context, R.id.main_container, fragmentStateCallback);
+}catch (IllegalArgumentException | JsonException error) {
     Toast.makeText(context, error.message, Toast.LENGTH_LONG).show();
 }
 ```
 ### 1. Получить рекламу от библиотеки
+- **context**: Context Activity, Fragment. На котором иниц-ется библиотека
 - **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
 - **fragmentStateCallback**: Callback с положительным и отрицательным результатом
 ``` js
-limeAds.getAd(R.id.main_container, fragmentStateCallback);
+limeAds.getAd(context, R.id.main_container, fragmentStateCallback);
 ```
 ### 2. Добавить FragmentState
 Callback, который является одним из параметров в функции 
 ``` js
-limeAds.getAd(R.id.main_container, fragmentStateCallback);
+limeAds.getAd(context, R.id.main_container, fragmentStateCallback);
 ```
 ``` kotlin
 private FragmentState fragmentStateCallback = new FragmentState() {
