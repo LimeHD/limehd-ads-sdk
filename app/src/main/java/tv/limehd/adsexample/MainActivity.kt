@@ -5,8 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import tv.limehd.adsmodule.Constants
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.FragmentState
 
@@ -19,8 +19,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val limeAds = LimeAds(this, JSONObject())
-        limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container)
+        try {
+            LimeAds.init(JSONObject(Constants.json))
+            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback)
+        }catch (e: IllegalArgumentException) {
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+        }
     }
 
     private val fragmentStateCallback = object : FragmentState {

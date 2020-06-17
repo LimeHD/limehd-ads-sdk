@@ -1084,8 +1084,11 @@ string exo_track_surround_5_point_1
 string exo_track_surround_7_point_1
 string exo_track_unknown
 string more_text
+string no_ad_found_at_all
 string search_menu_title
+string skip
 string status_bar_notification_info_overflow
+string timeout_occurred
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

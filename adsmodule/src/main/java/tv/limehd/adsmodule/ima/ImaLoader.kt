@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
+import tv.limehd.adsmodule.AdType
+import tv.limehd.adsmodule.LimeAds
+import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.FragmentState
 
-class ImaLoader constructor(private val context: Context, private val adTagUrl: String, private val container: ViewGroup)
+class ImaLoader constructor(private val context: Context, private val adTagUrl: String, private val container: ViewGroup, private val limeAds: LimeAds)
     : AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
 
     companion object {
@@ -38,7 +41,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
-                    fragmentState.onErrorState("TIMEOUT OCCURRED")
+                    fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
                 }
             }
         }
@@ -81,8 +84,13 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
     }
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
-        Log.d(TAG, "onAdError")
-        fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
+        Log.d(TAG, "Ima onAdError called")
+        isTimeout = false
+        if(limeAds.lastAd == AdType.IMA.typeSdk){
+            fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
+        }else {
+            limeAds.getNextAd(AdType.IMA.typeSdk)
+        }
     }
 
     override fun onAdEvent(adEvent: AdEvent?) {

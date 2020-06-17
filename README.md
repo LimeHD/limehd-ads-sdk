@@ -39,21 +39,27 @@ compileOptions {
 
 ## Примеры использования
 ### 0. Инициализация библиотеки `LimeAds`
-Для использования библиотеки необходимо создать экземпляр
+Для использования библиотеки необходимо создать экземпляр и обернуть метод init() в блок try | catch. Так как при неверных введённых параметрах будет выбрасываться IllegalArgumentException
+Инициализировав библиотеку `LimeAds.init(...)` приложение может использовать её по всему проекту, тем самым не создавать еще одни экземпляры
 ``` kotlin
-LimeAds limeAds = new LimeAds(context, new JSONobject())
+try {
+    LimeAds.init(new JSONObject(Constants.json));
+    LimeAds.getAd(context, R.id.main_container, fragmentStateCallback);
+}catch (IllegalArgumentException | JsonException error) {
+    Toast.makeText(context, error.message, Toast.LENGTH_LONG).show();
+}
 ```
 ### 1. Получить рекламу от библиотеки
+- **context**: Context Activity, Fragment. На котором иниц-ется библиотека
 - **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
 - **fragmentStateCallback**: Callback с положительным и отрицательным результатом
-- **main_container**: ViewGroup, куда приложение хочет вставить фрагмент с рекламой
 ``` js
-limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container);
+LimeAds.getAd(context, R.id.main_container, fragmentStateCallback);
 ```
 ### 2. Добавить FragmentState
 Callback, который является одним из параметров в функции 
 ``` js
-limeAds.getAd(R.id.main_container, fragmentStateCallback, main_container);
+LimeAds.getAd(context, R.id.main_container, fragmentStateCallback);
 ```
 ``` kotlin
 private FragmentState fragmentStateCallback = new FragmentState() {

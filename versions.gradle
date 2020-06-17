@@ -1,0 +1,49 @@
+ext.deps = [:]
+
+def support = [:]
+support.appcompat = "androidx.appcompat:appcompat:1.1.0"
+support.core = "androidx.core:core-ktx:1.2.0"
+
+def test = [:]
+test.junit = "junit:junit:4.12"
+test.junitAndroidX = "androidx.test.ext:junit:1.1.1"
+test.espresso = "androidx.test.espresso:espresso-core:3.2.0"
+test.jsonObject = "org.json:json:20140107"
+
+def myTarget = [:]
+myTarget.mobileads = "com.yandex.android:mobileads:2.143"
+myTarget.mobmetricalib = "com.yandex.android:mobmetricalib:3.13.1"
+myTarget.mobileads_mytarget = "com.yandex.ads.mediation:mobileads-mytarget:1.6.0"
+myTarget.mytarget_sdk = "com.my.target:mytarget-sdk:5.7.1"
+
+def gson = [:]
+gson.gson = "com.google.code.gson:gson:2.8.6"
+
+def kotlin = [:]
+kotlin.coroutines_core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0"
+kotlin.coroutines_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0"
+
+def ima = [:]
+ima.core = "com.google.android.exoplayer:exoplayer-core:2.11.1"
+ima.ui = "com.google.android.exoplayer:exoplayer-ui:2.11.1"
+ima.ima = "com.google.android.exoplayer:extension-ima:2.11.1"
+
+def mockito = [:]
+mockito.core = "org.mockito:mockito-core:1.10.19"
+mockito.android = "org.mockito:mockito-android:2.7.22"
+mockito.mockito_kotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+def buildVersions = [:]
+buildVersions.compileSdkVersion = 29
+buildVersions.buildToolsVersion = "29.0.3"
+buildVersions.minSdkVersion = 16
+buildVersions.targetSdkVersion = 29
+
+deps.support = support
+deps.test = test
+deps.myTarget = myTarget
+deps.gson = gson
+deps.kotlin = kotlin
+deps.ima = ima
+deps.mockito = mockito
+deps.buildVersions = buildVersions

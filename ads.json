@@ -1,0 +1,74 @@
+{
+  "ads": [
+    {
+      "id": 2,
+      "url": "https://an.yandex.ru/meta/347075?imp-id=2&charset=UTF-8&target-ref=http%3A%2F%2Flimehd.ru&page-ref=http%3A%2F%2Flimehd.ru&rnd=3126976288",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "yandex",
+      "type_identity": "yandex",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
+    },
+    {
+      "id": 16,
+      "url": "https://px.adhigh.net/p/direct_vast?pid=172&tid=instream_spbtv",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "ima",
+      "type_identity": "getintent",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
+    },
+    {
+      "id": 3,
+      "url": "https://data.videonow.ru/?profile_id=2535934&format=vast&container=preroll",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "ima-device",
+      "type_identity": "videonow",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
+    },
+    {
+      "id": 1,
+      "url": "mytarget url",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "mytarget",
+      "type_identity": "mytarget",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
+    },
+    {
+      "id": 1,
+      "url": "google",
+      "is_onl": 1,
+      "is_arh": 1,
+      "type_sdk": "google",
+      "type_identity": "google",
+      "type_block": 10,
+      "type_device": 10,
+      "orientation": 10,
+      "code": "",
+      "enable_cache": true,
+      "window": 99
+    }
+  ]
+}
