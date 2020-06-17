@@ -27,4 +27,7 @@ layout fragment_instream
 string ads_off
 string app_name
 string more_text
+string no_ad_found_at_all
+string skip
+string timeout_occurred
 style AppTheme
