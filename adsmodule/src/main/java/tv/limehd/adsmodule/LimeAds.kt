@@ -123,6 +123,10 @@ class LimeAds {
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
+            override fun onRequest() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
             override fun onLoaded(instreamAd: InstreamAd) {
                 myTargetFragment.setInstreamAd(instreamAd)
                 myTargetFragment.initializePlaying()
