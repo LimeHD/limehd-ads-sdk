@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try {
-            val limeAds = LimeAds(this, JSONObject(Constants.json))
-            limeAds.getAd(R.id.main_container, fragmentStateCallback)
+            LimeAds.init(JSONObject(Constants.json))
+            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback)
         }catch (e: IllegalArgumentException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
