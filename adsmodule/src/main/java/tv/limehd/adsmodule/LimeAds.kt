@@ -124,6 +124,7 @@ class LimeAds {
         val activity = context as FragmentActivity
         val fragmentManager = activity.supportFragmentManager
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+        adRequest.onRequest("Ad is requested", AdType.MyTarget)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
