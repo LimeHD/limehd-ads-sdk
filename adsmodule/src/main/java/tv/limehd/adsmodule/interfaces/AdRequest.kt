@@ -1,5 +1,7 @@
 package tv.limehd.adsmodule.interfaces
 
+import tv.limehd.adsmodule.AdType
+
 /**
  * Callback for loading ad. Used for showing application what
  * is going on with AD LOADING PROCESS
@@ -7,12 +9,12 @@ package tv.limehd.adsmodule.interfaces
 
 interface AdRequest {
 
-    fun onRequest()
+    fun onRequest(message: String, owner: AdType)
 
-    fun onLoaded()
+    fun onLoaded(message: String, owner: AdType)
 
-    fun onError()
+    fun onError(message: String, owner: AdType)
 
-    fun onNoAd()
+    fun onNoAd(message: String, owner: AdType)
 
 }

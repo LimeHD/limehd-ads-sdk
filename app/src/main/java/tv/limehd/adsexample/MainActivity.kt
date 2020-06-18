@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import org.json.JSONObject
+import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.Constants
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.AdRequest
@@ -41,19 +42,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val adRequestCallback = object : AdRequest {
-        override fun onRequest() {
+        override fun onRequest(message: String, owner: AdType) {
             Log.d(TAG, "onRequest: called")
         }
 
-        override fun onLoaded() {
+        override fun onLoaded(message: String, owner: AdType) {
             Log.d(TAG, "onLoaded: called")
         }
 
-        override fun onError() {
+        override fun onError(message: String, owner: AdType) {
             Log.d(TAG, "onError: called")
         }
 
-        override fun onNoAd() {
+        override fun onNoAd(message: String, owner: AdType) {
             Log.d(TAG, "onNoAd: called")
         }
 
