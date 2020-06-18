@@ -37,8 +37,8 @@ class MyTargetLoader constructor(private val context: Context) : InstreamAd.Inst
         TODO("Not yet implemented")
     }
 
-    override fun onNoAd(p0: String, p1: InstreamAd) {
-        adLoader.onNoAd()
+    override fun onNoAd(error: String, p1: InstreamAd) {
+        adLoader.onNoAd(error)
     }
 
     override fun onBannerResume(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -49,8 +49,8 @@ class MyTargetLoader constructor(private val context: Context) : InstreamAd.Inst
         TODO("Not yet implemented")
     }
 
-    override fun onError(p0: String, p1: InstreamAd) {
-        adLoader.onError()
+    override fun onError(error: String, p1: InstreamAd) {
+        adLoader.onError(error)
     }
 
     override fun onBannerComplete(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
