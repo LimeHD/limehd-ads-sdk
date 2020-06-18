@@ -127,21 +127,23 @@ class LimeAds {
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                adRequest.onRequest()
             }
 
             override fun onLoaded(instreamAd: InstreamAd) {
+                adRequest.onLoaded()
                 myTargetFragment.setInstreamAd(instreamAd)
                 myTargetFragment.initializePlaying()
                 fragmentState.onSuccessState(myTargetFragment)
             }
 
             override fun onError() {
-                TODO("Not yet implemented")
+                adRequest.onError()
             }
 
             override fun onNoAd() {
                 Log.d(TAG, "MyTarget onNoAd called")
+                adRequest.onNoAd()
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
