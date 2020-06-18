@@ -41,6 +41,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
+                    LimeAds.adRequest.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
                     fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
                 }
             }
@@ -69,6 +70,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         adsRequest.contentProgressProvider = ContentProgressProvider {
             VideoProgressUpdate(0, 120)
         }
+        LimeAds.adRequest.onRequest("Ad is requested", AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
         leftHandler.postDelayed(leftRunnable, 1000)
@@ -85,6 +87,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called")
+        LimeAds.adRequest.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         isTimeout = false
         if(limeAds.lastAd == AdType.IMA.typeSdk){
             fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
@@ -97,6 +100,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         when(adEvent?.type){
             AdEvent.AdEventType.LOADED -> {
                 Log.d(TAG, "loaded")
+                LimeAds.adRequest.onLoaded("Ad is loaded", AdType.IMA)
                 adsManager.start()
                 imaFragment = ImaFragment()
                 fragmentState.onSuccessState(imaFragment)
