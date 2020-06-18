@@ -127,23 +127,23 @@ class LimeAds {
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
-                adRequest.onRequest()
+                adRequest.onRequest("Ad is requested", AdType.MyTarget)
             }
 
             override fun onLoaded(instreamAd: InstreamAd) {
-                adRequest.onLoaded()
+                adRequest.onLoaded("Ad is loaded", AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
                 myTargetFragment.initializePlaying()
                 fragmentState.onSuccessState(myTargetFragment)
             }
 
             override fun onError(error: String) {
-                adRequest.onError()
+                adRequest.onError(error, AdType.MyTarget)
             }
 
             override fun onNoAd(error: String) {
                 Log.d(TAG, "MyTarget onNoAd called")
-                adRequest.onNoAd()
+                adRequest.onNoAd(error, AdType.MyTarget)
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))

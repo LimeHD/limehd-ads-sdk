@@ -43,19 +43,19 @@ class MainActivity : AppCompatActivity() {
 
     private val adRequestCallback = object : AdRequest {
         override fun onRequest(message: String, owner: AdType) {
-            Log.d(TAG, "onRequest: called")
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onLoaded(message: String, owner: AdType) {
-            Log.d(TAG, "onLoaded: called")
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onError(message: String, owner: AdType) {
-            Log.d(TAG, "onError: called")
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onNoAd(message: String, owner: AdType) {
-            Log.d(TAG, "onNoAd: called")
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
     }
