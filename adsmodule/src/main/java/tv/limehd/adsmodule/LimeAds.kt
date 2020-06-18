@@ -137,11 +137,11 @@ class LimeAds {
                 fragmentState.onSuccessState(myTargetFragment)
             }
 
-            override fun onError() {
+            override fun onError(error: String) {
                 adRequest.onError()
             }
 
-            override fun onNoAd() {
+            override fun onNoAd(error: String) {
                 Log.d(TAG, "MyTarget onNoAd called")
                 adRequest.onNoAd()
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
