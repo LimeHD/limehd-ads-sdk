@@ -10,6 +10,7 @@ import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.Constants
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.AdRequest
+import tv.limehd.adsmodule.interfaces.AdShow
 import tv.limehd.adsmodule.interfaces.FragmentState
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         try {
             LimeAds.init(JSONObject(Constants.json))
-            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, adRequestCallback)
+            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, adRequestCallback, adShowCallback)
         }catch (e: IllegalArgumentException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
@@ -56,6 +57,29 @@ class MainActivity : AppCompatActivity() {
 
         override fun onNoAd(message: String, owner: AdType) {
             Log.d(TAG, "$message from ${owner.typeSdk}")
+        }
+
+   }
+
+    private val adShowCallback = object : AdShow {
+        override fun onShow() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onError() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onComplete() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onSkip() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onClick() {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
     }

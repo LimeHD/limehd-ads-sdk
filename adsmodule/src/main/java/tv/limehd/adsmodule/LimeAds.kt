@@ -11,6 +11,7 @@ import org.json.JSONObject
 import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.AdRequest
+import tv.limehd.adsmodule.interfaces.AdShow
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
@@ -35,6 +36,7 @@ class LimeAds {
         private lateinit var context: Context
         private var isInitialized = false
         lateinit var adRequest: AdRequest
+        lateinit var adShow: AdShow
 
         /**
          * Init LimeAds library
@@ -58,9 +60,10 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun getAd(context: Context, resId: Int, fragmentState: FragmentState, adRequest: AdRequest) {
+        fun getAd(context: Context, resId: Int, fragmentState: FragmentState, adRequest: AdRequest, adShow: AdShow) {
             this.context = context
             this.adRequest = adRequest
+            this.adShow = adShow
             val activity = context as Activity
             this.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
