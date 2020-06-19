@@ -45,6 +45,23 @@ class MyTargetFragment : Fragment() {
         }
     }
 
+    private var skipAllowDelay = 0f
+    private lateinit var skipHandler: Handler
+    private val skipRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (skipAllowDelay > 0) {
+                skipAllowDelay--
+                val skipText = "Пропустить через " + skipAllowDelay.toInt() + " сек."
+                buttonSkip.text = skipText
+                skipHandler.postDelayed(this, 1000)
+            }
+            if (skipAllowDelay == 0f) {
+                buttonSkip.text = "Пропустить рекламу"
+                buttonSkip.isEnabled = true
+            }
+        }
+    }
+
     fun setInstreamAd(instreamAd: InstreamAd){
         mInstreamAd = instreamAd
         mInstreamAd.useDefaultPlayer()
