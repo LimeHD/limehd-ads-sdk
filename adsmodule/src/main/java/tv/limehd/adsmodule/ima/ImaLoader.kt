@@ -88,7 +88,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called")
         LimeAds.adRequest.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
-        LimeAds.adShow.onError()
+        LimeAds.adShow.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         isTimeout = false
         if(limeAds.lastAd == AdType.IMA.typeSdk){
             fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
@@ -108,11 +108,11 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
             }
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                 Log.d(TAG, "ALL_ADS_COMPLETED")
-                LimeAds.adShow.onComplete()
+                LimeAds.adShow.onComplete("ALL_ADS_COMPLETED", AdType.IMA)
             }
             AdEvent.AdEventType.CLICKED -> {
                 Log.d(TAG, "CLICKED")
-                LimeAds.adShow.onClick()
+                LimeAds.adShow.onClick("CLICKED", AdType.IMA)
             }
             AdEvent.AdEventType.COMPLETED -> {
                 Log.d(TAG, "COMPLETED")
@@ -149,15 +149,15 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
             }
             AdEvent.AdEventType.SKIPPED -> {
                 Log.d(TAG, "SKIPPED")
-                LimeAds.adShow.onSkip()
+                LimeAds.adShow.onSkip("SKIPPED", AdType.IMA)
             }
             AdEvent.AdEventType.STARTED -> {
                 Log.d(TAG, "STARTED")
-                LimeAds.adShow.onShow()
+                LimeAds.adShow.onShow("STARTED", AdType.IMA)
             }
             AdEvent.AdEventType.TAPPED -> {
                 Log.d(TAG, "TAPPED")
-                LimeAds.adShow.onClick()
+                LimeAds.adShow.onClick("CLICKED", AdType.IMA)
             }
             AdEvent.AdEventType.ICON_TAPPED -> {
                 Log.d(TAG, "ICON_TAPPED")
