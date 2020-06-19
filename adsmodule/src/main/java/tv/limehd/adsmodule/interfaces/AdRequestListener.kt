@@ -7,7 +7,7 @@ import tv.limehd.adsmodule.AdType
  * is going on with AD LOADING PROCESS
  */
 
-interface AdRequest {
+interface AdRequestListener {
 
     fun onRequest(message: String, owner: AdType)
 

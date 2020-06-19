@@ -9,8 +9,8 @@ import org.json.JSONObject
 import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.Constants
 import tv.limehd.adsmodule.LimeAds
-import tv.limehd.adsmodule.interfaces.AdRequest
-import tv.limehd.adsmodule.interfaces.AdShow
+import tv.limehd.adsmodule.interfaces.AdRequestListener
+import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val adRequestCallback = object : AdRequest {
+    private val adRequestCallback = object : AdRequestListener {
         override fun onRequest(message: String, owner: AdType) {
             Log.d(TAG, "$message from ${owner.typeSdk}")
         }
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
    }
 
-    private val adShowCallback = object : AdShow {
+    private val adShowCallback = object : AdShowListener {
         override fun onShow(message: String, owner: AdType) {
             Log.d(TAG, "$message from ${owner.typeSdk}")
         }

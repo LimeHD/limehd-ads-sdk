@@ -7,7 +7,7 @@ import tv.limehd.adsmodule.AdType
  * is going on with AD SHOWING PROCESS
  */
 
-interface AdShow {
+interface AdShowListener {
 
     fun onShow(message: String, owner: AdType)
 
