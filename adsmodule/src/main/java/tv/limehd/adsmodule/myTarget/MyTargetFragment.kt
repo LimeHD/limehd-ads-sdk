@@ -80,11 +80,11 @@ class MyTargetFragment : Fragment() {
         buttonSkip = rootView.findViewById(R.id.btn_skip)
         // Skip button
         buttonSkip.setOnClickListener {
-            LimeAds.adShow.onSkip("SKIPPED", AdType.MyTarget)
+            LimeAds.adShow?.onSkip("SKIPPED", AdType.MyTarget)
         }
         // Ad Click
         rootContainer.setOnClickListener {
-            LimeAds.adShow.onClick("CLICKED", AdType.MyTarget)
+            LimeAds.adShow?.onClick("CLICKED", AdType.MyTarget)
         }
         return rootView
     }
@@ -105,7 +105,7 @@ class MyTargetFragment : Fragment() {
             override fun onComplete(message: String, p1: InstreamAd) {
                 leftHandler.removeCallbacks(leftRunnable)
                 skipHandler.removeCallbacks(skipRunnable)
-                LimeAds.adShow.onComplete("COMPLETED", AdType.MyTarget)
+                LimeAds.adShow?.onComplete("COMPLETED", AdType.MyTarget)
             }
 
             override fun onBannerPause(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -113,7 +113,7 @@ class MyTargetFragment : Fragment() {
             }
 
             override fun onBannerStart(instreamAd: InstreamAd, instreamAdBanner: InstreamAd.InstreamAdBanner) {
-                LimeAds.adShow.onShow("SHOWING", AdType.MyTarget)
+                LimeAds.adShow?.onShow("SHOWING", AdType.MyTarget)
                 leftTimeText.visibility = View.VISIBLE
                 leftTimeText.bringToFront()
                 if(instreamAdBanner.duration > 0) {
@@ -142,7 +142,7 @@ class MyTargetFragment : Fragment() {
 
             override fun onNoAd(error: String, p1: InstreamAd) {
                 Log.d(TAG, "onNoAd called")
-                LimeAds.adShow.onError(error, AdType.MyTarget)
+                LimeAds.adShow?.onError(error, AdType.MyTarget)
             }
 
             override fun onBannerResume(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -155,7 +155,7 @@ class MyTargetFragment : Fragment() {
 
             override fun onError(error: String, p1: InstreamAd) {
                 Log.d(TAG, "onError called")
-                LimeAds.adShow.onError(error, AdType.MyTarget)
+                LimeAds.adShow?.onError(error, AdType.MyTarget)
             }
 
             override fun onBannerComplete(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {

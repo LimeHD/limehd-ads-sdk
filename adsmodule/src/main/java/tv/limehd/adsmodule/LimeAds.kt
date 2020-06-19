@@ -35,8 +35,8 @@ class LimeAds {
         private lateinit var json: JSONObject
         private lateinit var context: Context
         private var isInitialized = false
-        lateinit var adRequest: AdRequest
-        lateinit var adShow: AdShow
+        var adRequest: AdRequest? = null
+        var adShow: AdShow? = null
 
         /**
          * Init LimeAds library
@@ -60,7 +60,7 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun getAd(context: Context, resId: Int, fragmentState: FragmentState, adRequest: AdRequest, adShow: AdShow) {
+        fun getAd(context: Context, resId: Int, fragmentState: FragmentState, adRequest: AdRequest? = null, adShow: AdShow? = null) {
             this.context = context
             this.adRequest = adRequest
             this.adShow = adShow
@@ -127,27 +127,27 @@ class LimeAds {
         val activity = context as FragmentActivity
         val fragmentManager = activity.supportFragmentManager
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-        adRequest.onRequest("Ad is requested", AdType.MyTarget)
+        adRequest?.onRequest("Ad is requested", AdType.MyTarget)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
-                adRequest.onRequest("Ad is requested", AdType.MyTarget)
+                adRequest?.onRequest("Ad is requested", AdType.MyTarget)
             }
 
             override fun onLoaded(instreamAd: InstreamAd) {
-                adRequest.onLoaded("Ad is loaded", AdType.MyTarget)
+                adRequest?.onLoaded("Ad is loaded", AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
                 myTargetFragment.initializePlaying()
                 fragmentState.onSuccessState(myTargetFragment)
             }
 
             override fun onError(error: String) {
-                adRequest.onError(error, AdType.MyTarget)
+                adRequest?.onError(error, AdType.MyTarget)
             }
 
             override fun onNoAd(error: String) {
                 Log.d(TAG, "MyTarget onNoAd called")
-                adRequest.onNoAd(error, AdType.MyTarget)
+                adRequest?.onNoAd(error, AdType.MyTarget)
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
