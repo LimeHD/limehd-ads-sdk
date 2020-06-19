@@ -63,23 +63,23 @@ class MainActivity : AppCompatActivity() {
 
     private val adShowCallback = object : AdShow {
         override fun onShow(message: String, owner: AdType) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onError(message: String, owner: AdType) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onComplete(message: String, owner: AdType) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onSkip(message: String, owner: AdType) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
         override fun onClick(message: String, owner: AdType) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Log.d(TAG, "$message from ${owner.typeSdk}")
         }
 
     }
