@@ -1,5 +1,7 @@
 package tv.limehd.adsmodule.interfaces
 
+import tv.limehd.adsmodule.AdType
+
 /**
  * Callback for showing ad. Used for showing application what
  * is going on with AD SHOWING PROCESS
@@ -7,13 +9,13 @@ package tv.limehd.adsmodule.interfaces
 
 interface AdShow {
 
-    fun onShow()
+    fun onShow(message: String, owner: AdType)
 
-    fun onError()
+    fun onError(message: String, owner: AdType)
 
-    fun onComplete()
+    fun onComplete(message: String, owner: AdType)
 
-    fun onSkip()
+    fun onSkip(message: String, owner: AdType)
 
-    fun onClick()
+    fun onClick(message: String, owner: AdType)
 }
