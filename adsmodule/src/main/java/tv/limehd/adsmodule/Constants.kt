@@ -11,54 +11,12 @@ class Constants {
     companion object {
         const val json = "{\"ads\": [\n" +
                 "        {\n" +
-                "            \"id\": 2,\n" +
-                "            \"url\": \"https://an.yandex.ru/meta/347075?imp-id=2&charset=UTF-8&target-ref=http%3A%2F%2Flimehd.ru&page-ref=http%3A%2F%2Flimehd.ru&rnd=3132518945\",\n" +
-                "            \"is_onl\": 1,\n" +
-                "            \"is_arh\": 1,\n" +
-                "            \"type_sdk\": \"yandex\",\n" +
-                "            \"type_identity\": \"yandex\",\n" +
-                "            \"type_block\": 10,\n" +
-                "            \"type_device\": 10,\n" +
-                "            \"orientation\": 10,\n" +
-                "            \"code\": \"\",\n" +
-                "            \"enable_cache\": true,\n" +
-                "            \"window\": 99\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"id\": 16,\n" +
-                "            \"url\": \"https://px.adhigh.net/p/direct_vast?pid=172&tid=instream_spbtv\",\n" +
-                "            \"is_onl\": 1,\n" +
-                "            \"is_arh\": 1,\n" +
-                "            \"type_sdk\": \"ima-device\",\n" +
-                "            \"type_identity\": \"getintent\",\n" +
-                "            \"type_block\": 10,\n" +
-                "            \"type_device\": 10,\n" +
-                "            \"orientation\": 10,\n" +
-                "            \"code\": \"\",\n" +
-                "            \"enable_cache\": true,\n" +
-                "            \"window\": 99\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"id\": 1,\n" +
-                "            \"url\": \"https://px.adhigh.net/p/direct_vast?pid=172&tid=instream_spbtv\",\n" +
-                "            \"is_onl\": 1,\n" +
-                "            \"is_arh\": 1,\n" +
-                "            \"type_sdk\": \"ima\",\n" +
-                "            \"type_identity\": \"mytarget\",\n" +
-                "            \"type_block\": 10,\n" +
-                "            \"type_device\": 10,\n" +
-                "            \"orientation\": 10,\n" +
-                "            \"code\": \"\",\n" +
-                "            \"enable_cache\": true,\n" +
-                "            \"window\": 99\n" +
-                "        },\n" +
-                "        {\n" +
                 "            \"id\": 4,\n" +
-                "            \"url\": \"https://px.adhigh.net/p/direct_vast?pid=172&tid=instream_spbtv\",\n" +
+                "            \"url\": \"\",\n" +
                 "            \"is_onl\": 1,\n" +
                 "            \"is_arh\": 1,\n" +
                 "            \"type_sdk\": \"google\",\n" +
-                "            \"type_identity\": \"google\",\n" +
+                "            \"type_identity\": \"googleinterstitial\",\n" +
                 "            \"type_block\": 10,\n" +
                 "            \"type_device\": 10,\n" +
                 "            \"orientation\": 10,\n" +
@@ -67,12 +25,40 @@ class Constants {
                 "            \"window\": 99\n" +
                 "        },\n" +
                 "        {\n" +
-                "            \"id\": 3,\n" +
-                "            \"url\": \"https://data.videonow.ru/?profile_id=2535934&format=vast&container=preroll\",\n" +
+                "            \"id\": 25,\n" +
+                "            \"url\": \"\",\n" +
                 "            \"is_onl\": 1,\n" +
                 "            \"is_arh\": 1,\n" +
                 "            \"type_sdk\": \"mytarget\",\n" +
+                "            \"type_identity\": \"MyTarget\",\n" +
+                "            \"type_block\": 10,\n" +
+                "            \"type_device\": 10,\n" +
+                "            \"orientation\": 10,\n" +
+                "            \"code\": \"\",\n" +
+                "            \"enable_cache\": true,\n" +
+                "            \"window\": 99\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 6,\n" +
+                "            \"url\": \"https://data.videonow.ru/?profile_id=2392203&format=vast&container=preroll\",\n" +
+                "            \"is_onl\": 1,\n" +
+                "            \"is_arh\": 1,\n" +
+                "            \"type_sdk\": \"ima-device\",\n" +
                 "            \"type_identity\": \"videonow\",\n" +
+                "            \"type_block\": 10,\n" +
+                "            \"type_device\": 10,\n" +
+                "            \"orientation\": 10,\n" +
+                "            \"code\": \"\",\n" +
+                "            \"enable_cache\": false,\n" +
+                "            \"window\": 99\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 26,\n" +
+                "            \"url\": \"https://ads.hyperadx.com/v2/vast/b3Qn1BKM?v=3.0&device.ua={UA}&device.ip={IP}&device.ifa={GAID}&app.bundle={app.bundle}&app.cat={app.cat}&app.name={app.name}&app.storeurl={app.storeurl}&imp.video.w={player.widht}&imp.video.h={player.height}&device.geo.lat={device.geo.lat}&device.geo.lon={device.geo.lon}&regs.ext.coppa={COPPA}&regs.ext.gdpr={GDPR}&device.connectiontype={ConnectionType}&cb={cb}&device.os=(device.os}\",\n" +
+                "            \"is_onl\": 1,\n" +
+                "            \"is_arh\": 1,\n" +
+                "            \"type_sdk\": \"ima\",\n" +
+                "            \"type_identity\": \"hyperaudience\",\n" +
                 "            \"type_block\": 10,\n" +
                 "            \"type_device\": 10,\n" +
                 "            \"orientation\": 10,\n" +
@@ -80,7 +66,7 @@ class Constants {
                 "            \"enable_cache\": true,\n" +
                 "            \"window\": 99\n" +
                 "        }\n" +
-                "    ],\n" +
+                "    ]," +
                 "    \"ads_global\": {\n" +
                 "        \"preroll\": {\n" +
                 "            \"enabled\": true,\n" +
