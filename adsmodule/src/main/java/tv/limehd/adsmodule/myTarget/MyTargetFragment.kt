@@ -104,6 +104,7 @@ class MyTargetFragment : Fragment() {
 
             override fun onComplete(message: String, p1: InstreamAd) {
                 leftHandler.removeCallbacks(leftRunnable)
+                skipHandler.removeCallbacks(skipRunnable)
                 LimeAds.adShow.onComplete("COMPLETED", AdType.MyTarget)
             }
 
@@ -122,6 +123,21 @@ class MyTargetFragment : Fragment() {
                     leftTimeText.text = leftText
                     leftHandler.postDelayed(leftRunnable, 1000)
                 }
+
+                if(instreamAdBanner.allowClose) {
+                    skipAllowDelay = if(instreamAdBanner.allowCloseDelay > 1f){
+                        instreamAdBanner.allowCloseDelay
+                    }else {
+                        5f
+                    }
+                    buttonSkip.isEnabled = false
+                    buttonSkip.visibility = View.VISIBLE
+                    val skipText = "Пропустить через " + skipAllowDelay.toInt() + " сек."
+                    buttonSkip.text = skipText
+                    skipHandler = Handler()
+                    skipHandler.postDelayed(skipRunnable, 1000)
+                }
+
             }
 
             override fun onNoAd(error: String, p1: InstreamAd) {
