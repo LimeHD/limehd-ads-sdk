@@ -4,12 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.GsonBuilder
 import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
+import tv.limehd.adsmodule.ima.ImaFragment
 import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
+import tv.limehd.adsmodule.interfaces.AdRequestListener
+import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
@@ -33,6 +37,8 @@ class LimeAds {
         private lateinit var json: JSONObject
         private lateinit var context: Context
         private var isInitialized = false
+        var adRequestListener: AdRequestListener? = null
+        var adShowListener: AdShowListener? = null
 
         /**
          * Init LimeAds library
@@ -56,8 +62,10 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun getAd(context: Context, resId: Int, fragmentState: FragmentState) {
+        fun getAd(context: Context, resId: Int, fragmentState: FragmentState, adRequestListener: AdRequestListener? = null, adShowListener: AdShowListener? = null) {
             this.context = context
+            this.adRequestListener = adRequestListener
+            this.adShowListener = adShowListener
             val activity = context as Activity
             this.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
@@ -73,6 +81,24 @@ class LimeAds {
 
         @JvmStatic
         fun isInitialized() : Boolean = isInitialized
+
+        /**
+         * Show fragment with loaded ad
+         * Starts displaying ad
+         *
+         * @param   fragment      Fragment on which library will show ad (MyTargetFragment, ImaFragment ...)
+         */
+        @JvmStatic
+        fun showAd(fragment: Fragment){
+            val activity = context as FragmentActivity
+            val fragmentManager = activity.supportFragmentManager
+            fragmentManager.beginTransaction().replace(resId, fragment).commit()
+            when(fragment){
+                is MyTargetFragment -> fragment.initializePlaying()
+                is ImaFragment -> fragment.initializePlaying()
+            }
+        }
+
     }
 
     /**
@@ -121,20 +147,26 @@ class LimeAds {
         val activity = context as FragmentActivity
         val fragmentManager = activity.supportFragmentManager
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+        adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
+            override fun onRequest() {
+                adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
+            }
+
             override fun onLoaded(instreamAd: InstreamAd) {
+                adRequestListener?.onLoaded("Ad is loaded", AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
-                myTargetFragment.initializePlaying()
                 fragmentState.onSuccessState(myTargetFragment)
             }
 
-            override fun onError() {
-                TODO("Not yet implemented")
+            override fun onError(error: String) {
+                adRequestListener?.onError(error, AdType.MyTarget)
             }
 
-            override fun onNoAd() {
+            override fun onNoAd(error: String) {
                 Log.d(TAG, "MyTarget onNoAd called")
+                adRequestListener?.onNoAd(error, AdType.MyTarget)
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))

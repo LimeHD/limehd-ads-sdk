@@ -6,11 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.my.target.instreamads.InstreamAd
 import com.my.target.instreamads.InstreamAdPlayer
+import tv.limehd.adsmodule.AdType
+import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
 
 class MyTargetFragment : Fragment() {
@@ -24,6 +27,7 @@ class MyTargetFragment : Fragment() {
 
     private lateinit var videoContainer: RelativeLayout
     private lateinit var rootContainer: RelativeLayout
+    private lateinit var buttonSkip: Button
 
     private lateinit var leftTimeText: TextView
 
@@ -37,6 +41,23 @@ class MyTargetFragment : Fragment() {
                 val leftText = "Осталось ${leftTimeDelay.toInt()} сек."
                 leftTimeText.text = leftText
                 leftHandler.postDelayed(this, 1000)
+            }
+        }
+    }
+
+    private var skipAllowDelay = 0f
+    private lateinit var skipHandler: Handler
+    private val skipRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (skipAllowDelay > 0) {
+                skipAllowDelay--
+                val skipText = "Пропустить через " + skipAllowDelay.toInt() + " сек."
+                buttonSkip.text = skipText
+                skipHandler.postDelayed(this, 1000)
+            }
+            if (skipAllowDelay == 0f) {
+                buttonSkip.text = "Пропустить рекламу"
+                buttonSkip.isEnabled = true
             }
         }
     }
@@ -56,6 +77,15 @@ class MyTargetFragment : Fragment() {
         rootContainer = rootView.findViewById(R.id.root_container)
         videoContainer = rootView.findViewById(R.id.video_container)
         leftTimeText = rootView.findViewById(R.id.time_left)
+        buttonSkip = rootView.findViewById(R.id.btn_skip)
+        // Skip button
+        buttonSkip.setOnClickListener {
+            LimeAds.adShowListener?.onSkip("SKIPPED", AdType.MyTarget)
+        }
+        // Ad Click
+        rootContainer.setOnClickListener {
+            LimeAds.adShowListener?.onClick("CLICKED", AdType.MyTarget)
+        }
         return rootView
     }
 
@@ -72,8 +102,14 @@ class MyTargetFragment : Fragment() {
                 Log.d(TAG, "onLoad called")
             }
 
-            override fun onComplete(p0: String, p1: InstreamAd) {
-                leftHandler.removeCallbacks(leftRunnable)
+            override fun onComplete(message: String, p1: InstreamAd) {
+                if(this@MyTargetFragment::leftHandler.isInitialized) {
+                    leftHandler.removeCallbacks(leftRunnable)
+                }
+                if(this@MyTargetFragment::skipHandler.isInitialized) {
+                    skipHandler.removeCallbacks(skipRunnable)
+                }
+                LimeAds.adShowListener?.onComplete("COMPLETED", AdType.MyTarget)
             }
 
             override fun onBannerPause(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -81,6 +117,7 @@ class MyTargetFragment : Fragment() {
             }
 
             override fun onBannerStart(instreamAd: InstreamAd, instreamAdBanner: InstreamAd.InstreamAdBanner) {
+                LimeAds.adShowListener?.onShow("SHOWING", AdType.MyTarget)
                 leftTimeText.visibility = View.VISIBLE
                 leftTimeText.bringToFront()
                 if(instreamAdBanner.duration > 0) {
@@ -90,10 +127,26 @@ class MyTargetFragment : Fragment() {
                     leftTimeText.text = leftText
                     leftHandler.postDelayed(leftRunnable, 1000)
                 }
+
+                if(instreamAdBanner.allowClose) {
+                    skipAllowDelay = if(instreamAdBanner.allowCloseDelay > 1f){
+                        instreamAdBanner.allowCloseDelay
+                    }else {
+                        5f
+                    }
+                    buttonSkip.isEnabled = false
+                    buttonSkip.visibility = View.VISIBLE
+                    val skipText = "Пропустить через " + skipAllowDelay.toInt() + " сек."
+                    buttonSkip.text = skipText
+                    skipHandler = Handler()
+                    skipHandler.postDelayed(skipRunnable, 1000)
+                }
+
             }
 
-            override fun onNoAd(p0: String, p1: InstreamAd) {
+            override fun onNoAd(error: String, p1: InstreamAd) {
                 Log.d(TAG, "onNoAd called")
+                LimeAds.adShowListener?.onError(error, AdType.MyTarget)
             }
 
             override fun onBannerResume(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -104,8 +157,9 @@ class MyTargetFragment : Fragment() {
                 Log.d(TAG, "onBannerTimeLeftChange called")
             }
 
-            override fun onError(p0: String, p1: InstreamAd) {
+            override fun onError(error: String, p1: InstreamAd) {
                 Log.d(TAG, "onError called")
+                LimeAds.adShowListener?.onError(error, AdType.MyTarget)
             }
 
             override fun onBannerComplete(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
