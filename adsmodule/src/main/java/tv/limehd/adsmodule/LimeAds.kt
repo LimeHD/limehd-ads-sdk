@@ -137,7 +137,6 @@ class LimeAds {
             override fun onLoaded(instreamAd: InstreamAd) {
                 adRequestListener?.onLoaded("Ad is loaded", AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
-                myTargetFragment.initializePlaying()
                 fragmentState.onSuccessState(myTargetFragment)
             }
 
