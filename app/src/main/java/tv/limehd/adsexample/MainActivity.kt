@@ -9,11 +9,9 @@ import org.json.JSONObject
 import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.Constants
 import tv.limehd.adsmodule.LimeAds
-import tv.limehd.adsmodule.ima.ImaFragment
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
-import tv.limehd.adsmodule.myTarget.MyTargetFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,10 +34,7 @@ class MainActivity : AppCompatActivity() {
         override fun onSuccessState(fragment: Fragment) {
             Log.d(TAG, "onSuccessState called")
             supportFragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit()
-            when(fragment) {
-                is MyTargetFragment -> fragment.initializePlaying()
-                is ImaFragment -> fragment.initializePlaying()
-            }
+            LimeAds.showAd(fragment)
         }
 
         override fun onErrorState(message: String) {

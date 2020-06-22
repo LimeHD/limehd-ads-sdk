@@ -103,8 +103,12 @@ class MyTargetFragment : Fragment() {
             }
 
             override fun onComplete(message: String, p1: InstreamAd) {
-                leftHandler.removeCallbacks(leftRunnable)
-                skipHandler.removeCallbacks(skipRunnable)
+                if(this@MyTargetFragment::leftHandler.isInitialized) {
+                    leftHandler.removeCallbacks(leftRunnable)
+                }
+                if(this@MyTargetFragment::skipHandler.isInitialized) {
+                    skipHandler.removeCallbacks(skipRunnable)
+                }
                 LimeAds.adShowListener?.onComplete("COMPLETED", AdType.MyTarget)
             }
 

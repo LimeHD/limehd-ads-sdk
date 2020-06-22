@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.GsonBuilder
 import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
+import tv.limehd.adsmodule.ima.ImaFragment
 import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.AdRequestListener
@@ -79,6 +81,21 @@ class LimeAds {
 
         @JvmStatic
         fun isInitialized() : Boolean = isInitialized
+
+        /**
+         * Show fragment with loaded ad
+         * Starts displaying ad
+         *
+         * @param   fragment      Fragment on which library will show ad (MyTargetFragment, ImaFragment ...)
+         */
+        @JvmStatic
+        fun showAd(fragment: Fragment){
+            when(fragment){
+                is MyTargetFragment -> fragment.initializePlaying()
+                is ImaFragment -> fragment.initializePlaying()
+            }
+        }
+
     }
 
     /**
