@@ -102,8 +102,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
             AdEvent.AdEventType.LOADED -> {
                 Log.d(TAG, "loaded")
                 LimeAds.adRequestListener?.onLoaded("Ad is loaded", AdType.IMA)
-                adsManager.start()
-                imaFragment = ImaFragment()
+                imaFragment = ImaFragment(adsManager)
                 fragmentState.onSuccessState(imaFragment)
             }
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
