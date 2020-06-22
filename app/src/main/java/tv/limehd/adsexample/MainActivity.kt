@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     private val fragmentStateCallback = object : FragmentState {
         override fun onSuccessState(fragment: Fragment) {
             Log.d(TAG, "onSuccessState called")
-            supportFragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit()
             LimeAds.showAd(fragment)
         }
 

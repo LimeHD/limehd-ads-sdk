@@ -90,6 +90,9 @@ class LimeAds {
          */
         @JvmStatic
         fun showAd(fragment: Fragment){
+            val activity = context as FragmentActivity
+            val fragmentManager = activity.supportFragmentManager
+            fragmentManager.beginTransaction().replace(resId, fragment).commit()
             when(fragment){
                 is MyTargetFragment -> fragment.initializePlaying()
                 is ImaFragment -> fragment.initializePlaying()
