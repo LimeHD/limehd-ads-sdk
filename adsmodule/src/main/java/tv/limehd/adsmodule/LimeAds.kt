@@ -66,7 +66,13 @@ class LimeAds {
 
         @JvmStatic
         @JvmOverloads
-        fun getAd(context: Context, resId: Int, fragmentState: FragmentState, adRequestListener: AdRequestListener? = null, adShowListener: AdShowListener? = null) {
+        fun getAd(context: Context,
+                  resId: Int,
+                  fragmentState: FragmentState,
+                  isOnline: Int,
+                  isArchive: Int,
+                  adRequestListener: AdRequestListener? = null,
+                  adShowListener: AdShowListener? = null) {
             this.context = context
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
