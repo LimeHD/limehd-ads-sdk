@@ -101,14 +101,14 @@ class LimeAds {
                     AdType.MyTarget.typeSdk -> {
                         val online = ad.is_onl
                         val archive = ad.is_arh
-                        myTargetAdStatus["isOnline"] = online
-                        myTargetAdStatus["isArchive"] = archive
+                        myTargetAdStatus[context.getString(R.string.isOnline)] = online
+                        myTargetAdStatus[context.getString(R.string.isArchive)] = archive
                     }
                     AdType.IMA.typeSdk -> {
                         val online = ad.is_onl
                         val archive = ad.is_arh
-                        imaAdStatus["isOnline"] = online
-                        imaAdStatus["isArchive"] = archive
+                        imaAdStatus[context.getString(R.string.isOnline)] = online
+                        imaAdStatus[context.getString(R.string.isArchive)] = archive
                     }
                 }
             }
@@ -192,7 +192,7 @@ class LimeAds {
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
         if(currentAdStatus == AdStatus.Online){
-            if(myTargetAdStatus["isOnline"] == 1){
+            if(myTargetAdStatus[context.getString(R.string.isOnline)] == 1){
                 Log.d(TAG, "isOnline == 1, load MyTargetAd")
                 loadMyTarget()
             }else{
@@ -204,7 +204,7 @@ class LimeAds {
                 }
             }
         }else if(currentAdStatus == AdStatus.Archive){
-            if(myTargetAdStatus["isArchive"] == 1){
+            if(myTargetAdStatus[context.getString(R.string.isArchive)] == 1){
                 Log.d(TAG, "isArchive == 1, load MyTargetAd")
                 loadMyTarget()
             }else{
@@ -260,7 +260,7 @@ class LimeAds {
         Log.d(TAG, "Load IMA ad")
 
         if(currentAdStatus == AdStatus.Online){
-            if(imaAdStatus["isOnline"] == 1){
+            if(imaAdStatus[context.getString(R.string.isOnline)] == 1){
                 Log.d(TAG, "isOnline == 1, load ImaAd")
                 loadImaAd()
             }else{
@@ -272,7 +272,7 @@ class LimeAds {
                 }
             }
         }else if(currentAdStatus == AdStatus.Archive){
-            if(imaAdStatus["isArchive"] == 1){
+            if(imaAdStatus[context.getString(R.string.isArchive)] == 1){
                 Log.d(TAG, "isArchive == 1, load ImaAd")
                 loadImaAd()
             }else{

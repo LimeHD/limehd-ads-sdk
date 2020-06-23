@@ -5,4 +5,6 @@
     <string name="no_ad_found_at_all" translatable="false">We checked all of the ads, but no ad was found</string>
     <string name="skip">Пропустить</string>
     <string name="ads_off">Отключить рекламу</string>
+    <string name="isOnline" translatable="false">isOnline</string>
+    <string name="isArchive" translatable="false">isArchive</string>
 </resources>
