@@ -45,6 +45,7 @@ class LimeAds {
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
+        private val imaAdStatus: HashMap<String, Int> = HashMap()
 
         /**
          * Init LimeAds library
@@ -102,6 +103,12 @@ class LimeAds {
                         val archive = ad.is_arh
                         myTargetAdStatus["isOnline"] = online
                         myTargetAdStatus["isArchive"] = archive
+                    }
+                    AdType.IMA.typeSdk -> {
+                        val online = ad.is_onl
+                        val archive = ad.is_arh
+                        imaAdStatus["isOnline"] = online
+                        imaAdStatus["isArchive"] = archive
                     }
                 }
             }
@@ -251,6 +258,35 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
+
+        if(currentAdStatus == AdStatus.Online){
+            if(imaAdStatus["isOnline"] == 1){
+                Log.d(TAG, "isOnline == 1, load ImaAd")
+                loadImaAd()
+            }else{
+                Log.d(TAG, "isOnline == 0, not loading ImaAd")
+                if(lastAd == AdType.IMA.typeSdk){
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                }else {
+                    getNextAd(AdType.IMA.typeSdk)
+                }
+            }
+        }else if(currentAdStatus == AdStatus.Archive){
+            if(imaAdStatus["isArchive"] == 1){
+                Log.d(TAG, "isArchive == 1, load ImaAd")
+                loadImaAd()
+            }else{
+                Log.d(TAG, "isArchive == 0, not loading ImaAd")
+                if(lastAd == AdType.IMA.typeSdk){
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                }else {
+                    getNextAd(AdType.IMA.typeSdk)
+                }
+            }
+        }
+    }
+
+    private fun loadImaAd() {
         val imaLoader = ImaLoader(context, testAdTagUrl, viewGroup, this)
         imaLoader.loadImaAd(fragmentState)
     }
