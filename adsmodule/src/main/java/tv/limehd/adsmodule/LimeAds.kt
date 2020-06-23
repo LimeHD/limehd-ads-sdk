@@ -17,6 +17,7 @@ import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
+import tv.limehd.adsmodule.model.AdStatus
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
@@ -41,6 +42,7 @@ class LimeAds {
         var adRequestListener: AdRequestListener? = null
         var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
+        private var currentAdStatus: AdStatus = AdStatus.Online
 
         /**
          * Init LimeAds library
@@ -81,6 +83,16 @@ class LimeAds {
             val activityOfFragment = context as FragmentActivity
             this.fragmentManager = activityOfFragment.supportFragmentManager
             this.resId = resId
+
+            currentAdStatus = when(isOnline){
+                true -> {
+                    AdStatus.Online
+                }
+                false -> {
+                    AdStatus.Archive
+                }
+            }
+
             when(adsList[0].type_sdk){
                 AdType.Google.typeSdk -> limeAds?.getGoogleAd()
                 AdType.IMA.typeSdk -> limeAds?.getImaAd()
