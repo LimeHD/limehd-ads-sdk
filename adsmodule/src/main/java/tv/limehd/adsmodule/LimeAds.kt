@@ -83,6 +83,13 @@ class LimeAds {
             }
         }
 
+        /**
+         * Function returns TRUE, if library has been initialized
+         * Function returns FALSE, if library has not been initialized
+         *
+         * @return Boolean
+         */
+
         @JvmStatic
         fun isInitialized() : Boolean = isInitialized
 
