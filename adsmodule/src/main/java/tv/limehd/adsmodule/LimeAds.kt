@@ -20,6 +20,7 @@ import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
+import java.util.*
 
 /**
  * Класс для работы с рекламой
@@ -43,6 +44,7 @@ class LimeAds {
         var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
+        private val myTargetAdStatus: HashMap<String, Int> = HashMap()
 
         /**
          * Init LimeAds library
@@ -90,6 +92,17 @@ class LimeAds {
                 }
                 false -> {
                     AdStatus.Archive
+                }
+            }
+
+            for(ad in adsList){
+                when(ad.type_sdk){
+                    AdType.MyTarget.typeSdk -> {
+                        val online = ad.is_onl
+                        val archive = ad.is_arh
+                        myTargetAdStatus["isOnline"] = online
+                        myTargetAdStatus["isArchive"] = archive
+                    }
                 }
             }
 
@@ -171,6 +184,34 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
+        if(currentAdStatus == AdStatus.Online){
+            if(myTargetAdStatus["isOnline"] == 1){
+                Log.d(TAG, "isOnline == 1, load MyTargetAd")
+                loadMyTarget()
+            }else{
+                Log.d(TAG, "isOnline == 0, not loading MyTargetAd")
+                if(lastAd == AdType.MyTarget.typeSdk){
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                }else {
+                    getNextAd(AdType.MyTarget.typeSdk)
+                }
+            }
+        }else if(currentAdStatus == AdStatus.Archive){
+            if(myTargetAdStatus["isArchive"] == 1){
+                Log.d(TAG, "isArchive == 1, load MyTargetAd")
+                loadMyTarget()
+            }else{
+                Log.d(TAG, "isArchive == 0, not loading MyTargetAd")
+                if(lastAd == AdType.MyTarget.typeSdk){
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                }else {
+                    getNextAd(AdType.MyTarget.typeSdk)
+                }
+            }
+        }
+    }
+
+    private fun loadMyTarget() {
         val myTargetLoader = MyTargetLoader(context)
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
         adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
