@@ -69,8 +69,7 @@ class LimeAds {
         fun getAd(context: Context,
                   resId: Int,
                   fragmentState: FragmentState,
-                  isOnline: Int,
-                  isArchive: Int,
+                  isOnline: Boolean,
                   adRequestListener: AdRequestListener? = null,
                   adShowListener: AdShowListener? = null) {
             this.context = context
