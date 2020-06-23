@@ -49,6 +49,7 @@ class LimeAds {
          */
 
         @JvmStatic
+        @Throws(IllegalArgumentException::class)
         fun init(json: JSONObject) {
             if(json.isNull("ads") || json.isNull("ads_global") || json.getJSONArray("ads").length() == 0){
                 throw IllegalArgumentException("JSONObject is empty!")
