@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.gson.GsonBuilder
 import org.json.JSONObject
+import tv.limehd.adsmodule.google.Google
 import tv.limehd.adsmodule.ima.ImaFragment
 import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdRequestListener
@@ -45,6 +46,7 @@ class LimeAds {
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
         private val imaAdStatus: HashMap<String, Int> = HashMap()
         private lateinit var myTarget: MyTarget
+        private lateinit var google: Google
 
         /**
          * Init LimeAds library
@@ -264,16 +266,8 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "Load google ad")
-        // If success then give AdFragment
-        // Otherwise, onNoAd callback will be occurred
-
-        Log.d(TAG, "GoogleAd onNoAd called")
-
-        if(lastAd == AdType.Google.typeSdk){
-            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-        }else {
-            getNextAd(AdType.Google.typeSdk)
-        }
+        google = Google(context, lastAd, fragmentState, this)
+        google.getGoogleAd()
     }
 
     /**
