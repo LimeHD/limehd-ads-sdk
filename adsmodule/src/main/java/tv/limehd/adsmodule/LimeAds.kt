@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.google.gson.GsonBuilder
 import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
@@ -39,6 +40,7 @@ class LimeAds {
         private var isInitialized = false
         var adRequestListener: AdRequestListener? = null
         var adShowListener: AdShowListener? = null
+        private lateinit var fragmentManager: FragmentManager
 
         /**
          * Init LimeAds library
@@ -69,6 +71,8 @@ class LimeAds {
             val activity = context as Activity
             this.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
+            val activityOfFragment = context as FragmentActivity
+            this.fragmentManager = activityOfFragment.supportFragmentManager
             this.resId = resId
             when(adsList[0].type_sdk){
                 AdType.Google.typeSdk -> limeAds?.getGoogleAd()
@@ -90,8 +94,6 @@ class LimeAds {
          */
         @JvmStatic
         fun showAd(fragment: Fragment){
-            val activity = context as FragmentActivity
-            val fragmentManager = activity.supportFragmentManager
             fragmentManager.beginTransaction().replace(resId, fragment).commit()
             when(fragment){
                 is MyTargetFragment -> fragment.initializePlaying()
@@ -144,8 +146,6 @@ class LimeAds {
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
         val myTargetLoader = MyTargetLoader(context)
-        val activity = context as FragmentActivity
-        val fragmentManager = activity.supportFragmentManager
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
         adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
         myTargetLoader.loadAd()
