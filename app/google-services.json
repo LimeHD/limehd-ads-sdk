@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1008388326162:android:e6ba7df666daecb9",
         "android_client_info": {
-          "package_name": "limehd.ru.ctv"
+          "package_name": "tv.limehd.adsexample"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "1008388326162-6sovsjlfjb2qo8unth99ai1sboi5du5m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "limehd.ru.ctv",
+            "package_name": "tv.limehd.adsexample",
             "certificate_hash": "f44dba52d8c051223d59fb4a70849c1bb3691bdb"
           }
         },
@@ -26,7 +26,7 @@
           "client_id": "1008388326162-fqn2jpo9i86quk0q3cl9dv11uiphhrlp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "limehd.ru.ctv",
+            "package_name": "tv.limehd.adsexample",
             "certificate_hash": "42f8a51ea627e261e4ab73a393fa811a9454aa29"
           }
         },
@@ -51,7 +51,7 @@
               "client_id": "1008388326162-l6d58lpaai5a01ljp5rtbbftf3hgs8om.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "tv.limehd.ctv",
+                "bundle_id": "tv.limehd.adsexample",
                 "app_store_id": "1463388521"
               }
             }
