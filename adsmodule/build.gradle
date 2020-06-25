@@ -70,3 +70,4 @@ dependencies {
     implementation deps.googleAd.play_services_base
     implementation deps.googleAd.interactivemedia
 }
+apply plugin: 'com.google.gms.google-services'
