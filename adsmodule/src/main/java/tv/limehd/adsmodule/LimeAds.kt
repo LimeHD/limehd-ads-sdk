@@ -211,7 +211,7 @@ class LimeAds {
             Log.d(TAG, "$adStatus == 1, load ${adType.typeSdk}")
             when(adType){
                 is AdType.IMA -> ima.loadAd()
-                is AdType.MyTarget -> myTarget.loadMyTarget()
+                is AdType.MyTarget -> myTarget.loadAd()
             }
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")

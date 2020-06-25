@@ -25,7 +25,7 @@ class MyTarget(private val context: Context,
         private const val TAG = "MyTarget"
     }
 
-    fun loadMyTarget() {
+    fun loadAd() {
         val myTargetLoader = MyTargetLoader(context)
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
         LimeAds.adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
