@@ -8,18 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.gson.GsonBuilder
-import com.my.target.instreamads.InstreamAd
 import org.json.JSONObject
+import tv.limehd.adsmodule.google.Google
+import tv.limehd.adsmodule.ima.Ima
 import tv.limehd.adsmodule.ima.ImaFragment
-import tv.limehd.adsmodule.ima.ImaLoader
-import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
+import tv.limehd.adsmodule.myTarget.MyTarget
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
-import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
 /**
  * Класс для работы с рекламой
@@ -43,6 +42,12 @@ class LimeAds {
         var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
+        private val myTargetAdStatus: HashMap<String, Int> = HashMap()
+        private val imaAdStatus: HashMap<String, Int> = HashMap()
+        private lateinit var myTarget: MyTarget
+        private lateinit var ima: Ima
+        private lateinit var google: Google
+        private lateinit var loadedAdStatusMap: HashMap<String, Int>
 
         /**
          * Init LimeAds library
@@ -63,7 +68,9 @@ class LimeAds {
         }
 
         /**
-         * Load ad in correct order. That depends on the adsList
+         * Load ad in correct order. That depends on the JSONObject.
+         * Get current ad status (Online or Archive)
+         * Get and Save isOnline and isArchive for each ad in JSONObject
          */
 
         @JvmStatic
@@ -85,11 +92,22 @@ class LimeAds {
             this.resId = resId
 
             currentAdStatus = when(isOnline){
-                true -> {
-                    AdStatus.Online
-                }
-                false -> {
-                    AdStatus.Archive
+                true -> AdStatus.Online
+                false -> AdStatus.Archive
+            }
+
+            for(ad in adsList){
+                val online = ad.is_onl
+                val archive = ad.is_arh
+                when(ad.type_sdk){
+                    AdType.MyTarget.typeSdk -> {
+                        myTargetAdStatus[context.getString(R.string.isOnline)] = online
+                        myTargetAdStatus[context.getString(R.string.isArchive)] = archive
+                    }
+                    AdType.IMA.typeSdk -> {
+                        imaAdStatus[context.getString(R.string.isOnline)] = online
+                        imaAdStatus[context.getString(R.string.isArchive)] = archive
+                    }
                 }
             }
 
@@ -140,10 +158,10 @@ class LimeAds {
         adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
     }
 
-    val lastAd: String get() = adsList.last().type_sdk
+    val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
 
     /**
-     * Получить/вызвать слудующию рекламу после currentAd
+     * Получить/вызвать слудущию рекламу после currentAd
      *
      * @param   currentAd   реклама на которой сейчас произошла загрузка
      */
@@ -171,47 +189,64 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
-        val myTargetLoader = MyTargetLoader(context)
-        fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-        adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
-        myTargetLoader.loadAd()
-        myTargetLoader.setAdLoader(object : AdLoader {
-            override fun onRequest() {
-                adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
-            }
+        myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
+        loadAd(AdType.MyTarget)
+    }
 
-            override fun onLoaded(instreamAd: InstreamAd) {
-                adRequestListener?.onLoaded("Ad is loaded", AdType.MyTarget)
-                myTargetFragment.setInstreamAd(instreamAd)
-                fragmentState.onSuccessState(myTargetFragment)
-            }
+    /**
+     * Function stands for :
+     * 1) If current ad status is online status, then we check isOnline value for current ad (JSONObject)
+     *  1.1) If isOnline equals 1, then we load current ad
+     *  1.2) Otherwise, if current ad is the last ad in the JSONObject -> ads array, then we throw exception.
+     *       If current ad is not the last ad, then we load next ad after current one
+     *
+     *  @param  adType  Type of the current ad (IMA, MyTarget...)
+     *  @param adStatus Status for the ad (Online or Archive)
+     */
 
-            override fun onError(error: String) {
-                adRequestListener?.onError(error, AdType.MyTarget)
+    private fun loadOrLoadNextOrThrowExceptionByAdStatus(adType: AdType, adStatus: String){
+        if(loadedAdStatusMap[adStatus] == 1){
+            Log.d(TAG, "$adStatus == 1, load ${adType.typeSdk}")
+            when(adType){
+                is AdType.IMA -> ima.loadAd()
+                is AdType.MyTarget -> myTarget.loadAd()
             }
+        }else{
+            Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
+            if(lastAd == adType.typeSdk){
+                fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+            }else {
+                getNextAd(adType.typeSdk)
+            }
+        }
+    }
 
-            override fun onNoAd(error: String) {
-                Log.d(TAG, "MyTarget onNoAd called")
-                adRequestListener?.onNoAd(error, AdType.MyTarget)
-                fragmentManager.beginTransaction().remove(myTargetFragment).commit()
-                if(lastAd == AdType.MyTarget.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                }else {
-                    getNextAd(AdType.MyTarget.typeSdk)
-                }
-            }
-        })
+    /**
+     * Load ad base on AdType and AdStatus
+     *
+     * @param   adType  Type of the current ad (IMA, MyTarget...)
+     */
+
+    private fun loadAd(adType: AdType){
+        when(adType){
+            is AdType.IMA -> loadedAdStatusMap = imaAdStatus
+            is AdType.MyTarget -> loadedAdStatusMap = myTargetAdStatus
+        }
+        if(currentAdStatus == AdStatus.Online){
+            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isOnline))
+        }else if(currentAdStatus == AdStatus.Archive){
+            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isArchive))
+        }
     }
 
     /**
      * Получить рекламу от площадки IMA
-     *
      */
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        val imaLoader = ImaLoader(context, testAdTagUrl, viewGroup, this)
-        imaLoader.loadImaAd(fragmentState)
+        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, this)
+        loadAd(AdType.IMA)
     }
 
     /**
@@ -220,16 +255,8 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "Load google ad")
-        // If success then give AdFragment
-        // Otherwise, onNoAd callback will be occurred
-
-        Log.d(TAG, "GoogleAd onNoAd called")
-
-        if(lastAd == AdType.Google.typeSdk){
-            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-        }else {
-            getNextAd(AdType.Google.typeSdk)
-        }
+        google = Google(context, lastAd, fragmentState, this)
+        google.getGoogleAd()
     }
 
     /**

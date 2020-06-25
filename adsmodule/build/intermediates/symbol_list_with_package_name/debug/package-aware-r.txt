@@ -1083,6 +1083,8 @@ string exo_track_surround
 string exo_track_surround_5_point_1
 string exo_track_surround_7_point_1
 string exo_track_unknown
+string isArchive
+string isOnline
 string more_text
 string no_ad_found_at_all
 string search_menu_title
