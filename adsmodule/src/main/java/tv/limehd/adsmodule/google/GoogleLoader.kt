@@ -81,6 +81,9 @@ class GoogleLoader(
             override fun onAdLoaded() {
                 Log.d(TAG, "onAdLoaded: called")
                 adRequestListener.onLoaded("LOADED", AdType.Google)
+                if(interstitialAd.isLoaded){
+                    interstitialAd.show()
+                }
             }
         }
     }
