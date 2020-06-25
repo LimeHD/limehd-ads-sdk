@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentManager
 import com.google.gson.GsonBuilder
 import org.json.JSONObject
 import tv.limehd.adsmodule.google.Google
+import tv.limehd.adsmodule.ima.Ima
 import tv.limehd.adsmodule.ima.ImaFragment
-import tv.limehd.adsmodule.ima.ImaLoader
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
@@ -45,6 +45,7 @@ class LimeAds {
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
         private val imaAdStatus: HashMap<String, Int> = HashMap()
         private lateinit var myTarget: MyTarget
+        private lateinit var ima: Ima
         private lateinit var google: Google
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
 
@@ -207,7 +208,7 @@ class LimeAds {
         if(loadedAdStatusMap[adStatus] == 1){
             Log.d(TAG, "$adStatus == 1, load ${adType.typeSdk}")
             when(adType){
-                is AdType.IMA -> loadImaAd()
+                is AdType.IMA -> ima.loadAd()
                 is AdType.MyTarget -> myTarget.loadMyTarget()
             }
         }else{
@@ -244,12 +245,8 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
+        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, this)
         loadAd(AdType.IMA)
-    }
-
-    private fun loadImaAd() {
-        val imaLoader = ImaLoader(context, testAdTagUrl, viewGroup, this)
-        imaLoader.loadImaAd(fragmentState)
     }
 
     /**
