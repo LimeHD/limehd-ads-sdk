@@ -68,7 +68,9 @@ class LimeAds {
         }
 
         /**
-         * Load ad in correct order. That depends on the adsList
+         * Load ad in correct order. That depends on the JSONObject.
+         * Get current ad status (Online or Archive)
+         * Get and Save isOnline and isArchive for each ad in JSONObject
          */
 
         @JvmStatic
@@ -158,10 +160,10 @@ class LimeAds {
         adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
     }
 
-    val lastAd: String get() = adsList.last().type_sdk
+    val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
 
     /**
-     * Получить/вызвать слудующию рекламу после currentAd
+     * Получить/вызвать слудущию рекламу после currentAd
      *
      * @param   currentAd   реклама на которой сейчас произошла загрузка
      */
