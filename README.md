@@ -59,7 +59,7 @@ android {
 ``` kotlin
 try {
     LimeAds.init(new JSONObject(Constants.json));
-    LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, null, null);
+    LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, null, null);
 }catch (IllegalArgumentException | JsonException error) {
     Toast.makeText(context, error.message, Toast.LENGTH_LONG).show();
 }
@@ -68,15 +68,16 @@ try {
 - **context**: Context Activity, Fragment. На котором иниц-ется библиотека
 - **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
 - **fragmentStateCallback**: Callback с положительным и отрицательным результатом
+- **isOnline**: Boolean, если TRUE -> Онлайн, если FALSE -> Архив
 - @Nullable **adRequestCallback**: Листенер для логов запроса рекламы
 - @Nullable **adShowCallback**: Листенер для логов показа рекламы
 ``` js
-LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, adRequestCallback, adShowCallback);
+LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, adRequestCallback, adShowCallback);
 ```
 ### 2. Добавить FragmentState
 Callback, который является одним из параметров в функции 
 ``` js
-LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, adRequestCallback, adShowCallback);
+LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, adRequestCallback, adShowCallback);
 ```
 ``` kotlin
 private FragmentState fragmentStateCallback = new FragmentState() {
