@@ -97,16 +97,14 @@ class LimeAds {
             }
 
             for(ad in adsList){
+                val online = ad.is_onl
+                val archive = ad.is_arh
                 when(ad.type_sdk){
                     AdType.MyTarget.typeSdk -> {
-                        val online = ad.is_onl
-                        val archive = ad.is_arh
                         myTargetAdStatus[context.getString(R.string.isOnline)] = online
                         myTargetAdStatus[context.getString(R.string.isArchive)] = archive
                     }
                     AdType.IMA.typeSdk -> {
-                        val online = ad.is_onl
-                        val archive = ad.is_arh
                         imaAdStatus[context.getString(R.string.isOnline)] = online
                         imaAdStatus[context.getString(R.string.isArchive)] = archive
                     }
