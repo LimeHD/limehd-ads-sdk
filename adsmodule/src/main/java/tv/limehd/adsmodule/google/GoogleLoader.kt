@@ -57,14 +57,16 @@ class GoogleLoader(
                     3 -> errorMessage = "ERROR_CODE_NO_FILL"
                 }
                 if(errorType == 3){
+                    // No Ad Error
                     adRequestListener.onNoAd(errorMessage, AdType.Google)
-                    if(lastAd == AdType.Google.typeSdk){
-                        fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                    }else {
-                        limeAds.getNextAd(AdType.Google.typeSdk)
-                    }
-                }else {
+                }else{
+                    // Some other error happened
                     adRequestListener.onError(errorMessage, AdType.Google)
+                }
+                if(lastAd == AdType.Google.typeSdk){
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                }else {
+                    limeAds.getNextAd(AdType.Google.typeSdk)
                 }
             }
 
