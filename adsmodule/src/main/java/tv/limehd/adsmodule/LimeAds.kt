@@ -255,7 +255,7 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "Load google ad")
-        google = Google(context, lastAd, fragmentState, this)
+        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
         google.getGoogleAd()
     }
 
