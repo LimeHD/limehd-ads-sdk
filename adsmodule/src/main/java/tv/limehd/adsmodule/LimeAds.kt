@@ -44,6 +44,7 @@ class LimeAds {
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
         private val imaAdStatus: HashMap<String, Int> = HashMap()
+        private val googleAdStatus: HashMap<String, Int> = HashMap()
         private lateinit var myTarget: MyTarget
         private lateinit var ima: Ima
         private lateinit var google: Google
@@ -107,6 +108,10 @@ class LimeAds {
                     AdType.IMA.typeSdk -> {
                         imaAdStatus[context.getString(R.string.isOnline)] = online
                         imaAdStatus[context.getString(R.string.isArchive)] = archive
+                    }
+                    AdType.Google.typeSdk -> {
+                        googleAdStatus[context.getString(R.string.isOnline)] = online
+                        googleAdStatus[context.getString(R.string.isArchive)] = archive
                     }
                 }
             }
@@ -210,6 +215,7 @@ class LimeAds {
             when(adType){
                 is AdType.IMA -> ima.loadAd()
                 is AdType.MyTarget -> myTarget.loadAd()
+                is AdType.Google -> google.getGoogleAd()
             }
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
@@ -231,6 +237,7 @@ class LimeAds {
         when(adType){
             is AdType.IMA -> loadedAdStatusMap = imaAdStatus
             is AdType.MyTarget -> loadedAdStatusMap = myTargetAdStatus
+            is AdType.Google -> loadedAdStatusMap = googleAdStatus
         }
         if(currentAdStatus == AdStatus.Online){
             loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isOnline))
@@ -256,7 +263,7 @@ class LimeAds {
     private fun getGoogleAd() {
         Log.d(TAG, "Load google ad")
         google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
-        google.getGoogleAd()
+        loadAd(AdType.Google)
     }
 
     /**
