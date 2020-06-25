@@ -19,7 +19,6 @@ import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
 import tv.limehd.adsmodule.myTarget.MyTarget
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
-import java.util.*
 
 /**
  * Класс для работы с рекламой
@@ -47,6 +46,7 @@ class LimeAds {
         private val imaAdStatus: HashMap<String, Int> = HashMap()
         private lateinit var myTarget: MyTarget
         private lateinit var google: Google
+        private lateinit var loadedAdStatusMap: HashMap<String, Int>
 
         /**
          * Init LimeAds library
@@ -89,12 +89,8 @@ class LimeAds {
             this.resId = resId
 
             currentAdStatus = when(isOnline){
-                true -> {
-                    AdStatus.Online
-                }
-                false -> {
-                    AdStatus.Archive
-                }
+                true -> AdStatus.Online
+                false -> AdStatus.Archive
             }
 
             for(ad in adsList){
@@ -193,66 +189,62 @@ class LimeAds {
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
         myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
-        if(currentAdStatus == AdStatus.Online){
-            if(myTargetAdStatus[context.getString(R.string.isOnline)] == 1){
-                Log.d(TAG, "isOnline == 1, load MyTargetAd")
-                myTarget.loadMyTarget()
-            }else{
-                Log.d(TAG, "isOnline == 0, not loading MyTargetAd")
-                if(lastAd == AdType.MyTarget.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                }else {
-                    getNextAd(AdType.MyTarget.typeSdk)
-                }
+        loadAd(AdType.MyTarget)
+    }
+
+    /**
+     * Function stands for :
+     * 1) If current ad status is online status, then we check isOnline value for current ad (JSONObject)
+     *  1.1) If isOnline equals 1, then we load current ad
+     *  1.2) Otherwise, if current ad is the last ad in the JSONObject -> ads array, then we throw exception.
+     *       If current ad is not the last ad, then we load next ad after current one
+     *
+     *  @param  adType  Type of the current ad (IMA, MyTarget...)
+     *  @param adStatus Status for the ad (Online or Archive)
+     */
+
+    private fun loadOrLoadNextOrThrowExceptionByAdStatus(adType: AdType, adStatus: String){
+        if(loadedAdStatusMap[adStatus] == 1){
+            Log.d(TAG, "$adStatus == 1, load ${adType.typeSdk}")
+            when(adType){
+                is AdType.IMA -> loadImaAd()
+                is AdType.MyTarget -> myTarget.loadMyTarget()
             }
-        }else if(currentAdStatus == AdStatus.Archive){
-            if(myTargetAdStatus[context.getString(R.string.isArchive)] == 1){
-                Log.d(TAG, "isArchive == 1, load MyTargetAd")
-                myTarget.loadMyTarget()
-            }else{
-                Log.d(TAG, "isArchive == 0, not loading MyTargetAd")
-                if(lastAd == AdType.MyTarget.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                }else {
-                    getNextAd(AdType.MyTarget.typeSdk)
-                }
+        }else{
+            Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
+            if(lastAd == adType.typeSdk){
+                fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+            }else {
+                getNextAd(adType.typeSdk)
             }
         }
     }
 
     /**
-     * Получить рекламу от площадки IMA
+     * Load ad base on AdType and AdStatus
      *
+     * @param   adType  Type of the current ad (IMA, MyTarget...)
+     */
+
+    private fun loadAd(adType: AdType){
+        when(adType){
+            is AdType.IMA -> loadedAdStatusMap = imaAdStatus
+            is AdType.MyTarget -> loadedAdStatusMap = myTargetAdStatus
+        }
+        if(currentAdStatus == AdStatus.Online){
+            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isOnline))
+        }else if(currentAdStatus == AdStatus.Archive){
+            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isArchive))
+        }
+    }
+
+    /**
+     * Получить рекламу от площадки IMA
      */
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-
-        if(currentAdStatus == AdStatus.Online){
-            if(imaAdStatus[context.getString(R.string.isOnline)] == 1){
-                Log.d(TAG, "isOnline == 1, load ImaAd")
-                loadImaAd()
-            }else{
-                Log.d(TAG, "isOnline == 0, not loading ImaAd")
-                if(lastAd == AdType.IMA.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                }else {
-                    getNextAd(AdType.IMA.typeSdk)
-                }
-            }
-        }else if(currentAdStatus == AdStatus.Archive){
-            if(imaAdStatus[context.getString(R.string.isArchive)] == 1){
-                Log.d(TAG, "isArchive == 1, load ImaAd")
-                loadImaAd()
-            }else{
-                Log.d(TAG, "isArchive == 0, not loading ImaAd")
-                if(lastAd == AdType.IMA.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                }else {
-                    getNextAd(AdType.IMA.typeSdk)
-                }
-            }
-        }
+        loadAd(AdType.IMA)
     }
 
     private fun loadImaAd() {
