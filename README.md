@@ -37,6 +37,18 @@ compileOptions {
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
+### 4. Добавить `multiDexEnabled true` в build.gradle
+``` gradle
+android {
+    defaultConfig {
+        ...
+        minSdkVersion 16
+        targetSdkVersion 29
+        multiDexEnabled true
+    }
+}
+```
+
 ## Примеры использования
 ### 0. Инициализация библиотеки `LimeAds`
 - Для использования библиотеки необходимо создать экземпляр и обернуть метод init() в блок try | catch. Так как при неверных введённых параметрах будет выбрасываться IllegalArgumentException

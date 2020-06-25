@@ -199,4 +199,21 @@ class MyTargetFragment : Fragment() {
         }
     }
 
+    /**
+     * Stops all 3-rd party libraries processes
+     * Calls when `closing activity`, `buy subscription`
+     */
+
+    fun dispose() {
+        if(this::leftHandler.isInitialized) {
+            leftHandler.removeCallbacks(leftRunnable)
+        }
+        if(this::skipHandler.isInitialized) {
+            skipHandler.removeCallbacks(skipRunnable)
+        }
+        if(this::mInstreamAd.isInitialized) {
+            mInstreamAd.stop()
+        }
+    }
+
 }
