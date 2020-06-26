@@ -76,7 +76,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         adsRequest.contentProgressProvider = ContentProgressProvider {
             VideoProgressUpdate(0, 120)
         }
-        LimeAds.adRequestListener?.onRequest("Ad is requested", AdType.IMA)
+        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
         leftHandler.postDelayed(leftRunnable, 1000)
@@ -107,17 +107,17 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         when(adEvent?.type){
             AdEvent.AdEventType.LOADED -> {
                 Log.d(TAG, "loaded")
-                LimeAds.adRequestListener?.onLoaded("Ad is loaded", AdType.IMA)
+                LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
                 imaFragment = ImaFragment(adsManager)
                 fragmentState.onSuccessState(imaFragment)
             }
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                 Log.d(TAG, "ALL_ADS_COMPLETED")
-                LimeAds.adShowListener?.onComplete("ALL_ADS_COMPLETED", AdType.IMA)
+                LimeAds.adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
             }
             AdEvent.AdEventType.CLICKED -> {
                 Log.d(TAG, "CLICKED")
-                LimeAds.adShowListener?.onClick("CLICKED", AdType.IMA)
+                LimeAds.adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
             }
             AdEvent.AdEventType.COMPLETED -> {
                 Log.d(TAG, "COMPLETED")
@@ -154,15 +154,15 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
             }
             AdEvent.AdEventType.SKIPPED -> {
                 Log.d(TAG, "SKIPPED")
-                LimeAds.adShowListener?.onSkip("SKIPPED", AdType.IMA)
+                LimeAds.adShowListener?.onSkip(context.getString(R.string.skipped), AdType.IMA)
             }
             AdEvent.AdEventType.STARTED -> {
                 Log.d(TAG, "STARTED")
-                LimeAds.adShowListener?.onShow("STARTED", AdType.IMA)
+                LimeAds.adShowListener?.onShow(context.getString(R.string.showing), AdType.IMA)
             }
             AdEvent.AdEventType.TAPPED -> {
                 Log.d(TAG, "TAPPED")
-                LimeAds.adShowListener?.onClick("CLICKED", AdType.IMA)
+                LimeAds.adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
             }
             AdEvent.AdEventType.ICON_TAPPED -> {
                 Log.d(TAG, "ICON_TAPPED")
