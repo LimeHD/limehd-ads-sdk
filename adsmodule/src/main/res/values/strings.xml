@@ -15,4 +15,10 @@
     <string name="skipped" translatable="false">SKIPPED</string>
     <string name="clicked" translatable="false">CLICKED</string>
 
+    // AdRequestListener
+    <string name="requested" translatable="false">REQUESTED</string>
+    <string name="loaded" translatable="false">LOADED</string>
+    <string name="requestError" translatable="false">ERROR</string>
+    <string name="noAd" translatable="false">NO AD FOUND</string>
+
 </resources>
