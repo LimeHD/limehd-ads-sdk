@@ -12,6 +12,12 @@ import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.FragmentState
 
+/**
+ * This class stands for loading ima ads logic
+ * This is where all business magic happens
+ * Errors/Clicks/Completion/Loaded/Requested - will be thrown to AdRequest and AdShow listeners
+ */
+
 class ImaLoader constructor(private val context: Context, private val adTagUrl: String, private val container: ViewGroup, private val limeAds: LimeAds)
     : AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
 
