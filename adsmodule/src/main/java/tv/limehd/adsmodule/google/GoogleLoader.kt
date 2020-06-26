@@ -36,7 +36,7 @@ class GoogleLoader(
     fun loadAd() {
         interstitialAd = InterstitialAd(context)
         interstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
-        adRequestListener.onRequest("Ad is requested", AdType.Google)
+        adRequestListener.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
         interstitialAd.adListener = object : AdListener() {
             override fun onAdImpression() {
@@ -45,12 +45,12 @@ class GoogleLoader(
 
             override fun onAdLeftApplication() {
                 Log.d(TAG, "onAdLeftApplication: called")
-                adShowListener.onSkip("SKIP", AdType.Google)
+                adShowListener.onSkip(context.getString(R.string.skipped), AdType.Google)
             }
 
             override fun onAdClicked() {
                 Log.d(TAG, "onAdClicked: called")
-                adShowListener.onClick("CLICKED", AdType.Google)
+                adShowListener.onClick(context.getString(R.string.clicked), AdType.Google)
             }
 
             override fun onAdFailedToLoad(errorType: Int) {
@@ -78,17 +78,17 @@ class GoogleLoader(
 
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
-                adShowListener.onComplete("COMPLETED", AdType.Google)
+                adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
             }
 
             override fun onAdOpened() {
                 Log.d(TAG, "onAdOpened: called")
-                adShowListener.onShow("SHOWING", AdType.Google)
+                adShowListener.onShow(context.getString(R.string.showing), AdType.Google)
             }
 
             override fun onAdLoaded() {
                 Log.d(TAG, "onAdLoaded: called")
-                adRequestListener.onLoaded("LOADED", AdType.Google)
+                adRequestListener.onLoaded(context.getString(R.string.loaded), AdType.Google)
                 if(interstitialAd.isLoaded){
                     interstitialAd.show()
                 }
