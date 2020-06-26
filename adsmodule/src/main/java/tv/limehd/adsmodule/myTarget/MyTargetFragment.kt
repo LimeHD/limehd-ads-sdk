@@ -80,11 +80,11 @@ class MyTargetFragment : Fragment() {
         buttonSkip = rootView.findViewById(R.id.btn_skip)
         // Skip button
         buttonSkip.setOnClickListener {
-            LimeAds.adShowListener?.onSkip("SKIPPED", AdType.MyTarget)
+            LimeAds.adShowListener?.onSkip(this.getString(R.string.skipped), AdType.MyTarget)
         }
         // Ad Click
         rootContainer.setOnClickListener {
-            LimeAds.adShowListener?.onClick("CLICKED", AdType.MyTarget)
+            LimeAds.adShowListener?.onClick(this.getString(R.string.clicked), AdType.MyTarget)
         }
         return rootView
     }
@@ -109,7 +109,7 @@ class MyTargetFragment : Fragment() {
                 if(this@MyTargetFragment::skipHandler.isInitialized) {
                     skipHandler.removeCallbacks(skipRunnable)
                 }
-                LimeAds.adShowListener?.onComplete("COMPLETED", AdType.MyTarget)
+                LimeAds.adShowListener?.onComplete(this@MyTargetFragment.getString(R.string.completed), AdType.MyTarget)
             }
 
             override fun onBannerPause(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -117,7 +117,7 @@ class MyTargetFragment : Fragment() {
             }
 
             override fun onBannerStart(instreamAd: InstreamAd, instreamAdBanner: InstreamAd.InstreamAdBanner) {
-                LimeAds.adShowListener?.onShow("SHOWING", AdType.MyTarget)
+                LimeAds.adShowListener?.onShow(this@MyTargetFragment.getString(R.string.showing), AdType.MyTarget)
                 leftTimeText.visibility = View.VISIBLE
                 leftTimeText.bringToFront()
                 if(instreamAdBanner.duration > 0) {

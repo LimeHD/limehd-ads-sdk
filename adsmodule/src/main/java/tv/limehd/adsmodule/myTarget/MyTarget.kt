@@ -11,6 +11,14 @@ import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
+/**
+ * Class with MyTargetAd logic
+ * For better comprehension all business logic will be
+ * put right here, but not in the LimeAds class
+ *
+ * @link Google, Ima
+ */
+
 class MyTarget(private val context: Context,
                private val resId: Int,
                private val myTargetFragment: MyTargetFragment,
@@ -28,15 +36,15 @@ class MyTarget(private val context: Context,
     fun loadAd() {
         val myTargetLoader = MyTargetLoader(context)
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-        LimeAds.adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
+        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
-                LimeAds.adRequestListener?.onRequest("Ad is requested", AdType.MyTarget)
+                LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
             }
 
             override fun onLoaded(instreamAd: InstreamAd) {
-                LimeAds.adRequestListener?.onLoaded("Ad is loaded", AdType.MyTarget)
+                LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
                 fragmentState.onSuccessState(myTargetFragment)
             }
