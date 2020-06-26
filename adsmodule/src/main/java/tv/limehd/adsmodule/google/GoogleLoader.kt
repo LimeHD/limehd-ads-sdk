@@ -12,6 +12,12 @@ import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
+/**
+ * This class stands for loading google ads logic
+ * This is where all business magic happens
+ * Errors/Clicks/Completion/Loaded/Requested - will be thrown to AdRequest and AdShow listeners
+ */
+
 class GoogleLoader(
     private val context: Context,
     private val lastAd: String,
