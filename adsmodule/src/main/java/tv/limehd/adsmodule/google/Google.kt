@@ -7,6 +7,14 @@ import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
+/**
+ * Class with GoogleAd logic
+ * For better comprehension all business logic will be
+ * put right here, but not in the LimeAds class
+ *
+ * @link MyTarget, Ima
+ */
+
 class Google(private val context: Context,
              private val lastAd: String,
              private val fragmentState: FragmentState,
