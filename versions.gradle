@@ -39,6 +39,11 @@ buildVersions.buildToolsVersion = "29.0.3"
 buildVersions.minSdkVersion = 16
 buildVersions.targetSdkVersion = 29
 
+def googleAd = [:]
+googleAd.play_services_ads = 'com.google.android.gms:play-services-ads:19.2.0'
+googleAd.play_services_base = "com.google.android.gms:play-services-base:17.2.1"
+googleAd.interactivemedia = 'com.google.ads.interactivemedia.v3:interactivemedia:3.14.0'
+
 deps.support = support
 deps.test = test
 deps.myTarget = myTarget
@@ -47,3 +52,4 @@ deps.kotlin = kotlin
 deps.ima = ima
 deps.mockito = mockito
 deps.buildVersions = buildVersions
+deps.googleAd = googleAd

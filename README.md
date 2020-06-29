@@ -49,6 +49,25 @@ android {
 }
 ```
 
+### 5. Добавить google dependencies в проект. Для google рекламы
+build.gradle(project)
+``` gradle
+buildscript {
+    dependencies {
+        ...
+        classpath 'com.google.gms:google-services:4.3.3'
+    }
+}
+```
+build.gradle(app)
+В самом низу файла добавить
+``` gradle
+dependencies {
+    ...
+}
+apply plugin: 'com.google.gms.google-services'
+```
+
 ## Примеры использования
 ### 0. Инициализация библиотеки `LimeAds`
 - Для использования библиотеки необходимо создать экземпляр и обернуть метод init() в блок try | catch. Так как при неверных введённых параметрах будет выбрасываться IllegalArgumentException
