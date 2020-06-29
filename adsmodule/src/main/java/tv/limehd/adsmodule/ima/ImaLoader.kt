@@ -8,6 +8,7 @@ import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
 import tv.limehd.adsmodule.AdType
+import tv.limehd.adsmodule.Constants.Companion.TIMEOUT
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.FragmentState
@@ -36,7 +37,6 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     private lateinit var fragmentState: FragmentState
 
-    private var TIMEOUT = 3L
     private val leftHandler: Handler = Handler()
 
     private var leftRunnable: Runnable = object : Runnable {
