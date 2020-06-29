@@ -4,6 +4,10 @@ import android.content.Context
 import com.my.target.instreamads.InstreamAd
 import tv.limehd.adsmodule.interfaces.AdLoader
 
+/**
+ * This class stands for loading MyTarget ads logic
+ */
+
 class MyTargetLoader constructor(private val context: Context) : InstreamAd.InstreamAdListener {
 
     private lateinit var adLoader: AdLoader

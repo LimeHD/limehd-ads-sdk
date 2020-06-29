@@ -64,4 +64,9 @@ dependencies {
 
     // JSONObject mocking
     testImplementation deps.test.jsonObject
+
+    // Библиотеки для подключения GoogleAd
+    implementation deps.googleAd.play_services_ads
+    implementation deps.googleAd.play_services_base
+    implementation deps.googleAd.interactivemedia
 }

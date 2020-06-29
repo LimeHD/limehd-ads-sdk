@@ -44,3 +44,4 @@ dependencies {
 
     implementation project(':adsmodule')
 }
+apply plugin: 'com.google.gms.google-services'
