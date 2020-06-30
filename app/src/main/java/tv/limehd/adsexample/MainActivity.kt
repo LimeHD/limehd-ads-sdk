@@ -31,13 +31,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val fragmentStateCallback = object : FragmentState {
-        override fun onSuccessState(fragment: Fragment) {
-            Log.d(TAG, "onSuccessState called")
+        override fun onSuccessState(fragment: Fragment, owner: AdType) {
+            Log.d(TAG, "onSuccessState called from ${owner.typeSdk}")
             LimeAds.showAd(fragment)
         }
 
-        override fun onErrorState(message: String) {
-            Log.d(TAG, "onErrorState called: $message")
+        override fun onErrorState(message: String, owner: AdType) {
+            Log.d(TAG, "onErrorState called: $message from ${owner.typeSdk}")
             Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
         }
     }
