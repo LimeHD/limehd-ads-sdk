@@ -92,29 +92,8 @@ class LimeAds {
             this.fragmentManager = activityOfFragment.supportFragmentManager
             this.resId = resId
 
-            currentAdStatus = when(isOnline){
-                true -> AdStatus.Online
-                false -> AdStatus.Archive
-            }
-
-            for(ad in adsList){
-                val online = ad.is_onl
-                val archive = ad.is_arh
-                when(ad.type_sdk){
-                    AdType.MyTarget.typeSdk -> {
-                        myTargetAdStatus[context.getString(R.string.isOnline)] = online
-                        myTargetAdStatus[context.getString(R.string.isArchive)] = archive
-                    }
-                    AdType.IMA.typeSdk -> {
-                        imaAdStatus[context.getString(R.string.isOnline)] = online
-                        imaAdStatus[context.getString(R.string.isArchive)] = archive
-                    }
-                    AdType.Google.typeSdk -> {
-                        googleAdStatus[context.getString(R.string.isOnline)] = online
-                        googleAdStatus[context.getString(R.string.isArchive)] = archive
-                    }
-                }
-            }
+            limeAds?.getCurrentAdStatus(isOnline)
+            limeAds?.populateAdStatusesHashMaps()
 
             when(adsList[0].type_sdk){
                 AdType.Google.typeSdk -> limeAds?.getGoogleAd()
@@ -160,10 +139,52 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun getGoogleInterstitialAd() {
+        fun getGoogleInterstitialAd(
+            context: Context,
+            isOnline: Boolean,
+            fragmentState: FragmentState,
+            adRequestListener: AdRequestListener? = null,
+            adShowListener: AdShowListener? = null
+        ) {
+            this.context = context
+            this.fragmentState = fragmentState
+            this.adRequestListener = adRequestListener
+            this.adShowListener = adShowListener
+
+            limeAds?.getCurrentAdStatus(isOnline)
+            limeAds?.populateAdStatusesHashMaps()
+
             limeAds?.getGoogleAd()
         }
 
+    }
+
+    private fun getCurrentAdStatus(isOnline: Boolean) {
+        currentAdStatus = when(isOnline){
+            true -> AdStatus.Online
+            false -> AdStatus.Archive
+        }
+    }
+
+    private fun populateAdStatusesHashMaps() {
+        for(ad in adsList){
+            val online = ad.is_onl
+            val archive = ad.is_arh
+            when(ad.type_sdk){
+                AdType.MyTarget.typeSdk -> {
+                    myTargetAdStatus[context.getString(R.string.isOnline)] = online
+                    myTargetAdStatus[context.getString(R.string.isArchive)] = archive
+                }
+                AdType.IMA.typeSdk -> {
+                    imaAdStatus[context.getString(R.string.isOnline)] = online
+                    imaAdStatus[context.getString(R.string.isArchive)] = archive
+                }
+                AdType.Google.typeSdk -> {
+                    googleAdStatus[context.getString(R.string.isOnline)] = online
+                    googleAdStatus[context.getString(R.string.isArchive)] = archive
+                }
+            }
+        }
     }
 
     /**
