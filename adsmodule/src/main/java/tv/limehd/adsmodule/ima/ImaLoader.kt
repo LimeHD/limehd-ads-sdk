@@ -26,9 +26,9 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         private const val TAG = "ImaLoader"
     }
 
-    private var isTimeout = true
-
     private lateinit var imaFragment: ImaFragment
+
+    private var isTimeout = true
 
     private lateinit var mSdkFactory: ImaSdkFactory
     private lateinit var mSdkSetting: ImaSdkSettings
@@ -39,16 +39,22 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     private val leftHandler: Handler = Handler()
 
+    var timeout = TIMEOUT / 1000
+
     private var leftRunnable: Runnable = object : Runnable {
         override fun run() {
-            if (TIMEOUT > 0) {
-                TIMEOUT--
-                Log.d(TAG, TIMEOUT.toString())
+            if (timeout > 0) {
+                timeout--
+                Log.d(TAG, timeout.toString())
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
                     LimeAds.adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
-                    fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
+                    if(limeAds.lastAd == AdType.IMA.typeSdk){
+                        fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
+                    }else {
+                        limeAds.getNextAd(AdType.IMA.typeSdk)
+                    }
                 }
             }
         }
@@ -76,6 +82,9 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         adsRequest.contentProgressProvider = ContentProgressProvider {
             VideoProgressUpdate(0, 120)
         }
+
+        adsRequest.setVastLoadTimeout(TIMEOUT)
+
         LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
@@ -92,14 +101,15 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
     }
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
-        Log.d(TAG, "Ima onAdError called")
+        Log.d(TAG, "Ima onAdError called with ${adErrorEvent?.error?.errorCodeNumber}")
         LimeAds.adRequestListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         LimeAds.adShowListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
-        isTimeout = false
-        if(limeAds.lastAd == AdType.IMA.typeSdk){
-            fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
-        }else {
-            limeAds.getNextAd(AdType.IMA.typeSdk)
+        if(!isTimeout) {
+            if (limeAds.lastAd == AdType.IMA.typeSdk) {
+                fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
+            } else {
+                limeAds.getNextAd(AdType.IMA.typeSdk)
+            }
         }
     }
 

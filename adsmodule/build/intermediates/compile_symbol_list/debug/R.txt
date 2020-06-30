@@ -1103,6 +1103,7 @@ int string abc_shareactionprovider_share_with_application 0x0
 int string abc_toolbar_collapse_description 0x0
 int string ads_off 0x0
 int string app_name 0x0
+int string clicked 0x0
 int string common_google_play_services_enable_button 0x0
 int string common_google_play_services_enable_text 0x0
 int string common_google_play_services_enable_title 0x0
@@ -1121,6 +1122,8 @@ int string common_google_play_services_wear_update_text 0x0
 int string common_open_on_phone 0x0
 int string common_signin_button_text 0x0
 int string common_signin_button_text_long 0x0
+int string completed 0x0
+int string error 0x0
 int string exo_controls_fastforward_description 0x0
 int string exo_controls_fullscreen_description 0x0
 int string exo_controls_hide 0x0
@@ -1163,8 +1166,12 @@ int string exo_track_surround_7_point_1 0x0
 int string exo_track_unknown 0x0
 int string isArchive 0x0
 int string isOnline 0x0
+int string loaded 0x0
 int string more_text 0x0
+int string noAd 0x0
 int string no_ad_found_at_all 0x0
+int string requestError 0x0
+int string requested 0x0
 int string s1 0x0
 int string s2 0x0
 int string s3 0x0
@@ -1173,7 +1180,9 @@ int string s5 0x0
 int string s6 0x0
 int string s7 0x0
 int string search_menu_title 0x0
+int string showing 0x0
 int string skip 0x0
+int string skipped 0x0
 int string status_bar_notification_info_overflow 0x0
 int string timeout_occurred 0x0
 int style AlertDialog_AppCompat 0x0

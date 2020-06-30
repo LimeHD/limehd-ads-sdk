@@ -54,7 +54,7 @@ class MyTarget(private val context: Context,
             }
 
             override fun onNoAd(error: String) {
-                Log.d(TAG, "MyTarget onNoAd called")
+                Log.d(TAG, "MyTarget onNoAd called $error")
                 adRequestListener.onNoAd(error, AdType.MyTarget)
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){

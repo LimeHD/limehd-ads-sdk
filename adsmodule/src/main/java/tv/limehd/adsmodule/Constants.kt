@@ -91,7 +91,7 @@ class Constants {
                 "    }" +
                 "}"
 
-        var TIMEOUT = 3L
+        var TIMEOUT = 3000f
     }
 
     val jsonObject = JSONObject(json)
