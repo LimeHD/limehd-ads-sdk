@@ -12,11 +12,20 @@
     <dimen name="adMargin">8dp</dimen>
     <string name="ads_off">Отключить рекламу</string>
     <string name="app_name">LimeHdAdsSdk</string>
+    <string name="clicked" translatable="false">CLICKED</string>
+    <string name="completed" translatable="false">COMPLETED</string>
+    <string name="error" translatable="false">ERROR</string>
     <string name="isArchive" translatable="false">isArchive</string>
     <string name="isOnline" translatable="false">isOnline</string>
+    <string name="loaded" translatable="false">LOADED</string>
     <string name="more_text">Подробнее</string>
+    <string name="noAd" translatable="false">NO AD FOUND</string>
     <string name="no_ad_found_at_all" translatable="false">We checked all of the ads, but no ad was found</string>
+    <string name="requestError" translatable="false">ERROR</string>
+    <string name="requested" translatable="false">REQUESTED</string>
+    <string name="showing" translatable="false">SHOWING</string>
     <string name="skip">Пропустить</string>
+    <string name="skipped" translatable="false">SKIPPED</string>
     <string name="timeout_occurred" translatable="false">TIMEOUT OCCURRED</string>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
