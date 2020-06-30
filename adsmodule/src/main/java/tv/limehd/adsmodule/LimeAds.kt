@@ -220,7 +220,7 @@ class LimeAds {
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
             if(lastAd == adType.typeSdk){
-                fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), adType)
             }else {
                 getNextAd(adType.typeSdk)
             }
@@ -279,7 +279,7 @@ class LimeAds {
         Log.d(TAG, "YandexAd onNoAd called")
 
         if(lastAd == AdType.Yandex.typeSdk){
-            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Yandex)
         }else {
             getNextAd(AdType.Yandex.typeSdk)
         }
@@ -294,7 +294,7 @@ class LimeAds {
         Log.d(TAG, "Ima-Device onNoAd called")
 
         if(lastAd == AdType.IMADEVICE.typeSdk){
-            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMADEVICE)
         }else {
             getNextAd(AdType.IMADEVICE.typeSdk)
         }
