@@ -46,7 +46,7 @@ class MyTarget(private val context: Context,
             override fun onLoaded(instreamAd: InstreamAd) {
                 LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
-                fragmentState.onSuccessState(myTargetFragment)
+                fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
             }
 
             override fun onError(error: String) {
@@ -54,11 +54,11 @@ class MyTarget(private val context: Context,
             }
 
             override fun onNoAd(error: String) {
-                Log.d(TAG, "MyTarget onNoAd called")
+                Log.d(TAG, "MyTarget onNoAd called $error")
                 adRequestListener.onNoAd(error, AdType.MyTarget)
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.MyTarget)
                 }else {
                     limeAds.getNextAd(AdType.MyTarget.typeSdk)
                 }

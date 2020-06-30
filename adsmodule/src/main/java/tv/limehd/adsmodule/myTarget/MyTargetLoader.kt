@@ -2,6 +2,7 @@ package tv.limehd.adsmodule.myTarget
 
 import android.content.Context
 import com.my.target.instreamads.InstreamAd
+import tv.limehd.adsmodule.Constants.Companion.TIMEOUT
 import tv.limehd.adsmodule.interfaces.AdLoader
 
 /**
@@ -21,6 +22,7 @@ class MyTargetLoader constructor(private val context: Context) : InstreamAd.Inst
 
     fun loadAd() {
         val instreamAd = InstreamAd(slotId, context)
+        instreamAd.loadingTimeout = TIMEOUT.toInt() / 1000
         instreamAd.listener = this
         instreamAd.load()
     }

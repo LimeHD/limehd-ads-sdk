@@ -1104,6 +1104,7 @@ string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string ads_off
 string app_name
+string clicked
 string common_google_play_services_enable_button
 string common_google_play_services_enable_text
 string common_google_play_services_enable_title
@@ -1122,6 +1123,8 @@ string common_google_play_services_wear_update_text
 string common_open_on_phone
 string common_signin_button_text
 string common_signin_button_text_long
+string completed
+string error
 string exo_controls_fastforward_description
 string exo_controls_fullscreen_description
 string exo_controls_hide
@@ -1164,8 +1167,12 @@ string exo_track_surround_7_point_1
 string exo_track_unknown
 string isArchive
 string isOnline
+string loaded
 string more_text
+string noAd
 string no_ad_found_at_all
+string requestError
+string requested
 string s1
 string s2
 string s3
@@ -1174,7 +1181,9 @@ string s5
 string s6
 string s7
 string search_menu_title
+string showing
 string skip
+string skipped
 string status_bar_notification_info_overflow
 string timeout_occurred
 style AlertDialog_AppCompat
