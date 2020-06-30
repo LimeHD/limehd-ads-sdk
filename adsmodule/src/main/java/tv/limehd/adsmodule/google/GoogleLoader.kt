@@ -95,10 +95,12 @@ class GoogleLoader(
                     // Some other error happened
                     adRequestListener.onError(errorMessage, AdType.Google)
                 }
-                if(lastAd == AdType.Google.typeSdk){
-                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
-                }else {
-                    limeAds.getNextAd(AdType.Google.typeSdk)
+                if(!isTimeout) {
+                    if (lastAd == AdType.Google.typeSdk) {
+                        fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                    } else {
+                        limeAds.getNextAd(AdType.Google.typeSdk)
+                    }
                 }
             }
 
