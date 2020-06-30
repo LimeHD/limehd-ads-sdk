@@ -150,6 +150,20 @@ class LimeAds {
             }
         }
 
+        /**
+         * Get only google interstitial ad
+         *
+         * When user exit from fullscreen mode, app should call google interstitial ad
+         * If during interstitial -> timer (JSONObject from server) user exit from fullscreen more again,
+         * library should not request google interstitial ad. Otherwise if timer is ended and user exit
+         * fullscreen mode, then library should request google interstitial ad
+         */
+
+        @JvmStatic
+        fun getGoogleInterstitialAd() {
+            limeAds?.getGoogleAd()
+        }
+
     }
 
     /**
