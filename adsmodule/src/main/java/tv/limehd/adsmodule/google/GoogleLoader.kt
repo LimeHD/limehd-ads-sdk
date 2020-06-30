@@ -49,7 +49,7 @@ class GoogleLoader(
                 if(isTimeout){
                     LimeAds.adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.Google)
                     if(limeAds.lastAd == AdType.Google.typeSdk){
-                        fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
+                        fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
                     }else {
                         limeAds.getNextAd(AdType.Google.typeSdk)
                     }
@@ -97,7 +97,7 @@ class GoogleLoader(
                 }
                 if(!isTimeout) {
                     if (lastAd == AdType.Google.typeSdk) {
-                        fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all))
+                        fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
                     } else {
                         limeAds.getNextAd(AdType.Google.typeSdk)
                     }
