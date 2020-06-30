@@ -17,6 +17,7 @@ import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
+import tv.limehd.adsmodule.model.Interstitial
 import tv.limehd.adsmodule.myTarget.MyTarget
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 
@@ -50,6 +51,7 @@ class LimeAds {
         private lateinit var google: Google
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
         private var isGetAdBeingCalled = false
+        private lateinit var interstitial: Interstitial
 
         /**
          * Init LimeAds library
@@ -66,6 +68,7 @@ class LimeAds {
             this.json = json
             limeAds = LimeAds()
             limeAds?.getAdsList()
+            limeAds?.getAdsGlobalModels()
             isInitialized = true
         }
 
@@ -203,6 +206,16 @@ class LimeAds {
     private fun getAdsList() {
         val gson = GsonBuilder().create()
         adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
+    }
+
+    /**
+     * Get ads_global models from JSONObject
+     * preroll, preload_ads, yandex_min_api, interstitial
+     */
+
+    private fun getAdsGlobalModels() {
+        val gson = GsonBuilder().create()
+        interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
