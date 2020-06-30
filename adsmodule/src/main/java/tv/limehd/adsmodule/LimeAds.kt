@@ -2,6 +2,7 @@ package tv.limehd.adsmodule
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -317,9 +318,16 @@ class LimeAds {
      */
 
     private fun getGoogleAd() {
-        Log.d(TAG, "Load google ad")
-        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
-        loadAd(AdType.Google)
+        Log.d(TAG, "getGoogleAd: called")
+        if(isAllowedToRequestGoogleAd) {
+            isAllowedToRequestGoogleAd = false
+            if(timer == 0){
+                timer = 30
+            }
+            googleTimerHandler.postDelayed(googleTimerRunnable, 1000)
+            google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
+            loadAd(AdType.Google)
+        }
     }
 
     /**
@@ -353,6 +361,23 @@ class LimeAds {
             fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMADEVICE)
         }else {
             getNextAd(AdType.IMADEVICE.typeSdk)
+        }
+    }
+
+    //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
+
+    private var googleTimerHandler: Handler = Handler()
+    private var timer = 30
+    private var isAllowedToRequestGoogleAd = true
+    private var googleTimerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (timer > 0) {
+                timer--
+                Log.d(TAG, timer.toString())
+                googleTimerHandler.postDelayed(this, 1000)
+            }else{
+                isAllowedToRequestGoogleAd = true
+            }
         }
     }
 
