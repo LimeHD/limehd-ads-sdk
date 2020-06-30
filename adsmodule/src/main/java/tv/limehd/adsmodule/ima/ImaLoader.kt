@@ -1,6 +1,7 @@
 package tv.limehd.adsmodule.ima
 
 import android.content.Context
+import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
 import com.google.ads.interactivemedia.v3.api.*
@@ -27,12 +28,37 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     private lateinit var imaFragment: ImaFragment
 
+    private var isTimeout = true
+
     private lateinit var mSdkFactory: ImaSdkFactory
     private lateinit var mSdkSetting: ImaSdkSettings
     private lateinit var mAdsLoader: AdsLoader
     private lateinit var adsManager: AdsManager
 
     private lateinit var fragmentState: FragmentState
+
+    private val leftHandler: Handler = Handler()
+
+    var timeout = TIMEOUT / 1000
+
+    private var leftRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (timeout > 0) {
+                timeout--
+                Log.d(TAG, timeout.toString())
+                leftHandler.postDelayed(this, 1000)
+            }else{
+                if(isTimeout){
+                    LimeAds.adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
+                    if(limeAds.lastAd == AdType.IMA.typeSdk){
+                        fragmentState.onErrorState(context.resources.getString(R.string.timeout_occurred))
+                    }else {
+                        limeAds.getNextAd(AdType.IMA.typeSdk)
+                    }
+                }
+            }
+        }
+    }
 
     fun loadImaAd(fragmentState: FragmentState) {
         Log.d(TAG, "loadImaAd called")
@@ -61,10 +87,13 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
         LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
+
+        leftHandler.postDelayed(leftRunnable, 1000)
     }
 
     override fun onAdsManagerLoaded(adsManagerLoadedEvent: AdsManagerLoadedEvent?) {
         Log.d(TAG, "onAdsManagerLoaded")
+        isTimeout = false
         adsManager = adsManagerLoadedEvent!!.adsManager
         adsManager.addAdEventListener(this)
         adsManager.addAdErrorListener(this)
@@ -73,6 +102,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called with ${adErrorEvent?.error?.errorCodeNumber}")
+        isTimeout = false
         LimeAds.adRequestListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         LimeAds.adShowListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         if(limeAds.lastAd == AdType.IMA.typeSdk){
