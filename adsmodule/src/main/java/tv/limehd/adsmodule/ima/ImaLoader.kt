@@ -102,13 +102,14 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called with ${adErrorEvent?.error?.errorCodeNumber}")
-        isTimeout = false
         LimeAds.adRequestListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         LimeAds.adShowListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
-        if(limeAds.lastAd == AdType.IMA.typeSdk){
-            fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
-        }else {
-            limeAds.getNextAd(AdType.IMA.typeSdk)
+        if(!isTimeout) {
+            if (limeAds.lastAd == AdType.IMA.typeSdk) {
+                fragmentState.onErrorState(adErrorEvent?.error?.message.toString())
+            } else {
+                limeAds.getNextAd(AdType.IMA.typeSdk)
+            }
         }
     }
 
