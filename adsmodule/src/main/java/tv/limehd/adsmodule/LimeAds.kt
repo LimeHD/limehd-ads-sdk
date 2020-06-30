@@ -49,6 +49,7 @@ class LimeAds {
         private lateinit var ima: Ima
         private lateinit var google: Google
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
+        private var isGetAdBeingCalled = false
 
         /**
          * Init LimeAds library
@@ -82,6 +83,7 @@ class LimeAds {
                   isOnline: Boolean,
                   adRequestListener: AdRequestListener? = null,
                   adShowListener: AdShowListener? = null) {
+            isGetAdBeingCalled = true
             this.context = context
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
@@ -139,22 +141,27 @@ class LimeAds {
          */
 
         @JvmStatic
+        @JvmOverloads
         fun getGoogleInterstitialAd(
-            context: Context,
-            isOnline: Boolean,
-            fragmentState: FragmentState,
+            context: Context? = null,
+            isOnline: Boolean? = null,
+            fragmentState: FragmentState? = null,
             adRequestListener: AdRequestListener? = null,
             adShowListener: AdShowListener? = null
         ) {
-            this.context = context
-            this.fragmentState = fragmentState
-            this.adRequestListener = adRequestListener
-            this.adShowListener = adShowListener
+            if(isGetAdBeingCalled){
+                limeAds?.getGoogleAd()
+            }else {
+                this.context = context!!
+                this.fragmentState = fragmentState!!
+                this.adRequestListener = adRequestListener
+                this.adShowListener = adShowListener
 
-            limeAds?.getCurrentAdStatus(isOnline)
-            limeAds?.populateAdStatusesHashMaps()
+                limeAds?.getCurrentAdStatus(isOnline!!)
+                limeAds?.populateAdStatusesHashMaps()
 
-            limeAds?.getGoogleAd()
+                limeAds?.getGoogleAd()
+            }
         }
 
     }
