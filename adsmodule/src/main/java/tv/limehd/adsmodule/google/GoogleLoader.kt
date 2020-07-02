@@ -108,6 +108,8 @@ class GoogleLoader(
                 Log.d(TAG, "onAdClosed: called")
                 adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
                 // Should start preroll timer handler here. After user completes/closes ad
+                LimeAds.prerollTimer = LimeAds.preroll.epg_timer
+                limeAds.prerollTimerHandler.removeCallbacks(limeAds.prerollTimerRunnable)
                 limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
 

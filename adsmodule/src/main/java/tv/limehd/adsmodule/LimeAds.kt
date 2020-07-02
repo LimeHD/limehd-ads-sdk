@@ -54,8 +54,8 @@ class LimeAds {
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
         private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
-        private lateinit var preroll: Preroll
-        private var prerollTimer = 0
+        lateinit var preroll: Preroll
+        var prerollTimer = 0
         private var prerollEpgInterval = 0
         private var userClicksCounter = 0
         private var skipFirst = true
