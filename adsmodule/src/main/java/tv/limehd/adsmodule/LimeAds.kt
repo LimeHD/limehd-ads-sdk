@@ -59,6 +59,7 @@ class LimeAds {
         private var prerollEpgInterval = 0
         private var userClicksCounter = 0
         private var skipFirst = true
+        private var getAdFunCallAmount = 0
 
         /**
          * Init LimeAds library
@@ -112,17 +113,22 @@ class LimeAds {
 
             limeAds?.let {
                 if(it.isAllowedToRequestAd || userClicksCounter >= 5){
-                    it.isAllowedToRequestAd = false
-                    userClicksCounter = 0
-                    if(prerollTimer == 0){
-                        prerollTimer = preroll.epg_timer
-                    }
-                    when(adsList[0].type_sdk){
-                        AdType.Google.typeSdk -> limeAds?.getGoogleAd()
-                        AdType.IMA.typeSdk -> limeAds?.getImaAd()
-                        AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
-                        AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
-                        AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                    if(skipFirst && getAdFunCallAmount == 0){
+                        Log.d(TAG, "getAd: skip first ad")
+                        getAdFunCallAmount++
+                    }else {
+                        it.isAllowedToRequestAd = false
+                        userClicksCounter = 0
+                        if (prerollTimer == 0) {
+                            prerollTimer = preroll.epg_timer
+                        }
+                        when (adsList[0].type_sdk) {
+                            AdType.Google.typeSdk -> limeAds?.getGoogleAd()
+                            AdType.IMA.typeSdk -> limeAds?.getImaAd()
+                            AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
+                            AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
+                            AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                        }
                     }
                 }
             }

@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         try {
             LimeAds.init(JSONObject(Constants.json))
-            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
         }catch (e: IllegalArgumentException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
