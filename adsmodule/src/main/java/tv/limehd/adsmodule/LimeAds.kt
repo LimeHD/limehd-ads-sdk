@@ -55,6 +55,7 @@ class LimeAds {
         private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
         private lateinit var preroll: Preroll
+        private var prerollTimer = 0
 
         /**
          * Init LimeAds library
@@ -106,8 +107,8 @@ class LimeAds {
             limeAds?.let {
                 if(it.isAllowedToRequestAd){
                     it.isAllowedToRequestAd = false
-                    if(it.prerollTimer == 0){
-                        it.prerollTimer = preroll.epg_timer
+                    if(prerollTimer == 0){
+                        prerollTimer = preroll.epg_timer
                     }
                     when(adsList[0].type_sdk){
                         AdType.Google.typeSdk -> limeAds?.getGoogleAd()
@@ -235,6 +236,7 @@ class LimeAds {
         val gson = GsonBuilder().create()
         interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
         preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
+        prerollTimer = preroll.epg_timer
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
@@ -395,7 +397,6 @@ class LimeAds {
     //********************************************* PREROLL TIMER HANDLER ****************************************************** //
 
     var prerollTimerHandler: Handler = Handler()
-    private var prerollTimer = preroll.epg_timer
     private var isAllowedToRequestAd = true
     var prerollTimerRunnable: Runnable = object : Runnable {
         override fun run() {
