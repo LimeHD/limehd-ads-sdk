@@ -376,10 +376,27 @@ class LimeAds {
         override fun run() {
             if (timer > 0) {
                 timer--
-                Log.d(TAG, timer.toString())
+                Log.d(TAG, "Google timer: $timer")
                 googleTimerHandler.postDelayed(this, 1000)
             }else{
                 isAllowedToRequestGoogleAd = true
+            }
+        }
+    }
+
+    //********************************************* PREROLL TIMER HANDLER ****************************************************** //
+
+    private var prerollTimerHandler: Handler = Handler()
+    private var prerollTimer = preroll.epg_timer
+    private var isAllowedToRequestAd = true
+    private var prerollTimerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (prerollTimer > 0) {
+                prerollTimer--
+                Log.d(TAG, "Preroll timer: $prerollTimer")
+                prerollTimerHandler.postDelayed(this, 1000)
+            }else{
+                isAllowedToRequestAd = true
             }
         }
     }
