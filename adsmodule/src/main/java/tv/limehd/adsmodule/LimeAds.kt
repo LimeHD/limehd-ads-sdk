@@ -153,9 +153,7 @@ class LimeAds {
             adRequestListener: AdRequestListener? = null,
             adShowListener: AdShowListener? = null
         ) {
-            if(isGetAdBeingCalled){
-                limeAds?.getGoogleAd()
-            }else {
+            if(!isGetAdBeingCalled){
                 this.context = context!!
                 this.fragmentState = fragmentState!!
                 this.adRequestListener = adRequestListener
@@ -163,8 +161,17 @@ class LimeAds {
 
                 limeAds?.getCurrentAdStatus(isOnline!!)
                 limeAds?.populateAdStatusesHashMaps()
-
-                limeAds?.getGoogleAd()
+            }
+            limeAds?.let {
+                if(it.isAllowedToRequestGoogleAd){
+                    it.isAllowedToRequestGoogleAd = false
+                    if(it.timer == 0){
+                        it.timer = 30
+                    }
+                    it.googleTimerHandler.postDelayed(it.googleTimerRunnable, 1000)
+                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
+                    it.loadAd(AdType.Google)
+                }
             }
         }
 
@@ -319,15 +326,8 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "getGoogleAd: called")
-        if(isAllowedToRequestGoogleAd) {
-            isAllowedToRequestGoogleAd = false
-            if(timer == 0){
-                timer = 30
-            }
-            googleTimerHandler.postDelayed(googleTimerRunnable, 1000)
-            google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
-            loadAd(AdType.Google)
-        }
+        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
+        loadAd(AdType.Google)
     }
 
     /**
