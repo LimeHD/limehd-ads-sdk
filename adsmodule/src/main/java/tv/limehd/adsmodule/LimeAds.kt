@@ -117,11 +117,10 @@ class LimeAds {
                         Log.d(TAG, "getAd: skip first ad")
                         getAdFunCallAmount++
                     }else {
+                        prerollTimer = preroll.epg_timer
+                        it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
                         it.isAllowedToRequestAd = false
                         userClicksCounter = 0
-                        if (prerollTimer == 0) {
-                            prerollTimer = preroll.epg_timer
-                        }
                         when (adsList[0].type_sdk) {
                             AdType.Google.typeSdk -> limeAds?.getGoogleAd()
                             AdType.IMA.typeSdk -> limeAds?.getImaAd()
