@@ -19,6 +19,7 @@ import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
 import tv.limehd.adsmodule.model.Interstitial
+import tv.limehd.adsmodule.model.Preroll
 import tv.limehd.adsmodule.myTarget.MyTarget
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 
@@ -53,6 +54,7 @@ class LimeAds {
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
         private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
+        private lateinit var preroll: Preroll
 
         /**
          * Init LimeAds library
@@ -224,6 +226,7 @@ class LimeAds {
     private fun getAdsGlobalModels() {
         val gson = GsonBuilder().create()
         interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
+        preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
