@@ -115,6 +115,7 @@ class MyTargetFragment(
                     skipHandler.removeCallbacks(skipRunnable)
                 }
                 LimeAds.adShowListener?.onComplete(this@MyTargetFragment.getString(R.string.completed), AdType.MyTarget)
+                limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
 
             override fun onBannerPause(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
