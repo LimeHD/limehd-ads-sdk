@@ -57,6 +57,7 @@ class LimeAds {
         private lateinit var preroll: Preroll
         private var prerollTimer = 0
         private var prerollEpgInterval = 0
+        private var userClicksCounter = 0
 
         /**
          * Init LimeAds library
@@ -105,9 +106,13 @@ class LimeAds {
             limeAds?.getCurrentAdStatus(isOnline)
             limeAds?.populateAdStatusesHashMaps()
 
+            userClicksCounter++
+            Log.d(TAG, "userClicks: $userClicksCounter")
+
             limeAds?.let {
-                if(it.isAllowedToRequestAd){
+                if(it.isAllowedToRequestAd || userClicksCounter >= 5){
                     it.isAllowedToRequestAd = false
+                    userClicksCounter = 0
                     if(prerollTimer == 0){
                         prerollTimer = preroll.epg_timer
                     }
