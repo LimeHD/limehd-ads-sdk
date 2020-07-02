@@ -84,7 +84,7 @@ class Constants {
                 "        },\n" +
                 "        \"yandex_min_api\": 19,\n" +
                 "        \"interstitial\": {\n" +
-                "            \"timer\": \"1\",\n" +
+                "            \"timer\": \"1200\",\n" +
                 "            \"interval\": \"1\",\n" +
                 "            \"show_skip\": true\n" +
                 "        }\n" +
