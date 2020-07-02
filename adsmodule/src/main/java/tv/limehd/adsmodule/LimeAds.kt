@@ -103,12 +103,20 @@ class LimeAds {
             limeAds?.getCurrentAdStatus(isOnline)
             limeAds?.populateAdStatusesHashMaps()
 
-            when(adsList[0].type_sdk){
-                AdType.Google.typeSdk -> limeAds?.getGoogleAd()
-                AdType.IMA.typeSdk -> limeAds?.getImaAd()
-                AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
-                AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
-                AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+            limeAds?.let {
+                if(it.isAllowedToRequestAd){
+                    it.isAllowedToRequestAd = false
+                    if(it.prerollTimer == 0){
+                        it.prerollTimer = preroll.epg_timer
+                    }
+                    when(adsList[0].type_sdk){
+                        AdType.Google.typeSdk -> limeAds?.getGoogleAd()
+                        AdType.IMA.typeSdk -> limeAds?.getImaAd()
+                        AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
+                        AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
+                        AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                    }
+                }
             }
         }
 
@@ -386,10 +394,10 @@ class LimeAds {
 
     //********************************************* PREROLL TIMER HANDLER ****************************************************** //
 
-    private var prerollTimerHandler: Handler = Handler()
+    var prerollTimerHandler: Handler = Handler()
     private var prerollTimer = preroll.epg_timer
     private var isAllowedToRequestAd = true
-    private var prerollTimerRunnable: Runnable = object : Runnable {
+    var prerollTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (prerollTimer > 0) {
                 prerollTimer--
