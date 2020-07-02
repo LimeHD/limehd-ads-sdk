@@ -124,6 +124,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                 Log.d(TAG, "ALL_ADS_COMPLETED")
                 LimeAds.adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
+                limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
             AdEvent.AdEventType.CLICKED -> {
                 Log.d(TAG, "CLICKED")
