@@ -58,6 +58,7 @@ class LimeAds {
         private var prerollTimer = 0
         private var prerollEpgInterval = 0
         private var userClicksCounter = 0
+        private var skipFirst = true
 
         /**
          * Init LimeAds library
@@ -244,6 +245,7 @@ class LimeAds {
         preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
         prerollTimer = preroll.epg_timer
         prerollEpgInterval = preroll.epg_interval
+        skipFirst = preroll.skip_first
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
