@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity() {
             LimeAds.getGoogleInterstitialAd()
         }
 
+        getAd.setOnClickListener {
+            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
+        }
+
     }
 
     private val fragmentStateCallback = object : FragmentState {
