@@ -170,7 +170,7 @@ class LimeAds {
                     }
                     it.googleTimerHandler.postDelayed(it.googleTimerRunnable, 1000)
                     google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
-                    it.loadAd(AdType.Google)
+                    google.getGoogleAd()
                 }
             }
         }
