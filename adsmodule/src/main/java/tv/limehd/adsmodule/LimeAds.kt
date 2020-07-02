@@ -56,6 +56,7 @@ class LimeAds {
         private lateinit var interstitial: Interstitial
         private lateinit var preroll: Preroll
         private var prerollTimer = 0
+        private var prerollEpgInterval = 0
 
         /**
          * Init LimeAds library
@@ -237,6 +238,7 @@ class LimeAds {
         interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
         preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
         prerollTimer = preroll.epg_timer
+        prerollEpgInterval = preroll.epg_interval
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
