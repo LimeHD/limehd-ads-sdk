@@ -192,7 +192,7 @@ class LimeAds {
                         it.timer = 30
                     }
                     google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
-                    google.getGoogleAd()
+                    google.getGoogleAd(true)
                 }
             }
         }
@@ -305,7 +305,7 @@ class LimeAds {
             when(adType){
                 is AdType.IMA -> ima.loadAd()
                 is AdType.MyTarget -> myTarget.loadAd()
-                is AdType.Google -> google.getGoogleAd()
+                is AdType.Google -> google.getGoogleAd(false)
             }
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
@@ -393,7 +393,7 @@ class LimeAds {
     //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
 
     var googleTimerHandler: Handler = Handler()
-    private var timer = 30
+    var timer = 30
     var isAllowedToRequestGoogleAd = true
     var googleTimerRunnable: Runnable = object : Runnable {
         override fun run() {
