@@ -107,6 +107,7 @@ class GoogleLoader(
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
                 adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
+                limeAds.googleTimerHandler.postDelayed(limeAds.googleTimerRunnable, 1000)
             }
 
             override fun onAdOpened() {

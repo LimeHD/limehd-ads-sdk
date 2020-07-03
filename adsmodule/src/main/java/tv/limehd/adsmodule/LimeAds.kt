@@ -191,7 +191,6 @@ class LimeAds {
                     if(it.timer == 0){
                         it.timer = 30
                     }
-                    it.googleTimerHandler.postDelayed(it.googleTimerRunnable, 1000)
                     google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
                     google.getGoogleAd()
                 }
