@@ -393,10 +393,10 @@ class LimeAds {
 
     //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
 
-    private var googleTimerHandler: Handler = Handler()
+    var googleTimerHandler: Handler = Handler()
     private var timer = 30
     private var isAllowedToRequestGoogleAd = true
-    private var googleTimerRunnable: Runnable = object : Runnable {
+    var googleTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (timer > 0) {
                 timer--
