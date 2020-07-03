@@ -81,6 +81,10 @@ class GoogleLoader(
 
             override fun onAdFailedToLoad(errorType: Int) {
                 Log.d(TAG, "onAdFailedToLoad: called")
+                // when loading google ad make isAllowedToRequestGoogleAd to false
+                // but if error happened with google ad, we have to make isAllowedToRequestGoogleAd to true
+                // so next time google interstitial ad can be loaded
+                limeAds.isAllowedToRequestGoogleAd = true
                 var errorMessage = ""
                 when(errorType){
                     0 -> errorMessage = "ERROR_CODE_INTERNAL_ERROR"

@@ -394,7 +394,7 @@ class LimeAds {
 
     var googleTimerHandler: Handler = Handler()
     private var timer = 30
-    private var isAllowedToRequestGoogleAd = true
+    var isAllowedToRequestGoogleAd = true
     var googleTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (timer > 0) {
