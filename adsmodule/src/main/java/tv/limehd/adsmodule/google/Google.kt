@@ -45,12 +45,23 @@ class Google(private val context: Context,
     }
 
     /**
-     * Получить рекламу для площадки Google
+     * Get Google Ad
+     * Check if we are allowed to load google interstitial ad, cause of the timer
+     *
+     * @param   isLoadInterstitial  stands for understanding are we loading interstitial or in main stream with all ads
      */
 
     fun getGoogleAd(isLoadInterstitial: Boolean) {
         Log.d(TAG, "Load google ad")
         val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, limeAds, this)
-        googleLoader.loadAd()
+        if(isLoadInterstitial) {
+            if (isAllowedToRequestGoogleAd) {
+                isAllowedToRequestGoogleAd = false
+                timer = 0
+                googleLoader.loadAd()
+            }
+        }else{
+            googleLoader.loadAd()
+        }
     }
 }
