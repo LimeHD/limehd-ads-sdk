@@ -25,13 +25,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         try {
             LimeAds.init(JSONObject(Constants.json))
-            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
+            LimeAds.myTargetBlockId = 9525
+            LimeAds.googleUnitId = "ca-app-pub-3940256099942544/1033173712"
         }catch (e: IllegalArgumentException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
 
         openGoogleAd.setOnClickListener {
             LimeAds.getGoogleInterstitialAd()
+        }
+
+        getAd.setOnClickListener {
+            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
         }
 
     }

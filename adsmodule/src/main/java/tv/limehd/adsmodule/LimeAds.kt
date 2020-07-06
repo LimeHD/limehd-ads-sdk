@@ -19,6 +19,7 @@ import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
 import tv.limehd.adsmodule.model.Interstitial
+import tv.limehd.adsmodule.model.Preroll
 import tv.limehd.adsmodule.myTarget.MyTarget
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 
@@ -35,13 +36,13 @@ class LimeAds {
         private lateinit var viewGroup: ViewGroup
         private lateinit var fragmentState: FragmentState
         private var resId: Int = -1
-        var adsList = listOf<Ad>()
-        var limeAds: LimeAds? = null
+        private var adsList = listOf<Ad>()
+        private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
         private lateinit var context: Context
         private var isInitialized = false
-        var adRequestListener: AdRequestListener? = null
-        var adShowListener: AdShowListener? = null
+        private var adRequestListener: AdRequestListener? = null
+        private var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
@@ -53,6 +54,15 @@ class LimeAds {
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
         private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
+        private lateinit var preroll: Preroll
+        var prerollTimer = 0
+        private var prerollEpgInterval = 0
+        private var userClicksCounter = 0
+        private var skipFirst = true
+        private var getAdFunCallAmount = 0
+        lateinit var googleUnitId: String
+        @JvmField
+        var myTargetBlockId = -1
 
         /**
          * Init LimeAds library
@@ -76,7 +86,9 @@ class LimeAds {
         /**
          * Load ad in correct order. That depends on the JSONObject.
          * Get current ad status (Online or Archive)
-         * Get and Save isOnline and isArchive for each ad in JSONObject
+         * Get and Save isOnline and isArchive for each ad in JSONObject. Function checks
+         * is ad allowed to request. Because of the timer in JSONObject -> preroll -> epg_timer. Also ad can be loaded if
+         * user has clicked specific amount of times (JSONObject -> preroll -> epg_interval)
          */
 
         @JvmStatic
@@ -101,12 +113,28 @@ class LimeAds {
             limeAds?.getCurrentAdStatus(isOnline)
             limeAds?.populateAdStatusesHashMaps()
 
-            when(adsList[0].type_sdk){
-                AdType.Google.typeSdk -> limeAds?.getGoogleAd()
-                AdType.IMA.typeSdk -> limeAds?.getImaAd()
-                AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
-                AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
-                AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+            userClicksCounter++
+            Log.d(TAG, "userClicks: $userClicksCounter")
+
+            limeAds?.let {
+                if(it.isAllowedToRequestAd || userClicksCounter >= 5){
+                    if(skipFirst && getAdFunCallAmount == 0){
+                        Log.d(TAG, "getAd: skip first ad")
+                        getAdFunCallAmount++
+                    }else {
+                        prerollTimer = preroll.epg_timer
+                        it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                        it.isAllowedToRequestAd = false
+                        userClicksCounter = 0
+                        when (adsList[0].type_sdk) {
+                            AdType.Google.typeSdk -> limeAds?.getGoogleAd()
+                            AdType.IMA.typeSdk -> limeAds?.getImaAd()
+                            AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
+                            AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
+                            AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                        }
+                    }
+                }
             }
         }
 
@@ -168,9 +196,8 @@ class LimeAds {
                     if(it.timer == 0){
                         it.timer = 30
                     }
-                    it.googleTimerHandler.postDelayed(it.googleTimerRunnable, 1000)
-                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
-                    google.getGoogleAd()
+                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, preroll, it)
+                    google.getGoogleAd(true)
                 }
             }
         }
@@ -224,6 +251,10 @@ class LimeAds {
     private fun getAdsGlobalModels() {
         val gson = GsonBuilder().create()
         interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
+        preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
+        prerollTimer = preroll.epg_timer
+        prerollEpgInterval = preroll.epg_interval
+        skipFirst = preroll.skip_first
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
@@ -257,7 +288,7 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
-        myTargetFragment = MyTargetFragment(lastAd, fragmentState, this)
+        myTargetFragment = MyTargetFragment(lastAd, fragmentState, adShowListener!!, this)
         myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
         loadAd(AdType.MyTarget)
     }
@@ -279,7 +310,7 @@ class LimeAds {
             when(adType){
                 is AdType.IMA -> ima.loadAd()
                 is AdType.MyTarget -> myTarget.loadAd()
-                is AdType.Google -> google.getGoogleAd()
+                is AdType.Google -> google.getGoogleAd(false)
             }
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
@@ -316,7 +347,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, this)
+        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 
@@ -326,7 +357,7 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "getGoogleAd: called")
-        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
+        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, preroll, this)
         loadAd(AdType.Google)
     }
 
@@ -366,17 +397,33 @@ class LimeAds {
 
     //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
 
-    private var googleTimerHandler: Handler = Handler()
-    private var timer = 30
-    private var isAllowedToRequestGoogleAd = true
-    private var googleTimerRunnable: Runnable = object : Runnable {
+    val googleTimerHandler: Handler = Handler()
+    var timer = 30
+    var isAllowedToRequestGoogleAd = true
+    val googleTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (timer > 0) {
                 timer--
-                Log.d(TAG, timer.toString())
+                Log.d(TAG, "Google timer: $timer")
                 googleTimerHandler.postDelayed(this, 1000)
             }else{
                 isAllowedToRequestGoogleAd = true
+            }
+        }
+    }
+
+    //********************************************* PREROLL TIMER HANDLER ****************************************************** //
+
+    val prerollTimerHandler: Handler = Handler()
+    private var isAllowedToRequestAd = true
+    val prerollTimerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (prerollTimer > 0) {
+                prerollTimer--
+                Log.d(TAG, "Preroll timer: $prerollTimer")
+                prerollTimerHandler.postDelayed(this, 1000)
+            }else{
+                isAllowedToRequestAd = true
             }
         }
     }

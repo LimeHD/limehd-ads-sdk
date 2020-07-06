@@ -3,6 +3,7 @@ package tv.limehd.adsmodule.myTarget
 import android.content.Context
 import com.my.target.instreamads.InstreamAd
 import tv.limehd.adsmodule.Constants.Companion.TIMEOUT
+import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.AdLoader
 
 /**
@@ -13,7 +14,7 @@ class MyTargetLoader constructor(private val context: Context) : InstreamAd.Inst
 
     private lateinit var adLoader: AdLoader
 //  private val slotId = 621422 // in production
-    private val slotId = 9525   // for testing
+    private val slotId = LimeAds.myTargetBlockId   // for testing
 //    private val slotId = 1010 // error
 
     fun setAdLoader(adLoader: AdLoader){
