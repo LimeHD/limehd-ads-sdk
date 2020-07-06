@@ -61,6 +61,7 @@ class LimeAds {
         private var skipFirst = true
         private var getAdFunCallAmount = 0
         lateinit var googleUnitId: String
+        @JvmField
         var myTargetBlockId = -1
 
         /**
