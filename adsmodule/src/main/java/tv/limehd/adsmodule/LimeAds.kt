@@ -187,8 +187,16 @@ class LimeAds {
                 limeAds?.getCurrentAdStatus(isOnline!!)
                 limeAds?.populateAdStatusesHashMaps()
             }
-            google = Google(this.context, limeAds!!.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, limeAds!!)
-            google.getGoogleAd(true)
+            limeAds?.let {
+                if(it.isAllowedToRequestGoogleAd){
+                    it.isAllowedToRequestGoogleAd = false
+                    if(it.timer == 0){
+                        it.timer = 30
+                    }
+                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
+                    google.getGoogleAd(true)
+                }
+            }
         }
 
     }
@@ -381,6 +389,23 @@ class LimeAds {
             fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMADEVICE)
         }else {
             getNextAd(AdType.IMADEVICE.typeSdk)
+        }
+    }
+
+    //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
+
+    var googleTimerHandler: Handler = Handler()
+    var timer = 30
+    var isAllowedToRequestGoogleAd = true
+    var googleTimerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (timer > 0) {
+                timer--
+                Log.d(TAG, "Google timer: $timer")
+                googleTimerHandler.postDelayed(this, 1000)
+            }else{
+                isAllowedToRequestGoogleAd = true
+            }
         }
     }
 

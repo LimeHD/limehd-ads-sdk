@@ -27,8 +27,7 @@ class GoogleLoader(
     private val adRequestListener: AdRequestListener,
     private val adShowListener: AdShowListener,
     private val isLoadInterstitial: Boolean,
-    private val limeAds: LimeAds,
-    private val google: Google
+    private val limeAds: LimeAds
 ) {
 
     companion object {
@@ -88,7 +87,7 @@ class GoogleLoader(
                 // when loading google ad make isAllowedToRequestGoogleAd to false
                 // but if error happened with google ad, we have to make isAllowedToRequestGoogleAd to true
                 // so next time google interstitial ad can be loaded
-                google.isAllowedToRequestGoogleAd = true
+                limeAds.isAllowedToRequestGoogleAd = true
                 var errorMessage = ""
                 when(errorType){
                     0 -> errorMessage = "ERROR_CODE_INTERNAL_ERROR"
@@ -118,8 +117,8 @@ class GoogleLoader(
                 Log.d(TAG, "onAdClosed: called")
                 adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
                 if(isLoadInterstitial){
-                    google.timer = 30
-                    google.googleTimerHandler.postDelayed(google.googleTimerRunnable, 1000)
+                    limeAds.timer = 30
+                    limeAds.googleTimerHandler.postDelayed(limeAds.googleTimerRunnable, 1000)
                 }else{
                     LimeAds.prerollTimer = LimeAds.preroll.epg_timer
                     limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
