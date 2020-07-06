@@ -63,7 +63,7 @@ class GoogleLoader(
 
     fun loadAd() {
         interstitialAd = InterstitialAd(context)
-        interstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        interstitialAd.adUnitId = LimeAds.googleUnitId
         adRequestListener.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
         leftHandler.postDelayed(leftRunnable, 1000)

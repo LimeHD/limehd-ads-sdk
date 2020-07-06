@@ -60,6 +60,8 @@ class LimeAds {
         private var userClicksCounter = 0
         private var skipFirst = true
         private var getAdFunCallAmount = 0
+        lateinit var googleUnitId: String
+        var myTargetBlockId = -1
 
         /**
          * Init LimeAds library
