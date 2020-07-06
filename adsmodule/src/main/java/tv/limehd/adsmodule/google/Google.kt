@@ -6,6 +6,7 @@ import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
+import tv.limehd.adsmodule.model.Preroll
 
 /**
  * Class with GoogleAd logic
@@ -20,6 +21,7 @@ class Google(private val context: Context,
              private val fragmentState: FragmentState,
              private val adRequestListener: AdRequestListener,
              private val adShowListener: AdShowListener,
+             private val preroll: Preroll,
              private val limeAds: LimeAds) {
 
     companion object {
@@ -32,7 +34,7 @@ class Google(private val context: Context,
 
     fun getGoogleAd(isLoadInterstitial: Boolean) {
         Log.d(TAG, "Load google ad")
-        val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, limeAds)
+        val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, preroll, limeAds)
         googleLoader.loadAd()
     }
 }

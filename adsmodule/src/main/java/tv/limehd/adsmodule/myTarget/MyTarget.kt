@@ -36,21 +36,21 @@ class MyTarget(private val context: Context,
     fun loadAd() {
         val myTargetLoader = MyTargetLoader(context)
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
+        adRequestListener.onRequest(context.getString(R.string.requested), AdType.MyTarget)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
-                LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
+                adRequestListener.onRequest(context.getString(R.string.requested), AdType.MyTarget)
             }
 
             override fun onLoaded(instreamAd: InstreamAd) {
-                LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
+                adRequestListener.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
                 fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
             }
 
             override fun onError(error: String) {
-                LimeAds.adRequestListener?.onError(error, AdType.MyTarget)
+                adRequestListener.onError(error, AdType.MyTarget)
             }
 
             override fun onNoAd(error: String) {
