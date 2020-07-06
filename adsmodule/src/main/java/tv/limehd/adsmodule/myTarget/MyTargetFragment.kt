@@ -15,11 +15,13 @@ import com.my.target.instreamads.InstreamAdPlayer
 import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
+import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
 class MyTargetFragment(
     private var lastAd: String,
     private var fragmentState: FragmentState,
+    private val adShowListener: AdShowListener,
     private var limeAds: LimeAds
 ) : Fragment() {
 
@@ -85,11 +87,11 @@ class MyTargetFragment(
         buttonSkip = rootView.findViewById(R.id.btn_skip)
         // Skip button
         buttonSkip.setOnClickListener {
-            LimeAds.adShowListener?.onSkip(this.getString(R.string.skipped), AdType.MyTarget)
+            adShowListener.onSkip(this.getString(R.string.skipped), AdType.MyTarget)
         }
         // Ad Click
         rootContainer.setOnClickListener {
-            LimeAds.adShowListener?.onClick(this.getString(R.string.clicked), AdType.MyTarget)
+            adShowListener.onClick(this.getString(R.string.clicked), AdType.MyTarget)
         }
         return rootView
     }
@@ -114,7 +116,8 @@ class MyTargetFragment(
                 if(this@MyTargetFragment::skipHandler.isInitialized) {
                     skipHandler.removeCallbacks(skipRunnable)
                 }
-                LimeAds.adShowListener?.onComplete(this@MyTargetFragment.getString(R.string.completed), AdType.MyTarget)
+                adShowListener.onComplete(this@MyTargetFragment.getString(R.string.completed), AdType.MyTarget)
+                limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
 
             override fun onBannerPause(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -122,7 +125,7 @@ class MyTargetFragment(
             }
 
             override fun onBannerStart(instreamAd: InstreamAd, instreamAdBanner: InstreamAd.InstreamAdBanner) {
-                LimeAds.adShowListener?.onShow(this@MyTargetFragment.getString(R.string.showing), AdType.MyTarget)
+                adShowListener.onShow(this@MyTargetFragment.getString(R.string.showing), AdType.MyTarget)
                 leftTimeText.visibility = View.VISIBLE
                 leftTimeText.bringToFront()
                 if(instreamAdBanner.duration > 0) {
@@ -151,7 +154,7 @@ class MyTargetFragment(
 
             override fun onNoAd(error: String, p1: InstreamAd) {
                 Log.d(TAG, "onNoAd called")
-                LimeAds.adShowListener?.onError(error, AdType.MyTarget)
+                adShowListener.onError(error, AdType.MyTarget)
             }
 
             override fun onBannerResume(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
@@ -164,7 +167,7 @@ class MyTargetFragment(
 
             override fun onError(error: String, p1: InstreamAd) {
                 Log.d(TAG, "onError called")
-                LimeAds.adShowListener?.onError(error, AdType.MyTarget)
+                adShowListener.onError(error, AdType.MyTarget)
                 fragmentManager?.beginTransaction()?.remove(this@MyTargetFragment)?.commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context!!.resources.getString(R.string.no_ad_found_at_all), AdType.MyTarget)

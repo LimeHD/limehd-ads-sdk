@@ -2,6 +2,7 @@ package tv.limehd.adsmodule
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -17,6 +18,8 @@ import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.AdStatus
+import tv.limehd.adsmodule.model.Interstitial
+import tv.limehd.adsmodule.model.Preroll
 import tv.limehd.adsmodule.myTarget.MyTarget
 import tv.limehd.adsmodule.myTarget.MyTargetFragment
 
@@ -33,13 +36,13 @@ class LimeAds {
         private lateinit var viewGroup: ViewGroup
         private lateinit var fragmentState: FragmentState
         private var resId: Int = -1
-        var adsList = listOf<Ad>()
-        var limeAds: LimeAds? = null
+        private var adsList = listOf<Ad>()
+        private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
         private lateinit var context: Context
         private var isInitialized = false
-        var adRequestListener: AdRequestListener? = null
-        var adShowListener: AdShowListener? = null
+        private var adRequestListener: AdRequestListener? = null
+        private var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
@@ -49,6 +52,17 @@ class LimeAds {
         private lateinit var ima: Ima
         private lateinit var google: Google
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
+        private var isGetAdBeingCalled = false
+        private lateinit var interstitial: Interstitial
+        private lateinit var preroll: Preroll
+        var prerollTimer = 0
+        private var prerollEpgInterval = 0
+        private var userClicksCounter = 0
+        private var skipFirst = true
+        private var getAdFunCallAmount = 0
+        lateinit var googleUnitId: String
+        @JvmField
+        var myTargetBlockId = -1
 
         /**
          * Init LimeAds library
@@ -65,13 +79,16 @@ class LimeAds {
             this.json = json
             limeAds = LimeAds()
             limeAds?.getAdsList()
+            limeAds?.getAdsGlobalModels()
             isInitialized = true
         }
 
         /**
          * Load ad in correct order. That depends on the JSONObject.
          * Get current ad status (Online or Archive)
-         * Get and Save isOnline and isArchive for each ad in JSONObject
+         * Get and Save isOnline and isArchive for each ad in JSONObject. Function checks
+         * is ad allowed to request. Because of the timer in JSONObject -> preroll -> epg_timer. Also ad can be loaded if
+         * user has clicked specific amount of times (JSONObject -> preroll -> epg_interval)
          */
 
         @JvmStatic
@@ -82,6 +99,7 @@ class LimeAds {
                   isOnline: Boolean,
                   adRequestListener: AdRequestListener? = null,
                   adShowListener: AdShowListener? = null) {
+            isGetAdBeingCalled = true
             this.context = context
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
@@ -92,36 +110,31 @@ class LimeAds {
             this.fragmentManager = activityOfFragment.supportFragmentManager
             this.resId = resId
 
-            currentAdStatus = when(isOnline){
-                true -> AdStatus.Online
-                false -> AdStatus.Archive
-            }
+            limeAds?.getCurrentAdStatus(isOnline)
+            limeAds?.populateAdStatusesHashMaps()
 
-            for(ad in adsList){
-                val online = ad.is_onl
-                val archive = ad.is_arh
-                when(ad.type_sdk){
-                    AdType.MyTarget.typeSdk -> {
-                        myTargetAdStatus[context.getString(R.string.isOnline)] = online
-                        myTargetAdStatus[context.getString(R.string.isArchive)] = archive
-                    }
-                    AdType.IMA.typeSdk -> {
-                        imaAdStatus[context.getString(R.string.isOnline)] = online
-                        imaAdStatus[context.getString(R.string.isArchive)] = archive
-                    }
-                    AdType.Google.typeSdk -> {
-                        googleAdStatus[context.getString(R.string.isOnline)] = online
-                        googleAdStatus[context.getString(R.string.isArchive)] = archive
+            userClicksCounter++
+            Log.d(TAG, "userClicks: $userClicksCounter")
+
+            limeAds?.let {
+                if(it.isAllowedToRequestAd || userClicksCounter >= 5){
+                    if(skipFirst && getAdFunCallAmount == 0){
+                        Log.d(TAG, "getAd: skip first ad")
+                        getAdFunCallAmount++
+                    }else {
+                        prerollTimer = preroll.epg_timer
+                        it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                        it.isAllowedToRequestAd = false
+                        userClicksCounter = 0
+                        when (adsList[0].type_sdk) {
+                            AdType.Google.typeSdk -> limeAds?.getGoogleAd()
+                            AdType.IMA.typeSdk -> limeAds?.getImaAd()
+                            AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
+                            AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
+                            AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                        }
                     }
                 }
-            }
-
-            when(adsList[0].type_sdk){
-                AdType.Google.typeSdk -> limeAds?.getGoogleAd()
-                AdType.IMA.typeSdk -> limeAds?.getImaAd()
-                AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
-                AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
-                AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
             }
         }
 
@@ -150,6 +163,73 @@ class LimeAds {
             }
         }
 
+        /**
+         * Get only google interstitial ad
+         *
+         * When user exit from fullscreen mode, app should call google interstitial ad
+         * If during interstitial -> timer (JSONObject from server) user exit from fullscreen more again,
+         * library should not request google interstitial ad. Otherwise if timer is ended and user exit
+         * fullscreen mode, then library should request google interstitial ad
+         */
+
+        @JvmStatic
+        @JvmOverloads
+        fun getGoogleInterstitialAd(
+            context: Context? = null,
+            isOnline: Boolean? = null,
+            fragmentState: FragmentState? = null,
+            adRequestListener: AdRequestListener? = null,
+            adShowListener: AdShowListener? = null
+        ) {
+            if(!isGetAdBeingCalled){
+                this.context = context!!
+                this.fragmentState = fragmentState!!
+                this.adRequestListener = adRequestListener
+                this.adShowListener = adShowListener
+
+                limeAds?.getCurrentAdStatus(isOnline!!)
+                limeAds?.populateAdStatusesHashMaps()
+            }
+            limeAds?.let {
+                if(it.isAllowedToRequestGoogleAd){
+                    it.isAllowedToRequestGoogleAd = false
+                    if(it.timer == 0){
+                        it.timer = 30
+                    }
+                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, preroll, it)
+                    google.getGoogleAd(true)
+                }
+            }
+        }
+
+    }
+
+    private fun getCurrentAdStatus(isOnline: Boolean) {
+        currentAdStatus = when(isOnline){
+            true -> AdStatus.Online
+            false -> AdStatus.Archive
+        }
+    }
+
+    private fun populateAdStatusesHashMaps() {
+        for(ad in adsList){
+            val online = ad.is_onl
+            val archive = ad.is_arh
+            when(ad.type_sdk){
+                AdType.MyTarget.typeSdk -> {
+                    myTargetAdStatus[context.getString(R.string.isOnline)] = online
+                    myTargetAdStatus[context.getString(R.string.isArchive)] = archive
+                }
+                AdType.IMA.typeSdk -> {
+                    imaAdStatus[context.getString(R.string.isOnline)] = online
+                    imaAdStatus[context.getString(R.string.isArchive)] = archive
+                }
+                AdType.Google.typeSdk -> {
+                    googleAdStatus[context.getString(R.string.isOnline)] = online
+                    googleAdStatus[context.getString(R.string.isArchive)] = archive
+                }
+            }
+        }
     }
 
     /**
@@ -161,6 +241,20 @@ class LimeAds {
     private fun getAdsList() {
         val gson = GsonBuilder().create()
         adsList = gson.fromJson(json.getJSONArray("ads").toString(), Array<Ad>::class.java).toList()
+    }
+
+    /**
+     * Get ads_global models from JSONObject
+     * preroll, preload_ads, yandex_min_api, interstitial
+     */
+
+    private fun getAdsGlobalModels() {
+        val gson = GsonBuilder().create()
+        interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
+        preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
+        prerollTimer = preroll.epg_timer
+        prerollEpgInterval = preroll.epg_interval
+        skipFirst = preroll.skip_first
     }
 
     val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
@@ -194,7 +288,7 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
-        myTargetFragment = MyTargetFragment(lastAd, fragmentState, this)
+        myTargetFragment = MyTargetFragment(lastAd, fragmentState, adShowListener!!, this)
         myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
         loadAd(AdType.MyTarget)
     }
@@ -216,7 +310,7 @@ class LimeAds {
             when(adType){
                 is AdType.IMA -> ima.loadAd()
                 is AdType.MyTarget -> myTarget.loadAd()
-                is AdType.Google -> google.getGoogleAd()
+                is AdType.Google -> google.getGoogleAd(false)
             }
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
@@ -253,7 +347,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, this)
+        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 
@@ -262,8 +356,8 @@ class LimeAds {
      */
 
     private fun getGoogleAd() {
-        Log.d(TAG, "Load google ad")
-        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
+        Log.d(TAG, "getGoogleAd: called")
+        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, preroll, this)
         loadAd(AdType.Google)
     }
 
@@ -298,6 +392,39 @@ class LimeAds {
             fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMADEVICE)
         }else {
             getNextAd(AdType.IMADEVICE.typeSdk)
+        }
+    }
+
+    //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
+
+    val googleTimerHandler: Handler = Handler()
+    var timer = 30
+    var isAllowedToRequestGoogleAd = true
+    val googleTimerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (timer > 0) {
+                timer--
+                Log.d(TAG, "Google timer: $timer")
+                googleTimerHandler.postDelayed(this, 1000)
+            }else{
+                isAllowedToRequestGoogleAd = true
+            }
+        }
+    }
+
+    //********************************************* PREROLL TIMER HANDLER ****************************************************** //
+
+    val prerollTimerHandler: Handler = Handler()
+    private var isAllowedToRequestAd = true
+    val prerollTimerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            if (prerollTimer > 0) {
+                prerollTimer--
+                Log.d(TAG, "Preroll timer: $prerollTimer")
+                prerollTimerHandler.postDelayed(this, 1000)
+            }else{
+                isAllowedToRequestAd = true
+            }
         }
     }
 

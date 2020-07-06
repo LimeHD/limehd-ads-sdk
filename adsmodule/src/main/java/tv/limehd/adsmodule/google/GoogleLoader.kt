@@ -13,6 +13,7 @@ import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
+import tv.limehd.adsmodule.model.Preroll
 
 /**
  * This class stands for loading google ads logic
@@ -26,6 +27,8 @@ class GoogleLoader(
     private val fragmentState: FragmentState,
     private val adRequestListener: AdRequestListener,
     private val adShowListener: AdShowListener,
+    private val isLoadInterstitial: Boolean,
+    private val preroll: Preroll,
     private val limeAds: LimeAds
 ) {
 
@@ -47,11 +50,13 @@ class GoogleLoader(
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
-                    LimeAds.adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.Google)
+                    adRequestListener.onError(context.resources.getString(R.string.timeout_occurred), AdType.Google)
                     if(limeAds.lastAd == AdType.Google.typeSdk){
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
                     }else {
-                        limeAds.getNextAd(AdType.Google.typeSdk)
+                        if(!isLoadInterstitial) {
+                            limeAds.getNextAd(AdType.Google.typeSdk)
+                        }
                     }
                 }
             }
@@ -60,7 +65,7 @@ class GoogleLoader(
 
     fun loadAd() {
         interstitialAd = InterstitialAd(context)
-        interstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        interstitialAd.adUnitId = LimeAds.googleUnitId
         adRequestListener.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
         leftHandler.postDelayed(leftRunnable, 1000)
@@ -81,6 +86,10 @@ class GoogleLoader(
 
             override fun onAdFailedToLoad(errorType: Int) {
                 Log.d(TAG, "onAdFailedToLoad: called")
+                // when loading google ad make isAllowedToRequestGoogleAd to false
+                // but if error happened with google ad, we have to make isAllowedToRequestGoogleAd to true
+                // so next time google interstitial ad can be loaded
+                limeAds.isAllowedToRequestGoogleAd = true
                 var errorMessage = ""
                 when(errorType){
                     0 -> errorMessage = "ERROR_CODE_INTERNAL_ERROR"
@@ -99,7 +108,9 @@ class GoogleLoader(
                     if (lastAd == AdType.Google.typeSdk) {
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
                     } else {
-                        limeAds.getNextAd(AdType.Google.typeSdk)
+                        if(!isLoadInterstitial) {
+                            limeAds.getNextAd(AdType.Google.typeSdk)
+                        }
                     }
                 }
             }
@@ -107,6 +118,13 @@ class GoogleLoader(
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
                 adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
+                if(isLoadInterstitial){
+                    limeAds.timer = 30
+                    limeAds.googleTimerHandler.postDelayed(limeAds.googleTimerRunnable, 1000)
+                }else{
+                    LimeAds.prerollTimer = preroll.epg_timer
+                    limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
+                }
             }
 
             override fun onAdOpened() {

@@ -11,6 +11,8 @@ import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.Constants.Companion.TIMEOUT
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
+import tv.limehd.adsmodule.interfaces.AdRequestListener
+import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
 /**
@@ -19,7 +21,12 @@ import tv.limehd.adsmodule.interfaces.FragmentState
  * Errors/Clicks/Completion/Loaded/Requested - will be thrown to AdRequest and AdShow listeners
  */
 
-class ImaLoader constructor(private val context: Context, private val adTagUrl: String, private val container: ViewGroup, private val limeAds: LimeAds)
+class ImaLoader constructor(private val context: Context,
+                            private val adTagUrl: String,
+                            private val container: ViewGroup,
+                            private val adRequestListener: AdRequestListener,
+                            private val adShowListener: AdShowListener,
+                            private val limeAds: LimeAds)
     : AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
 
     companion object {
@@ -49,7 +56,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
-                    LimeAds.adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
+                    adRequestListener.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
                     if(limeAds.lastAd == AdType.IMA.typeSdk){
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMA)
                     }else {
@@ -85,7 +92,7 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
         adsRequest.setVastLoadTimeout(TIMEOUT)
 
-        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
+        adRequestListener.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
         leftHandler.postDelayed(leftRunnable, 1000)
@@ -102,8 +109,8 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called with ${adErrorEvent?.error?.errorCodeNumber}")
-        LimeAds.adRequestListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
-        LimeAds.adShowListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
+        adRequestListener.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
+        adShowListener.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         if(!isTimeout) {
             if (limeAds.lastAd == AdType.IMA.typeSdk) {
                 fragmentState.onErrorState(context.getString(R.string.no_ad_found_at_all), AdType.IMA)
@@ -117,17 +124,18 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
         when(adEvent?.type){
             AdEvent.AdEventType.LOADED -> {
                 Log.d(TAG, "loaded")
-                LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
+                adRequestListener.onLoaded(context.getString(R.string.loaded), AdType.IMA)
                 imaFragment = ImaFragment(adsManager)
                 fragmentState.onSuccessState(imaFragment, AdType.IMA)
             }
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                 Log.d(TAG, "ALL_ADS_COMPLETED")
-                LimeAds.adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
+                adShowListener.onComplete(context.getString(R.string.completed), AdType.IMA)
+                limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
             AdEvent.AdEventType.CLICKED -> {
                 Log.d(TAG, "CLICKED")
-                LimeAds.adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
+                adShowListener.onClick(context.getString(R.string.clicked), AdType.IMA)
             }
             AdEvent.AdEventType.COMPLETED -> {
                 Log.d(TAG, "COMPLETED")
@@ -164,15 +172,15 @@ class ImaLoader constructor(private val context: Context, private val adTagUrl: 
             }
             AdEvent.AdEventType.SKIPPED -> {
                 Log.d(TAG, "SKIPPED")
-                LimeAds.adShowListener?.onSkip(context.getString(R.string.skipped), AdType.IMA)
+                adShowListener.onSkip(context.getString(R.string.skipped), AdType.IMA)
             }
             AdEvent.AdEventType.STARTED -> {
                 Log.d(TAG, "STARTED")
-                LimeAds.adShowListener?.onShow(context.getString(R.string.showing), AdType.IMA)
+                adShowListener.onShow(context.getString(R.string.showing), AdType.IMA)
             }
             AdEvent.AdEventType.TAPPED -> {
                 Log.d(TAG, "TAPPED")
-                LimeAds.adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
+                adShowListener.onClick(context.getString(R.string.clicked), AdType.IMA)
             }
             AdEvent.AdEventType.ICON_TAPPED -> {
                 Log.d(TAG, "ICON_TAPPED")

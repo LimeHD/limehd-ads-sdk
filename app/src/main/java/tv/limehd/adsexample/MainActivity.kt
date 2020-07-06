@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.Constants
@@ -24,10 +25,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         try {
             LimeAds.init(JSONObject(Constants.json))
-            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
+            LimeAds.myTargetBlockId = 9525
+            LimeAds.googleUnitId = "ca-app-pub-3940256099942544/1033173712"
         }catch (e: IllegalArgumentException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
+
+        openGoogleAd.setOnClickListener {
+            LimeAds.getGoogleInterstitialAd()
+        }
+
+        getAd.setOnClickListener {
+            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
+        }
+
     }
 
     private val fragmentStateCallback = object : FragmentState {
