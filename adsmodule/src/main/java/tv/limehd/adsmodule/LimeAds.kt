@@ -83,7 +83,9 @@ class LimeAds {
         /**
          * Load ad in correct order. That depends on the JSONObject.
          * Get current ad status (Online or Archive)
-         * Get and Save isOnline and isArchive for each ad in JSONObject
+         * Get and Save isOnline and isArchive for each ad in JSONObject. Function checks
+         * is ad allowed to request. Because of the timer in JSONObject -> preroll -> epg_timer. Also ad can be loaded if
+         * user has clicked specific amount of times (JSONObject -> preroll -> epg_interval)
          */
 
         @JvmStatic
