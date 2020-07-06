@@ -36,13 +36,13 @@ class LimeAds {
         private lateinit var viewGroup: ViewGroup
         private lateinit var fragmentState: FragmentState
         private var resId: Int = -1
-        var adsList = listOf<Ad>()
-        var limeAds: LimeAds? = null
+        private var adsList = listOf<Ad>()
+        private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
         private lateinit var context: Context
         private var isInitialized = false
-        var adRequestListener: AdRequestListener? = null
-        var adShowListener: AdShowListener? = null
+        private var adRequestListener: AdRequestListener? = null
+        private var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
@@ -54,12 +54,15 @@ class LimeAds {
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
         private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
-        lateinit var preroll: Preroll
+        private lateinit var preroll: Preroll
         var prerollTimer = 0
         private var prerollEpgInterval = 0
         private var userClicksCounter = 0
         private var skipFirst = true
         private var getAdFunCallAmount = 0
+        lateinit var googleUnitId: String
+        @JvmField
+        var myTargetBlockId = -1
 
         /**
          * Init LimeAds library
@@ -83,7 +86,9 @@ class LimeAds {
         /**
          * Load ad in correct order. That depends on the JSONObject.
          * Get current ad status (Online or Archive)
-         * Get and Save isOnline and isArchive for each ad in JSONObject
+         * Get and Save isOnline and isArchive for each ad in JSONObject. Function checks
+         * is ad allowed to request. Because of the timer in JSONObject -> preroll -> epg_timer. Also ad can be loaded if
+         * user has clicked specific amount of times (JSONObject -> preroll -> epg_interval)
          */
 
         @JvmStatic
@@ -191,7 +196,7 @@ class LimeAds {
                     if(it.timer == 0){
                         it.timer = 30
                     }
-                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, it)
+                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, preroll, it)
                     google.getGoogleAd(true)
                 }
             }
@@ -283,7 +288,7 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
-        myTargetFragment = MyTargetFragment(lastAd, fragmentState, this)
+        myTargetFragment = MyTargetFragment(lastAd, fragmentState, adShowListener!!, this)
         myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
         loadAd(AdType.MyTarget)
     }
@@ -342,7 +347,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, this)
+        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 
@@ -352,7 +357,7 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "getGoogleAd: called")
-        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, this)
+        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, preroll, this)
         loadAd(AdType.Google)
     }
 
@@ -392,10 +397,10 @@ class LimeAds {
 
     //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
 
-    var googleTimerHandler: Handler = Handler()
+    val googleTimerHandler: Handler = Handler()
     var timer = 30
     var isAllowedToRequestGoogleAd = true
-    var googleTimerRunnable: Runnable = object : Runnable {
+    val googleTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (timer > 0) {
                 timer--
@@ -409,9 +414,9 @@ class LimeAds {
 
     //********************************************* PREROLL TIMER HANDLER ****************************************************** //
 
-    var prerollTimerHandler: Handler = Handler()
+    val prerollTimerHandler: Handler = Handler()
     private var isAllowedToRequestAd = true
-    var prerollTimerRunnable: Runnable = object : Runnable {
+    val prerollTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (prerollTimer > 0) {
                 prerollTimer--
