@@ -32,7 +32,7 @@ class Google(private val context: Context,
 
     fun getGoogleAd(isLoadInterstitial: Boolean) {
         Log.d(TAG, "Load google ad")
-        val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, limeAds)
+        val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, limeAds, this)
         googleLoader.loadAd()
     }
 }

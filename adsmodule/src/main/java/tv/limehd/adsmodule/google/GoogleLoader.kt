@@ -27,7 +27,8 @@ class GoogleLoader(
     private val adRequestListener: AdRequestListener,
     private val adShowListener: AdShowListener,
     private val isLoadInterstitial: Boolean,
-    private val limeAds: LimeAds
+    private val limeAds: LimeAds,
+    private val google: Google
 ) {
 
     companion object {
