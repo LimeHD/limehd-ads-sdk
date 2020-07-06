@@ -397,10 +397,10 @@ class LimeAds {
 
     //********************************************* GOOGLE INTERSTITIAL TIMER HANDLER ****************************************************** //
 
-    var googleTimerHandler: Handler = Handler()
+    val googleTimerHandler: Handler = Handler()
     var timer = 30
     var isAllowedToRequestGoogleAd = true
-    var googleTimerRunnable: Runnable = object : Runnable {
+    val googleTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (timer > 0) {
                 timer--
@@ -414,9 +414,9 @@ class LimeAds {
 
     //********************************************* PREROLL TIMER HANDLER ****************************************************** //
 
-    var prerollTimerHandler: Handler = Handler()
+    val prerollTimerHandler: Handler = Handler()
     private var isAllowedToRequestAd = true
-    var prerollTimerRunnable: Runnable = object : Runnable {
+    val prerollTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (prerollTimer > 0) {
                 prerollTimer--
