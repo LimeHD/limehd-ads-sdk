@@ -75,9 +75,12 @@ apply plugin: 'com.google.gms.google-services'
 - Для большей информации о загрузки и показа рекламы в метод `LimeAds.getAd(..., adRequestCallback, adShowCallback)` можно добавить листенеры. По умолчанию их значение **null**
   - *import tv.limehd.adsmodule.interfaces.AdRequestListener*
   - *import tv.limehd.adsmodule.interfaces.AdShowListener*
+- Чтобы грузить рекламу, необходимо указать **blockId** и **unitId** для MyTarget и GoogleAd соответственно
 ``` kotlin
 try {
     LimeAds.init(new JSONObject(Constants.json));
+    LimeAds.myTargetBlockId = 9525;
+    LimeAds.googleUnitId = "ca-app-pub-3940256099942544/1033173712";
     LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, null, null);
 }catch (IllegalArgumentException | JsonException error) {
     Toast.makeText(context, error.message, Toast.LENGTH_LONG).show();
@@ -93,7 +96,14 @@ try {
 ``` js
 LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, adRequestCallback, adShowCallback);
 ```
-### 2. Добавить FragmentState
+
+### 2. Получить рекламу от межстраницы Google
+Функция нужна когда пользователь вышел из полноэкранного режима, чтобы показать межстраничку Google
+``` js
+LimeAds.getGoogleInterstitialAd()
+```
+
+### 3. Добавить FragmentState
 Callback, который является одним из параметров в функции 
 ``` js
 LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, adRequestCallback, adShowCallback);
@@ -113,7 +123,7 @@ private FragmentState fragmentStateCallback = new FragmentState() {
     }
 };
 ```
-### 3. Листенеры для логов показа и запросов рекламы
+### 4. Листенеры для логов показа и запросов рекламы
 Если Вам не нужны логи можете не включать эти листенеры в метод LimeAds.getAd(...)
   - @Nullable *import tv.limehd.adsmodule.interfaces.AdRequestListener*  - листенер для запросов рекламы
   - @Nullable *import tv.limehd.adsmodule.interfaces.AdShowListener*   - листенер для показа рекламы
