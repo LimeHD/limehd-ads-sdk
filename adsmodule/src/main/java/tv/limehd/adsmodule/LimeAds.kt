@@ -70,6 +70,7 @@ class LimeAds {
          * of getting successful ad is higher
          */
 
+        @JvmStatic
         fun startBackgroundRequests() {
             TODO()
         }
