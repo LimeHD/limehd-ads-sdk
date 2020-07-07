@@ -72,7 +72,14 @@ class LimeAds {
 
         @JvmStatic
         fun startBackgroundRequests() {
-            TODO()
+            // Imagine we have 2 ads (Google and Ima) Down below the step by step algorithm
+            // 1: Request 1st iteration with ads in order that we have in JSONObject
+            // 2: If Google have ERROR_RESULT, then immediately should request from Ima
+                // 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
+                // 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
+                // 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
+            // 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
+            // 4: We have to do this until we don`t have SUCCESS_RESULT
         }
 
         /**
