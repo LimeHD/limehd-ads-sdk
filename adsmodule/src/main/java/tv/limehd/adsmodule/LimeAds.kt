@@ -65,6 +65,18 @@ class LimeAds {
         var myTargetBlockId = -1
 
         /**
+         * Function stands for requesting ad in the background while user
+         * doing/watching some movie or something. Because ad usually has failure,
+         * so if user goes to next channel, we request 1 time
+         * But if we do it in background thread, we can request it more than 1 time. And percentage
+         * of getting successful ad is higher
+         */
+
+        fun startBackgroundRequests() {
+            TODO()
+        }
+
+        /**
          * Init LimeAds library
          *
          * @param   json    JSONObject which server gives to library to load ads
