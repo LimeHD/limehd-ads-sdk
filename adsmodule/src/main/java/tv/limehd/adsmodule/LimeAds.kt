@@ -9,6 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import tv.limehd.adsmodule.google.Google
 import tv.limehd.adsmodule.ima.Ima
@@ -28,8 +32,8 @@ class LimeAds {
 
     companion object {
         private const val TAG = "LimeAds"
-//        private const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
-        private const val testAdTagUrl = "https://exchange.buzzoola.com/adv/kbDH64c7yFY_jqB7YcKn5Fe1xALB2bNgjXr1P_8yfXuCZKsWdzlR9A/vast2"
+        private const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
+//        private const val testAdTagUrl = "https://exchange.buzzoola.com/adv/kbDH64c7yFY_jqB7YcKn5Fe1xALB2bNgjXr1P_8yfXuCZKsWdzlR9A/vast2"
         private lateinit var myTargetFragment: MyTargetFragment
         private lateinit var viewGroup: ViewGroup
         private lateinit var fragmentState: FragmentState
@@ -82,8 +86,11 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun startBackgroundRequests() {
-            TODO()
+        fun startBackgroundRequests(context: Context, resId: Int) {
+            val backgroundAdManger = BackgroundAdManger(context)
+            val activity = context as Activity
+            val container: ViewGroup = activity.findViewById(resId)
+            limeAds?.backgroundAdLogic(backgroundAdManger, container)
         }
 
         /**
@@ -222,6 +229,38 @@ class LimeAds {
                     google.getGoogleAd(true)
                 }
             }
+        }
+
+    }
+
+    private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger, container: ViewGroup) {
+        Log.d(TAG, "backgroundAdLogic: start")
+        // beginning of the block
+        CoroutineScope(Dispatchers.Main).launch {
+            // loop through iterations
+            for (i in 0 until preload.count) {
+                // loop through each ad in the iteration
+                for(ad in adsList){
+                    when(ad.type_sdk){
+                        AdType.IMA.typeSdk -> {
+                            // call ima
+                        }
+                        AdType.MyTarget.typeSdk -> {
+                            // call mytarget
+                        }
+                        AdType.Google.typeSdk -> {
+                            // call google
+                        }
+                    }
+                }
+                // should have timeout after each iteration
+                Log.d(TAG, "backgroundAdLogic: timeout after iteration")
+                delay(5000)
+            }
+            // should have block timeout after each block
+            Log.d(TAG, "backgroundAdLogic: block timeout after each block")
+            delay(5000)
+            backgroundAdLogic(backgroundAdManger, container)
         }
 
     }
