@@ -10,11 +10,11 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.my.target.instreamads.InstreamAd
-import tv.limehd.adsmodule.google.GoogleLoader
 import tv.limehd.adsmodule.interfaces.AdLoader
+import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
-class BackgroundAdManger(private val context: Context) :  AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener{
+class BackgroundAdManger(private val adsList: List<Ad>, private val context: Context) :  AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener{
 
     companion object {
         private const val TAG = "BackgroundAdManger"

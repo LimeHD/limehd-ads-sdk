@@ -87,7 +87,7 @@ class LimeAds {
 
         @JvmStatic
         fun startBackgroundRequests(context: Context, resId: Int) {
-            val backgroundAdManger = BackgroundAdManger(context)
+            val backgroundAdManger = BackgroundAdManger(adsList, context)
             val activity = context as Activity
             val container: ViewGroup = activity.findViewById(resId)
             limeAds?.backgroundAdLogic(backgroundAdManger, container)
