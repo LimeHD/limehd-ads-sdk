@@ -14,7 +14,11 @@ import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
-class BackgroundAdManger(private val adsList: List<Ad>, private val container: ViewGroup, private val context: Context) :  AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener{
+class BackgroundAdManger(private val adsList: List<Ad>,
+                         private val container: ViewGroup,
+                         private val adTagUrl: String,
+                         private val context: Context
+) :  AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener{
 
     companion object {
         private const val TAG = "BackgroundAdManger"
@@ -29,7 +33,7 @@ class BackgroundAdManger(private val adsList: List<Ad>, private val container: V
     private lateinit var mSdkSetting: ImaSdkSettings
     private lateinit var mAdsLoader: AdsLoader
 
-    fun loadIma(container: ViewGroup, adTagUrl: String) {
+    fun loadIma(container: ViewGroup) {
         mSdkFactory = ImaSdkFactory.getInstance()
         mSdkSetting = mSdkFactory.createImaSdkSettings()
         mSdkSetting.language = "ru"
