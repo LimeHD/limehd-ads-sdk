@@ -25,6 +25,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
         lateinit var imaAdsManager: AdsManager
         lateinit var myTargetInstreamAd: InstreamAd
         lateinit var googleInterstitialAd: InterstitialAd
+        var isAdLoaded = false
     }
 
     fun getNextAd(currentAd: String) {
@@ -77,6 +78,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
         // Ima ad is successfully loaded. We should save to cache
         Log.d(TAG, "onAdsManagerLoaded: called. Save to cache Ima")
         imaAdsManager = adsManagerLoaderEvent!!.adsManager
+        isAdLoaded = true
     }
 
     override fun onAdError(p0: AdErrorEvent?) {
@@ -97,6 +99,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
             override fun onLoaded(instreamAd: InstreamAd) {
                 Log.d(TAG, "onLoaded: called. Save to cache MyTarget")
                 myTargetInstreamAd = instreamAd
+                isAdLoaded = true
             }
 
             override fun onError(error: String) {
@@ -148,6 +151,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
             override fun onAdLoaded() {
                 Log.d(TAG, "onAdLoaded: called. Save to cache Google")
                 googleInterstitialAd = interstitialAd
+                isAdLoaded = true
             }
         }
     }
