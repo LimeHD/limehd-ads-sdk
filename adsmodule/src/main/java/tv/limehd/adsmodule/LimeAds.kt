@@ -9,10 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import tv.limehd.adsmodule.google.Google
 import tv.limehd.adsmodule.ima.Ima
@@ -243,13 +240,28 @@ class LimeAds {
                 for(ad in adsList){
                     when(ad.type_sdk){
                         AdType.IMA.typeSdk -> {
-                            // call ima
+                            if(BackgroundAdManger.isAdLoaded){
+                                Log.d(TAG, "backgroundAdLogic: cancel")
+                                this.cancel()
+                            }else{
+                                backgroundAdManger.loadIma(viewGroup)
+                            }
                         }
                         AdType.MyTarget.typeSdk -> {
-                            // call mytarget
+                            if(BackgroundAdManger.isAdLoaded){
+                                Log.d(TAG, "backgroundAdLogic: cancel")
+                                this.cancel()
+                            }else{
+                                backgroundAdManger.loadMyTarget()
+                            }
                         }
                         AdType.Google.typeSdk -> {
-                            // call google
+                            if(BackgroundAdManger.isAdLoaded){
+                                Log.d(TAG, "backgroundAdLogic: cancel")
+                                this.cancel()
+                            }else{
+                                backgroundAdManger.loadGoogleAd()
+                            }
                         }
                     }
                 }
@@ -262,7 +274,6 @@ class LimeAds {
             delay(5000)
             backgroundAdLogic(backgroundAdManger)
         }
-
     }
 
     private fun getCurrentAdStatus(isOnline: Boolean) {

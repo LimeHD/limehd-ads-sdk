@@ -49,7 +49,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
     private lateinit var mSdkSetting: ImaSdkSettings
     private lateinit var mAdsLoader: AdsLoader
 
-    private fun loadIma(container: ViewGroup) {
+    fun loadIma(container: ViewGroup) {
         mSdkFactory = ImaSdkFactory.getInstance()
         mSdkSetting = mSdkFactory.createImaSdkSettings()
         mSdkSetting.language = "ru"
@@ -83,12 +83,12 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
     override fun onAdError(p0: AdErrorEvent?) {
         Log.d(TAG, "onAdError: load next ad after Ima")
-        getNextAd(AdType.IMA.typeSdk)
+//        getNextAd(AdType.IMA.typeSdk)
     }
 
     // ***************************************************** MyTarget SDK ********************************************************* //
 
-    private fun loadMyTarget() {
+    fun loadMyTarget() {
         val myTargetLoader = MyTargetLoader(context)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
@@ -108,7 +108,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
             override fun onNoAd(error: String) {
                 Log.d(TAG, "onNoAd: load next ad after MyTarget")
-                getNextAd(AdType.MyTarget.typeSdk)
+//                getNextAd(AdType.MyTarget.typeSdk)
             }
         })
     }
@@ -117,7 +117,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
     private lateinit var interstitialAd: InterstitialAd
 
-    private fun loadGoogleAd() {
+    fun loadGoogleAd() {
         interstitialAd = InterstitialAd(context)
         interstitialAd.adUnitId = LimeAds.googleUnitId
         interstitialAd.loadAd(AdRequest.Builder().build())
@@ -137,7 +137,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
             override fun onAdFailedToLoad(errorType: Int) {
                 // load next ad
                 Log.d(TAG, "onAdFailedToLoad: load next ad after google")
-                getNextAd(AdType.Google.typeSdk)
+//                getNextAd(AdType.Google.typeSdk)
             }
 
             override fun onAdClosed() {
