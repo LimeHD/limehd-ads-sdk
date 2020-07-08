@@ -14,7 +14,7 @@ import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 
-class BackgroundAdManger(private val adsList: List<Ad>, private val context: Context) :  AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener{
+class BackgroundAdManger(private val adsList: List<Ad>, private val container: ViewGroup, private val context: Context) :  AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener{
 
     companion object {
         private const val TAG = "BackgroundAdManger"

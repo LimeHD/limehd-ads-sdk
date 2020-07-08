@@ -87,10 +87,10 @@ class LimeAds {
 
         @JvmStatic
         fun startBackgroundRequests(context: Context, resId: Int) {
-            val backgroundAdManger = BackgroundAdManger(adsList, context)
             val activity = context as Activity
-            val container: ViewGroup = activity.findViewById(resId)
-            limeAds?.backgroundAdLogic(backgroundAdManger, container)
+            viewGroup = activity.findViewById(resId)
+            val backgroundAdManger = BackgroundAdManger(adsList, viewGroup, context)
+            limeAds?.backgroundAdLogic(backgroundAdManger)
         }
 
         /**
@@ -233,7 +233,7 @@ class LimeAds {
 
     }
 
-    private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger, container: ViewGroup) {
+    private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger) {
         Log.d(TAG, "backgroundAdLogic: start")
         // beginning of the block
         CoroutineScope(Dispatchers.Main).launch {
@@ -260,7 +260,7 @@ class LimeAds {
             // should have block timeout after each block
             Log.d(TAG, "backgroundAdLogic: block timeout after each block")
             delay(5000)
-            backgroundAdLogic(backgroundAdManger, container)
+            backgroundAdLogic(backgroundAdManger)
         }
 
     }
