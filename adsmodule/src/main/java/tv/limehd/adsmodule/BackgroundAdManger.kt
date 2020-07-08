@@ -81,6 +81,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
     override fun onAdError(p0: AdErrorEvent?) {
         Log.d(TAG, "onAdError: load next ad after Ima")
+        getNextAd(AdType.IMA.typeSdk)
     }
 
     // ***************************************************** MyTarget SDK ********************************************************* //
@@ -104,6 +105,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
             override fun onNoAd(error: String) {
                 Log.d(TAG, "onNoAd: load next ad after MyTarget")
+                getNextAd(AdType.MyTarget.typeSdk)
             }
         })
     }
@@ -132,6 +134,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
             override fun onAdFailedToLoad(errorType: Int) {
                 // load next ad
                 Log.d(TAG, "onAdFailedToLoad: load next ad after google")
+                getNextAd(AdType.Google.typeSdk)
             }
 
             override fun onAdClosed() {
