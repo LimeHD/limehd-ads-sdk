@@ -27,13 +27,28 @@ class BackgroundAdManger(private val adsList: List<Ad>,
         lateinit var googleInterstitialAd: InterstitialAd
     }
 
+    fun getNextAd(currentAd: String) {
+        var nextAd: String? = null
+        for(i in adsList.indices){
+            if(adsList[i].type_sdk == currentAd){
+                nextAd = adsList[i + 1].type_sdk
+            }
+        }
+        Log.d(TAG, "Next ad after '$currentAd' is '$nextAd'")
+        when(nextAd){
+            AdType.Google.typeSdk -> loadGoogleAd()
+            AdType.IMA.typeSdk -> loadIma(container)
+            AdType.MyTarget.typeSdk -> loadMyTarget()
+        }
+    }
+
     // ***************************************************** IMA SDK ********************************************************* //
 
     private lateinit var mSdkFactory: ImaSdkFactory
     private lateinit var mSdkSetting: ImaSdkSettings
     private lateinit var mAdsLoader: AdsLoader
 
-    fun loadIma(container: ViewGroup) {
+    private fun loadIma(container: ViewGroup) {
         mSdkFactory = ImaSdkFactory.getInstance()
         mSdkSetting = mSdkFactory.createImaSdkSettings()
         mSdkSetting.language = "ru"
@@ -70,7 +85,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
     // ***************************************************** MyTarget SDK ********************************************************* //
 
-    fun loadMyTarget() {
+    private fun loadMyTarget() {
         val myTargetLoader = MyTargetLoader(context)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
@@ -97,7 +112,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
     private lateinit var interstitialAd: InterstitialAd
 
-    fun loadGoogleAd() {
+    private fun loadGoogleAd() {
         interstitialAd = InterstitialAd(context)
         interstitialAd.adUnitId = LimeAds.googleUnitId
         interstitialAd.loadAd(AdRequest.Builder().build())
