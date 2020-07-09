@@ -232,6 +232,7 @@ class LimeAds {
 
     private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger) {
         Log.d(TAG, "backgroundAdLogic: start")
+        var result = false
         // beginning of the block
         CoroutineScope(Dispatchers.Main).launch {
             // loop through iterations
@@ -240,27 +241,30 @@ class LimeAds {
                 for(ad in adsList){
                     when(ad.type_sdk){
                         AdType.IMA.typeSdk -> {
-                            if(BackgroundAdManger.isAdLoaded){
-                                Log.d(TAG, "backgroundAdLogic: cancel")
+                            Log.d(TAG, "backgroundAdLogic: $result")
+                            if(result){
+                                Log.d(TAG, "backgroundAdLogic: cancel ima")
                                 this.cancel()
-                            }else{
-                                backgroundAdManger.loadIma(viewGroup)
+                            }else {
+                                result = backgroundAdManger.loadIma(viewGroup)
                             }
                         }
                         AdType.MyTarget.typeSdk -> {
-                            if(BackgroundAdManger.isAdLoaded){
-                                Log.d(TAG, "backgroundAdLogic: cancel")
+                            Log.d(TAG, "backgroundAdLogic: $result")
+                            if(result){
+                                Log.d(TAG, "backgroundAdLogic: cancel mytarget")
                                 this.cancel()
-                            }else{
-                                backgroundAdManger.loadMyTarget()
+                            }else {
+                                result = backgroundAdManger.loadMyTarget()
                             }
                         }
                         AdType.Google.typeSdk -> {
-                            if(BackgroundAdManger.isAdLoaded){
-                                Log.d(TAG, "backgroundAdLogic: cancel")
+                            Log.d(TAG, "backgroundAdLogic: $result")
+                            if(result){
+                                Log.d(TAG, "backgroundAdLogic: cancel google")
                                 this.cancel()
-                            }else{
-                                backgroundAdManger.loadGoogleAd()
+                            }else {
+                                result = backgroundAdManger.loadGoogleAd()
                             }
                         }
                     }
