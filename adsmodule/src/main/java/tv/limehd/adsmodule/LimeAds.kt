@@ -91,8 +91,9 @@ class LimeAds {
 
             myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
             val activityOfFragment = context as FragmentActivity
-            val fragmentManager = activityOfFragment.supportFragmentManager
+            fragmentManager = activityOfFragment.supportFragmentManager
             fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+            fragmentManager.beginTransaction().hide(myTargetFragment).commit()
         }
 
         /**
@@ -139,7 +140,9 @@ class LimeAds {
             this.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
             val activityOfFragment = context as FragmentActivity
-            this.fragmentManager = activityOfFragment.supportFragmentManager
+            if(!::fragmentManager.isInitialized){
+                this.fragmentManager = activityOfFragment.supportFragmentManager
+            }
             this.resId = resId
 
             val readyBackgroundSkd = limeAds!!.getBackgroundReadyAd()
@@ -188,7 +191,7 @@ class LimeAds {
                         Log.d(TAG, "getAd: show mytarget from background")
                         val instreamAd = BackgroundAdManger.myTargetInstreamAd
                         myTargetFragment.setInstreamAd(instreamAd!!)
-                        fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+                        fragmentManager.beginTransaction().show(myTargetFragment).commit()
                         fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
                     }
                     AdType.Google.typeSdk -> {
