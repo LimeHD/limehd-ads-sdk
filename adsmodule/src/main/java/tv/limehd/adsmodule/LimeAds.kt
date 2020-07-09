@@ -230,6 +230,19 @@ class LimeAds {
 
     }
 
+    /**
+     * Here starts Algorithm:
+     *
+     * Imagine we have 2 ads (Google and Ima)
+     * 1: Request 1st iteration with ads in order that we have in JSONObject
+     * 2: If Google have ERROR_RESULT, then immediately should request from Ima
+     * 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
+     * 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
+     * 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
+     * 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
+     * 4: We have to do this until we don`t have SUCCESS_RESULT
+     */
+
     private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger) {
         Log.d(TAG, "backgroundAdLogic: start")
         var result = false
@@ -241,27 +254,21 @@ class LimeAds {
                 for(ad in adsList){
                     when(ad.type_sdk){
                         AdType.IMA.typeSdk -> {
-                            Log.d(TAG, "backgroundAdLogic: $result")
                             if(result){
-                                Log.d(TAG, "backgroundAdLogic: cancel ima")
                                 this.cancel()
                             }else {
                                 result = backgroundAdManger.loadIma(viewGroup)
                             }
                         }
                         AdType.MyTarget.typeSdk -> {
-                            Log.d(TAG, "backgroundAdLogic: $result")
                             if(result){
-                                Log.d(TAG, "backgroundAdLogic: cancel mytarget")
                                 this.cancel()
                             }else {
                                 result = backgroundAdManger.loadMyTarget()
                             }
                         }
                         AdType.Google.typeSdk -> {
-                            Log.d(TAG, "backgroundAdLogic: $result")
                             if(result){
-                                Log.d(TAG, "backgroundAdLogic: cancel google")
                                 this.cancel()
                             }else {
                                 result = backgroundAdManger.loadGoogleAd()
@@ -270,11 +277,9 @@ class LimeAds {
                     }
                 }
                 // should have timeout after each iteration
-                Log.d(TAG, "backgroundAdLogic: timeout after iteration")
                 delay(5000)
             }
             // should have block timeout after each block
-            Log.d(TAG, "backgroundAdLogic: block timeout after each block")
             delay(5000)
             backgroundAdLogic(backgroundAdManger)
         }
