@@ -22,9 +22,9 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
     companion object {
         private const val TAG = "BackgroundAdManger"
-        lateinit var imaAdsManager: AdsManager
-        lateinit var myTargetInstreamAd: InstreamAd
-        lateinit var googleInterstitialAd: InterstitialAd
+        var imaAdsManager: AdsManager? = null
+        var myTargetInstreamAd: InstreamAd? = null
+        var googleInterstitialAd: InterstitialAd? = null
     }
 
     // ***************************************************** IMA SDK ********************************************************* //
@@ -58,10 +58,12 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
         return suspendCoroutine {cont ->
             mAdsLoader.addAdsLoadedListener {
+                Log.d(TAG, "loadIma: ima loaded")
                 imaAdsManager = it!!.adsManager
                 cont.resume(true)
             }
             mAdsLoader.addAdErrorListener {
+                Log.d(TAG, "loadIma: error")
                 cont.resume(false)
             }
         }
@@ -80,6 +82,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onLoaded(instreamAd: InstreamAd) {
+                    Log.d(TAG, "onLoaded: mytarget loaded")
                     myTargetInstreamAd = instreamAd
                     it.resume(true)
                 }
@@ -89,6 +92,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onNoAd(error: String) {
+                    Log.d(TAG, "onNoAd: mytarget error")
                     it.resume(false)
                 }
             })
@@ -119,6 +123,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onAdFailedToLoad(errorType: Int) {
+                    Log.d(TAG, "onAdFailedToLoad: google error")
                     it.resume(false)
                 }
 
@@ -131,6 +136,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onAdLoaded() {
+                    Log.d(TAG, "onAdLoaded: google loaded")
                     googleInterstitialAd = interstitialAd
                     it.resume(true)
                 }

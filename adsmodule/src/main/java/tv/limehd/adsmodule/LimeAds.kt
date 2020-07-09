@@ -83,11 +83,16 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun startBackgroundRequests(context: Context, resId: Int) {
+        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener) {
             val activity = context as Activity
             viewGroup = activity.findViewById(resId)
             val backgroundAdManger = BackgroundAdManger(testAdTagUrl, context)
             limeAds?.backgroundAdLogic(backgroundAdManger)
+
+            myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
+            val activityOfFragment = context as FragmentActivity
+            val fragmentManager = activityOfFragment.supportFragmentManager
+            fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
         }
 
         /**
@@ -125,6 +130,7 @@ class LimeAds {
                   isOnline: Boolean,
                   adRequestListener: AdRequestListener? = null,
                   adShowListener: AdShowListener? = null) {
+
             isGetAdBeingCalled = true
             this.context = context
             this.adRequestListener = adRequestListener
@@ -136,29 +142,60 @@ class LimeAds {
             this.fragmentManager = activityOfFragment.supportFragmentManager
             this.resId = resId
 
-            limeAds?.getCurrentAdStatus(isOnline)
-            limeAds?.populateAdStatusesHashMaps()
+            val readyBackgroundSkd = limeAds!!.getBackgroundReadyAd()
 
-            userClicksCounter++
-            Log.d(TAG, "userClicks: $userClicksCounter")
+            if(readyBackgroundSkd.isEmpty()) {
+                Log.d(TAG, "getAd: load ad in main thread")
 
-            limeAds?.let {
-                if(it.isAllowedToRequestAd || userClicksCounter >= 5){
-                    if(skipFirst && getAdFunCallAmount == 0){
-                        Log.d(TAG, "getAd: skip first ad")
-                        getAdFunCallAmount++
-                    }else {
-                        prerollTimer = preroll.epg_timer
-                        it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
-                        it.isAllowedToRequestAd = false
-                        userClicksCounter = 0
-                        when (adsList[0].type_sdk) {
-                            AdType.Google.typeSdk -> limeAds?.getGoogleAd()
-                            AdType.IMA.typeSdk -> limeAds?.getImaAd()
-                            AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
-                            AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
-                            AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                limeAds?.getCurrentAdStatus(isOnline)
+                limeAds?.populateAdStatusesHashMaps()
+
+                userClicksCounter++
+                Log.d(TAG, "userClicks: $userClicksCounter")
+
+                limeAds?.let {
+                    if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
+                        if (skipFirst && getAdFunCallAmount == 0) {
+                            Log.d(TAG, "getAd: skip first ad")
+                            getAdFunCallAmount++
+                        } else {
+                            prerollTimer = preroll.epg_timer
+                            it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                            it.isAllowedToRequestAd = false
+                            userClicksCounter = 0
+                            when (adsList[0].type_sdk) {
+                                AdType.Google.typeSdk -> limeAds?.getGoogleAd()
+                                AdType.IMA.typeSdk -> limeAds?.getImaAd()
+                                AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
+                                AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
+                                AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                            }
                         }
+                    }
+                }
+            }else{
+                when(readyBackgroundSkd){
+                    AdType.IMA.typeSdk -> {
+                        // show ima ad
+                        Log.d(TAG, "getAd: show ima from background")
+                        val adsManager = BackgroundAdManger.imaAdsManager
+                        adsManager!!.init()
+                        val imaFragment = ImaFragment(adsManager)
+                        fragmentState.onSuccessState(imaFragment, AdType.IMA)
+                    }
+                    AdType.MyTarget.typeSdk -> {
+                        // show mytarget ad
+                        Log.d(TAG, "getAd: show mytarget from background")
+                        val instreamAd = BackgroundAdManger.myTargetInstreamAd
+                        myTargetFragment.setInstreamAd(instreamAd!!)
+                        fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+                        fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
+                    }
+                    AdType.Google.typeSdk -> {
+                        // show google ad
+                        Log.d(TAG, "getAd: show google from background")
+                        val interstitial = BackgroundAdManger.googleInterstitialAd
+                        interstitial!!.show()
                     }
                 }
             }
@@ -228,6 +265,20 @@ class LimeAds {
             }
         }
 
+    }
+
+    private fun getBackgroundReadyAd() : String {
+        var readySdk = ""
+        if(BackgroundAdManger.imaAdsManager != null){
+            readySdk = AdType.IMA.typeSdk
+        }
+        if(BackgroundAdManger.myTargetInstreamAd != null){
+            readySdk = AdType.MyTarget.typeSdk
+        }
+        if(BackgroundAdManger.googleInterstitialAd != null){
+            readySdk = AdType.Google.typeSdk
+        }
+        return readySdk
     }
 
     /**
