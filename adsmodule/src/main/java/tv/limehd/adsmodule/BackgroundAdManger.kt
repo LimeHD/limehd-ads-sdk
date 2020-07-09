@@ -3,7 +3,10 @@ package tv.limehd.adsmodule
 import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
-import com.google.ads.interactivemedia.v3.api.*
+import com.google.ads.interactivemedia.v3.api.AdsLoader
+import com.google.ads.interactivemedia.v3.api.AdsManager
+import com.google.ads.interactivemedia.v3.api.ImaSdkFactory
+import com.google.ads.interactivemedia.v3.api.ImaSdkSettings
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
 import com.google.android.gms.ads.AdListener
@@ -11,39 +14,18 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.my.target.instreamads.InstreamAd
 import tv.limehd.adsmodule.interfaces.AdLoader
-import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class BackgroundAdManger(private val adsList: List<Ad>,
-                         private val container: ViewGroup,
-                         private val adTagUrl: String,
-                         private val context: Context
-){
+class BackgroundAdManger(private val adTagUrl: String, private val context: Context){
 
     companion object {
         private const val TAG = "BackgroundAdManger"
         lateinit var imaAdsManager: AdsManager
         lateinit var myTargetInstreamAd: InstreamAd
         lateinit var googleInterstitialAd: InterstitialAd
-        var isAdLoaded = false
     }
-
-//    fun getNextAd(currentAd: String) {
-//        var nextAd: String? = null
-//        for(i in adsList.indices){
-//            if(adsList[i].type_sdk == currentAd){
-//                nextAd = adsList[i + 1].type_sdk
-//            }
-//        }
-//        Log.d(TAG, "Next ad after '$currentAd' is '$nextAd'")
-//        when(nextAd){
-//            AdType.Google.typeSdk -> loadGoogleAd()
-//            AdType.IMA.typeSdk -> loadIma(container)
-//            AdType.MyTarget.typeSdk -> loadMyTarget()
-//        }
-//    }
 
     // ***************************************************** IMA SDK ********************************************************* //
 
@@ -76,9 +58,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
 
         return suspendCoroutine {cont ->
             mAdsLoader.addAdsLoadedListener {
-                Log.d(TAG, "onAdsManagerLoaded: called. Save to cache Ima")
                 imaAdsManager = it!!.adsManager
-                isAdLoaded = true
                 cont.resume(true)
             }
             mAdsLoader.addAdErrorListener {
@@ -100,9 +80,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
                 }
 
                 override fun onLoaded(instreamAd: InstreamAd) {
-                    Log.d(TAG, "onLoaded: called. Save to cache MyTarget")
                     myTargetInstreamAd = instreamAd
-                    isAdLoaded = true
                     it.resume(true)
                 }
 
@@ -111,7 +89,6 @@ class BackgroundAdManger(private val adsList: List<Ad>,
                 }
 
                 override fun onNoAd(error: String) {
-                    Log.d(TAG, "onNoAd: load next ad after MyTarget")
                     it.resume(false)
                 }
             })
@@ -142,8 +119,6 @@ class BackgroundAdManger(private val adsList: List<Ad>,
                 }
 
                 override fun onAdFailedToLoad(errorType: Int) {
-                    // load next ad
-                    Log.d(TAG, "onAdFailedToLoad: load next ad after google")
                     it.resume(false)
                 }
 
@@ -156,9 +131,7 @@ class BackgroundAdManger(private val adsList: List<Ad>,
                 }
 
                 override fun onAdLoaded() {
-                    Log.d(TAG, "onAdLoaded: called. Save to cache Google")
                     googleInterstitialAd = interstitialAd
-                    isAdLoaded = true
                     it.resume(true)
                 }
             }
