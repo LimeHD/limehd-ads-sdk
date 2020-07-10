@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
             LimeAds.init(JSONObject(Constants.json))
             LimeAds.myTargetBlockId = 9525
             LimeAds.googleUnitId = "ca-app-pub-3940256099942544/1033173712"
-            LimeAds.startBackgroundRequests(this, R.id.main_container, fragmentStateCallback, adShowCallback)
         }catch (e: IllegalArgumentException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
@@ -38,6 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         getAd.setOnClickListener {
             LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
+        }
+
+        startBackgroundRequests.setOnClickListener {
+            LimeAds.startBackgroundRequests(this, R.id.main_container, fragmentStateCallback, adShowCallback)
         }
 
     }
