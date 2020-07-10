@@ -2,6 +2,7 @@ package tv.limehd.adsmodule
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import com.google.ads.interactivemedia.v3.api.AdsLoader
 import com.google.ads.interactivemedia.v3.api.AdsManager
@@ -35,6 +36,9 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
     suspend fun loadIma(container: ViewGroup) : Boolean {
         Log.d(TAG, "loadIma: called")
+
+        container.visibility = View.GONE
+
         mSdkFactory = ImaSdkFactory.getInstance()
         mSdkSetting = mSdkFactory.createImaSdkSettings()
         mSdkSetting.language = "ru"

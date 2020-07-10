@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -145,6 +146,8 @@ class LimeAds {
             }
             this.resId = resId
 
+            viewGroup.visibility = View.VISIBLE
+
             val readyBackgroundSkd = limeAds!!.getBackgroundReadyAd()
 
             if(readyBackgroundSkd.isEmpty()) {
@@ -181,6 +184,7 @@ class LimeAds {
                     AdType.IMA.typeSdk -> {
                         // show ima ad
                         Log.d(TAG, "getAd: show ima from background")
+                        viewGroup.visibility = View.VISIBLE
                         val adsManager = BackgroundAdManger.imaAdsManager
                         adsManager!!.init()
                         val imaFragment = ImaFragment(adsManager)
