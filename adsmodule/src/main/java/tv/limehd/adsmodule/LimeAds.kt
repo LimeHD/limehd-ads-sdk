@@ -147,8 +147,6 @@ class LimeAds {
             }
             this.resId = resId
 
-            viewGroup.visibility = View.VISIBLE
-
             val readyBackgroundSkd = limeAds!!.getBackgroundReadyAd()
 
             if(readyBackgroundSkd.isEmpty()) {
@@ -181,36 +179,52 @@ class LimeAds {
                     }
                 }
             }else{
-                when(readyBackgroundSkd){
-                    AdType.IMA.typeSdk -> {
-                        // show ima ad
-                        Log.d(TAG, "getAd: show ima from background")
-                        viewGroup.visibility = View.VISIBLE
-                        val adsManager = BackgroundAdManger.imaAdsManager
-                        adsManager?.addAdEventListener {
-                            if(it.type.name == AdEvent.AdEventType.ALL_ADS_COMPLETED.name) {
-                                // should restart BackgroundAdManager
-                                BackgroundAdManger.clearVariables()
-                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                limeAds?.let {
+                    if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
+                        if (skipFirst && getAdFunCallAmount == 0) {
+                            Log.d(TAG, "getAd: skip first ad")
+                            getAdFunCallAmount++
+                        } else {
+                            prerollTimer = preroll.epg_timer
+                            it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                            it.isAllowedToRequestAd = false
+                            userClicksCounter = 0
+                            when(readyBackgroundSkd){
+                                AdType.IMA.typeSdk -> {
+                                    // show ima ad
+                                    Log.d(TAG, "getAd: show ima from background")
+                                    viewGroup.visibility = View.VISIBLE
+                                    val adsManager = BackgroundAdManger.imaAdsManager
+                                    adsManager?.addAdEventListener { adEvent ->
+                                        if(adEvent.type.name == AdEvent.AdEventType.ALL_ADS_COMPLETED.name) {
+                                            // should restart BackgroundAdManager
+                                            BackgroundAdManger.clearVariables()
+                                            startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+
+                                            // should start preroll handler
+                                            limeAds!!.prerollTimerHandler.postDelayed(limeAds!!.prerollTimerRunnable, 1000)
+                                        }
+                                    }
+                                    adsManager!!.init()
+                                    val imaFragment = ImaFragment(adsManager)
+                                    fragmentState.onSuccessState(imaFragment, AdType.IMA)
+                                }
+                                AdType.MyTarget.typeSdk -> {
+                                    // show mytarget ad
+                                    Log.d(TAG, "getAd: show mytarget from background")
+                                    val instreamAd = BackgroundAdManger.myTargetInstreamAd
+                                    myTargetFragment.setInstreamAd(instreamAd!!)
+                                    fragmentManager.beginTransaction().show(myTargetFragment).commit()
+                                    fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
+                                }
+                                AdType.Google.typeSdk -> {
+                                    // show google ad
+                                    Log.d(TAG, "getAd: show google from background")
+                                    val interstitial = BackgroundAdManger.googleInterstitialAd
+                                    interstitial!!.show()
+                                }
                             }
                         }
-                        adsManager!!.init()
-                        val imaFragment = ImaFragment(adsManager)
-                        fragmentState.onSuccessState(imaFragment, AdType.IMA)
-                    }
-                    AdType.MyTarget.typeSdk -> {
-                        // show mytarget ad
-                        Log.d(TAG, "getAd: show mytarget from background")
-                        val instreamAd = BackgroundAdManger.myTargetInstreamAd
-                        myTargetFragment.setInstreamAd(instreamAd!!)
-                        fragmentManager.beginTransaction().show(myTargetFragment).commit()
-                        fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
-                    }
-                    AdType.Google.typeSdk -> {
-                        // show google ad
-                        Log.d(TAG, "getAd: show google from background")
-                        val interstitial = BackgroundAdManger.googleInterstitialAd
-                        interstitial!!.show()
                     }
                 }
             }

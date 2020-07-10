@@ -3,6 +3,7 @@ package tv.limehd.adsmodule.ima
 import android.content.Context
 import android.os.Handler
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
@@ -176,6 +177,7 @@ class ImaLoader constructor(private val context: Context,
             }
             AdEvent.AdEventType.STARTED -> {
                 Log.d(TAG, "STARTED")
+                container.visibility = View.VISIBLE
                 adShowListener.onShow(context.getString(R.string.showing), AdType.IMA)
             }
             AdEvent.AdEventType.TAPPED -> {
