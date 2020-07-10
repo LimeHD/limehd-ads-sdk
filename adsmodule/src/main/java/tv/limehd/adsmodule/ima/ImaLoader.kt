@@ -9,6 +9,7 @@ import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
 import tv.limehd.adsmodule.AdType
+import tv.limehd.adsmodule.BackgroundAdManger
 import tv.limehd.adsmodule.Constants.Companion.TIMEOUT
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
@@ -132,6 +133,11 @@ class ImaLoader constructor(private val context: Context,
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                 Log.d(TAG, "ALL_ADS_COMPLETED")
                 adShowListener.onComplete(context.getString(R.string.completed), AdType.IMA)
+
+                // should restart BackgroundAdManager
+                BackgroundAdManger.clearVariables()
+                LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+
                 limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
             AdEvent.AdEventType.CLICKED -> {
