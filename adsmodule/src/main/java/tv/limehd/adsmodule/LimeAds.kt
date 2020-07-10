@@ -34,15 +34,15 @@ class LimeAds {
 //        private const val testAdTagUrl = "https://exchange.buzzoola.com/adv/kbDH64c7yFY_jqB7YcKn5Fe1xALB2bNgjXr1P_8yfXuCZKsWdzlR9A/vast2"
         private lateinit var myTargetFragment: MyTargetFragment
         private lateinit var viewGroup: ViewGroup
-        private lateinit var fragmentState: FragmentState
-        private var resId: Int = -1
+        lateinit var fragmentState: FragmentState
+        var resId: Int = -1
         private var adsList = listOf<Ad>()
         private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
         private lateinit var context: Context
         private var isInitialized = false
         private var adRequestListener: AdRequestListener? = null
-        private var adShowListener: AdShowListener? = null
+        var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()

@@ -132,7 +132,9 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onAdClosed() {
-                    TODO()
+                    // should restart BackgroundAdManager
+                    clearVariables()
+                    LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
                 }
 
                 override fun onAdOpened() {
@@ -146,6 +148,12 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
             }
         }
+    }
+
+    private fun clearVariables() {
+        googleInterstitialAd = null
+        imaAdsManager = null
+        myTargetInstreamAd = null
     }
 
 }
