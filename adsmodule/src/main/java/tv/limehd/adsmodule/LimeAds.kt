@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.google.ads.interactivemedia.v3.api.AdEvent
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -186,6 +187,13 @@ class LimeAds {
                         Log.d(TAG, "getAd: show ima from background")
                         viewGroup.visibility = View.VISIBLE
                         val adsManager = BackgroundAdManger.imaAdsManager
+                        adsManager?.addAdEventListener {
+                            if(it.type.name == AdEvent.AdEventType.ALL_ADS_COMPLETED.name) {
+                                // should restart BackgroundAdManager
+                                BackgroundAdManger.clearVariables()
+                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                            }
+                        }
                         adsManager!!.init()
                         val imaFragment = ImaFragment(adsManager)
                         fragmentState.onSuccessState(imaFragment, AdType.IMA)
