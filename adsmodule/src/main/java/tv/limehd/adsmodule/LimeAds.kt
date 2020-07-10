@@ -39,7 +39,7 @@ class LimeAds {
         private var adsList = listOf<Ad>()
         private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
-        private lateinit var context: Context
+        lateinit var context: Context
         private var isInitialized = false
         private var adRequestListener: AdRequestListener? = null
         var adShowListener: AdShowListener? = null

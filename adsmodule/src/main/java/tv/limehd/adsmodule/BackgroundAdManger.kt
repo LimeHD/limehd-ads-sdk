@@ -26,6 +26,12 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
         var imaAdsManager: AdsManager? = null
         var myTargetInstreamAd: InstreamAd? = null
         var googleInterstitialAd: InterstitialAd? = null
+
+        fun clearVariables() {
+            googleInterstitialAd = null
+            imaAdsManager = null
+            myTargetInstreamAd = null
+        }
     }
 
     // ***************************************************** IMA SDK ********************************************************* //
@@ -148,12 +154,6 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
             }
         }
-    }
-
-    private fun clearVariables() {
-        googleInterstitialAd = null
-        imaAdsManager = null
-        myTargetInstreamAd = null
     }
 
 }

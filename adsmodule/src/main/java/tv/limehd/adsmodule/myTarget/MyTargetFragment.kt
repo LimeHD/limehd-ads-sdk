@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.my.target.instreamads.InstreamAd
 import com.my.target.instreamads.InstreamAdPlayer
 import tv.limehd.adsmodule.AdType
+import tv.limehd.adsmodule.BackgroundAdManger
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
 import tv.limehd.adsmodule.interfaces.AdShowListener
@@ -110,6 +111,11 @@ class MyTargetFragment(
             }
 
             override fun onComplete(message: String, p1: InstreamAd) {
+
+                // should restart BackgroundAdManager
+                BackgroundAdManger.clearVariables()
+                LimeAds.startBackgroundRequests(LimeAds.context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+
                 if(this@MyTargetFragment::leftHandler.isInitialized) {
                     leftHandler.removeCallbacks(leftRunnable)
                 }
