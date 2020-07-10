@@ -88,7 +88,7 @@ class LimeAds {
         fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener) {
             val activity = context as Activity
             viewGroup = activity.findViewById(resId)
-            val backgroundAdManger = BackgroundAdManger(testAdTagUrl, context)
+            val backgroundAdManger = BackgroundAdManger(testAdTagUrl, context, limeAds!!)
             limeAds?.backgroundAdLogic(backgroundAdManger)
 
             myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)

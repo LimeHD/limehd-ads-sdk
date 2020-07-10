@@ -19,7 +19,7 @@ import tv.limehd.adsmodule.myTarget.MyTargetLoader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class BackgroundAdManger(private val adTagUrl: String, private val context: Context){
+class BackgroundAdManger(private val adTagUrl: String, private val context: Context, private val limeAds: LimeAds){
 
     companion object {
         private const val TAG = "BackgroundAdManger"
@@ -141,6 +141,9 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                     // should restart BackgroundAdManager
                     clearVariables()
                     LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+
+                    // should start preroll handler
+                    limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
                 }
 
                 override fun onAdOpened() {
