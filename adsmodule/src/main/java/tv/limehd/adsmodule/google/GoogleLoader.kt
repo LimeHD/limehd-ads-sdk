@@ -7,6 +7,7 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import tv.limehd.adsmodule.AdType
+import tv.limehd.adsmodule.BackgroundAdManger
 import tv.limehd.adsmodule.Constants.Companion.TIMEOUT
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
@@ -118,6 +119,11 @@ class GoogleLoader(
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
                 adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
+
+                // should restart BackgroundAdManager
+                BackgroundAdManger.clearVariables()
+                LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+
                 if(isLoadInterstitial){
                     limeAds.timer = 30
                     limeAds.googleTimerHandler.postDelayed(limeAds.googleTimerRunnable, 1000)
