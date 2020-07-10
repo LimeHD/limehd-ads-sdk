@@ -25,8 +25,19 @@
             android:padding="15dp"
             android:text="OPEN GOOGLE AD"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/getAd"
+            app:layout_constraintEnd_toStartOf="@id/startBackgroundRequests"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/startBackgroundRequests"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:text="START BACKGROUND"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/getAd"
+            app:layout_constraintStart_toEndOf="@id/openGoogleAd"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -36,8 +47,8 @@
             android:padding="15dp"
             android:text="GET AD"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/openGoogleAd"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/startBackgroundRequests"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
