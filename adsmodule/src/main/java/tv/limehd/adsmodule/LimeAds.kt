@@ -203,13 +203,27 @@ class LimeAds {
                                     viewGroup.visibility = View.VISIBLE
                                     val adsManager = BackgroundAdManger.imaAdsManager
                                     adsManager?.addAdEventListener { adEvent ->
-                                        if(adEvent.type.name == AdEvent.AdEventType.ALL_ADS_COMPLETED.name) {
-                                            // should restart BackgroundAdManager
-                                            BackgroundAdManger.clearVariables()
-                                            startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                                        when(adEvent.type){
+                                            AdEvent.AdEventType.SKIPPED -> {
+                                                adShowListener?.onComplete(context.getString(R.string.skipped), AdType.IMA)
+                                            }
+                                            AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
+                                                adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
 
-                                            // should start preroll handler
-                                            limeAds!!.prerollTimerHandler.postDelayed(limeAds!!.prerollTimerRunnable, 1000)
+                                                // should restart BackgroundAdManager
+                                                BackgroundAdManger.clearVariables()
+                                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+
+                                                // should start preroll handler
+                                                limeAds!!.prerollTimerHandler.postDelayed(limeAds!!.prerollTimerRunnable, 1000)
+                                            }
+                                            AdEvent.AdEventType.STARTED -> {
+                                                adShowListener?.onComplete(context.getString(R.string.showing), AdType.IMA)
+                                            }
+
+                                            AdEvent.AdEventType.TAPPED -> {
+                                                adShowListener?.onComplete(context.getString(R.string.clicked), AdType.IMA)
+                                            }
                                         }
                                     }
                                     adsManager!!.init()
