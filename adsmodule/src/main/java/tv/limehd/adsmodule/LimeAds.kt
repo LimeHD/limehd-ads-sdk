@@ -89,7 +89,12 @@ class LimeAds {
             val activity = context as Activity
             viewGroup = activity.findViewById(resId)
             val backgroundAdManger = BackgroundAdManger(testAdTagUrl, context, limeAds!!)
-            limeAds?.backgroundAdLogic(backgroundAdManger)
+
+            if(limeAds!!.getBackgroundReadyAd().isEmpty()) {
+                limeAds?.backgroundAdLogic(backgroundAdManger)
+            }else{
+                Log.d(TAG, "startBackgroundRequests: ${limeAds!!.getBackgroundReadyAd()} is ready!")
+            }
 
             myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
             val activityOfFragment = context as FragmentActivity
