@@ -64,6 +64,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
         adsRequest.setVastLoadTimeout(Constants.TIMEOUT)
 
+        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
         return suspendCoroutine {cont ->
@@ -74,6 +75,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
             }
             mAdsLoader.addAdErrorListener {
                 Log.d(TAG, "loadIma: error")
+                LimeAds.adRequestListener?.onError(it?.error?.message.toString(), AdType.IMA)
                 cont.resume(false)
             }
         }

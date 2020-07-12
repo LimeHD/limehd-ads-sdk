@@ -42,7 +42,7 @@ class LimeAds {
         private lateinit var json: JSONObject
         lateinit var context: Context
         private var isInitialized = false
-        private var adRequestListener: AdRequestListener? = null
+        var adRequestListener: AdRequestListener? = null
         var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
@@ -204,6 +204,9 @@ class LimeAds {
                                     val adsManager = BackgroundAdManger.imaAdsManager
                                     adsManager?.addAdEventListener { adEvent ->
                                         when(adEvent.type){
+                                            AdEvent.AdEventType.LOADED -> {
+                                                adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
+                                            }
                                             AdEvent.AdEventType.SKIPPED -> {
                                                 adShowListener?.onComplete(context.getString(R.string.skipped), AdType.IMA)
                                             }
