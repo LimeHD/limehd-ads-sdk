@@ -129,15 +129,19 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onAdClicked() {
-                    TODO()
+                    LimeAds.adShowListener?.onClick(context.getString(R.string.clicked), AdType.Google)
                 }
 
                 override fun onAdFailedToLoad(errorType: Int) {
                     Log.d(TAG, "onAdFailedToLoad: google error")
+                    LimeAds.adShowListener?.onError(context.getString(R.string.error), AdType.Google)
                     it.resume(false)
                 }
 
                 override fun onAdClosed() {
+
+                    LimeAds.adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
+
                     // should restart BackgroundAdManager
                     clearVariables()
                     LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
@@ -147,7 +151,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
                 }
 
                 override fun onAdOpened() {
-                    TODO()
+                    LimeAds.adShowListener?.onShow(context.getString(R.string.showing), AdType.Google)
                 }
 
                 override fun onAdLoaded() {
