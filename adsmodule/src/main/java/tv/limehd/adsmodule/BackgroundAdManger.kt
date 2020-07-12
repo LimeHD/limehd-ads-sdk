@@ -122,6 +122,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
         Log.d(TAG, "loadGoogleAd: called")
         interstitialAd = InterstitialAd(context)
         interstitialAd.adUnitId = LimeAds.googleUnitId
+        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
         return suspendCoroutine {
             interstitialAd.adListener = object : AdListener() {
@@ -139,6 +140,22 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
                 override fun onAdFailedToLoad(errorType: Int) {
                     Log.d(TAG, "onAdFailedToLoad: google error")
+
+                    var errorMessage = ""
+                    when(errorType){
+                        0 -> errorMessage = "ERROR_CODE_INTERNAL_ERROR"
+                        1 -> errorMessage = "ERROR_CODE_INVALID_REQUEST"
+                        2 -> errorMessage = " ERROR_CODE_NETWORK_ERROR"
+                        3 -> errorMessage = "ERROR_CODE_NO_FILL"
+                    }
+                    if(errorType == 3){
+                        // No Ad Error
+                        LimeAds.adRequestListener?.onNoAd(errorMessage, AdType.Google)
+                    }else{
+                        // Some other error happened
+                        LimeAds.adRequestListener?.onError(errorMessage, AdType.Google)
+                    }
+
                     LimeAds.adShowListener?.onError(context.getString(R.string.error), AdType.Google)
                     it.resume(false)
                 }
