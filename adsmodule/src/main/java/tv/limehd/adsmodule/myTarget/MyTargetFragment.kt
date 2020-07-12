@@ -28,6 +28,7 @@ class MyTargetFragment(
 
     companion object {
         private const val TAG = "myTargetFragment"
+        var isShowingAd: Boolean = false
     }
 
     private lateinit var mInstreamAd: InstreamAd
@@ -112,6 +113,8 @@ class MyTargetFragment(
 
             override fun onComplete(message: String, p1: InstreamAd) {
 
+                isShowingAd = false
+
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()
                 LimeAds.startBackgroundRequests(LimeAds.context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
@@ -131,6 +134,7 @@ class MyTargetFragment(
             }
 
             override fun onBannerStart(instreamAd: InstreamAd, instreamAdBanner: InstreamAd.InstreamAdBanner) {
+                isShowingAd = true
                 adShowListener.onShow(this@MyTargetFragment.getString(R.string.showing), AdType.MyTarget)
                 leftTimeText.visibility = View.VISIBLE
                 leftTimeText.bringToFront()

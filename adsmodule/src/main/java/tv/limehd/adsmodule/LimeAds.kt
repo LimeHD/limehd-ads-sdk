@@ -96,11 +96,13 @@ class LimeAds {
                 Log.d(TAG, "startBackgroundRequests: ${limeAds!!.getBackgroundReadyAd()} is ready!")
             }
 
-            myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
-            val activityOfFragment = context as FragmentActivity
-            fragmentManager = activityOfFragment.supportFragmentManager
-            fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-            fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+            if(!MyTargetFragment.isShowingAd){
+                myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
+                val activityOfFragment = context as FragmentActivity
+                fragmentManager = activityOfFragment.supportFragmentManager
+                fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+                fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+            }
         }
 
         /**
