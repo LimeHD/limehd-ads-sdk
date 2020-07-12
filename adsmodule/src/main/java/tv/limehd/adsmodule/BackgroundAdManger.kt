@@ -85,6 +85,7 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
     suspend fun loadMyTarget() : Boolean {
         Log.d(TAG, "loadMyTarget: called")
+        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
         val myTargetLoader = MyTargetLoader(context)
         myTargetLoader.loadAd()
         return suspendCoroutine {
@@ -95,16 +96,18 @@ class BackgroundAdManger(private val adTagUrl: String, private val context: Cont
 
                 override fun onLoaded(instreamAd: InstreamAd) {
                     Log.d(TAG, "onLoaded: mytarget loaded")
+                    LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
                     myTargetInstreamAd = instreamAd
                     it.resume(true)
                 }
 
                 override fun onError(error: String) {
-                    TODO()
+                    LimeAds.adRequestListener?.onError(context.getString(R.string.requestError), AdType.MyTarget)
                 }
 
                 override fun onNoAd(error: String) {
                     Log.d(TAG, "onNoAd: mytarget error")
+                    LimeAds.adRequestListener?.onNoAd(context.getString(R.string.noAd), AdType.MyTarget)
                     it.resume(false)
                 }
             })

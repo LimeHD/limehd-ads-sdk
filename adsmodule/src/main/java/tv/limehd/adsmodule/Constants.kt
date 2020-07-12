@@ -15,7 +15,7 @@ class Constants {
                 "            \"url\": \"\",\n" +
                 "            \"is_onl\": 1,\n" +
                 "            \"is_arh\": 1,\n" +
-                "            \"type_sdk\": \"ima\",\n" +
+                "            \"type_sdk\": \"mytarget\",\n" +
                 "            \"type_identity\": \"googleinterstitial\",\n" +
                 "            \"type_block\": 10,\n" +
                 "            \"type_device\": 10,\n" +
