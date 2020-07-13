@@ -31,7 +31,6 @@ class LimeAds {
 
     companion object {
         private const val TAG = "LimeAds"
-        private const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
         private lateinit var myTargetFragment: MyTargetFragment
         private lateinit var viewGroup: ViewGroup
         lateinit var fragmentState: FragmentState
@@ -73,7 +72,7 @@ class LimeAds {
 
         @JvmStatic
         fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener?) {
-            backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, testAdTagUrl, preload, adsList, limeAds!!)
+            backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, Constants.testAdTagUrl, preload, adsList, limeAds!!)
             backgroundAdManger.startBackgroundRequests()
             if(!MyTargetFragment.isShowingAd){
                 myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
@@ -454,7 +453,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
+        ima = Ima(context, Constants.testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 
