@@ -16,12 +16,14 @@ import tv.limehd.adsmodule.AdType
 import tv.limehd.adsmodule.BackgroundAdManger
 import tv.limehd.adsmodule.LimeAds
 import tv.limehd.adsmodule.R
+import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 
 class MyTargetFragment(
     private var lastAd: String,
     private var fragmentState: FragmentState,
+    private val adRequestListener: AdRequestListener?,
     private val adShowListener: AdShowListener?,
     private var limeAds: LimeAds
 ) : Fragment() {
@@ -117,7 +119,7 @@ class MyTargetFragment(
 
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()
-                LimeAds.startBackgroundRequests(LimeAds.context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                LimeAds.startBackgroundRequests(LimeAds.context, LimeAds.resId, fragmentState, adRequestListener, adShowListener)
 
                 if(this@MyTargetFragment::leftHandler.isInitialized) {
                     leftHandler.removeCallbacks(leftRunnable)

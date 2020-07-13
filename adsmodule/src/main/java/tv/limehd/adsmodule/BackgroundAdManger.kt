@@ -183,7 +183,7 @@ class BackgroundAdManger(
 
                     // should restart BackgroundAdManager
                     clearVariables()
-                    LimeAds.startBackgroundRequests(context, resId, fragmentState, adShowListener)
+                    LimeAds.startBackgroundRequests(context, resId, fragmentState, adRequestListener, adShowListener)
 
                     // should start preroll handler
                     limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)

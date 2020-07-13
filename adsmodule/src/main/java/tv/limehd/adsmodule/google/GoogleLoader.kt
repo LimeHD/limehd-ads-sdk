@@ -122,7 +122,7 @@ class GoogleLoader(
 
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()
-                LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                LimeAds.startBackgroundRequests(context, LimeAds.resId, fragmentState, adRequestListener, adShowListener)
 
                 if(isLoadInterstitial){
                     limeAds.timer = 30

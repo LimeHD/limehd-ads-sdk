@@ -71,11 +71,15 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener?) {
+        @Throws(NullPointerException::class)
+        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adRequestListener: AdRequestListener?, adShowListener: AdShowListener?) {
+            if(limeAds == null){
+                throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
+            }
             backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, Constants.testAdTagUrl, preload, adsList, limeAds!!)
             backgroundAdManger.startBackgroundRequests()
             if(!MyTargetFragment.isShowingAd){
-                myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
+                myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adRequestListener, adShowListener, limeAds!!)
                 val activityOfFragment = context as FragmentActivity
                 fragmentManager = activityOfFragment.supportFragmentManager
                 fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
@@ -195,7 +199,7 @@ class LimeAds {
 
                                                 // should restart BackgroundAdManager
                                                 BackgroundAdManger.clearVariables()
-                                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, adRequestListener, adShowListener)
 
                                                 // should start preroll handler
                                                 limeAds!!.prerollTimerHandler.postDelayed(limeAds!!.prerollTimerRunnable, 1000)
@@ -272,17 +276,16 @@ class LimeAds {
         @Throws(NullPointerException::class)
         fun getGoogleInterstitialAd() {
             if(!this::context.isInitialized || limeAds == null){
-                throw NullPointerException("You have not initialized LimeAds. Please, do the following: LimeAds.init(...)")
-            } else {
-                with(limeAds!!) {
-                    if(this.isAllowedToRequestGoogleAd){
-                        this.isAllowedToRequestGoogleAd = false
-                        if(this.timer == 0){
-                            this.timer = 30
-                        }
-                        google = Google(context, lastAd, fragmentState, adRequestListener, adShowListener, preroll, this)
-                        google.getGoogleAd(true)
+                throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
+            }
+            with(limeAds!!) {
+                if(this.isAllowedToRequestGoogleAd){
+                    this.isAllowedToRequestGoogleAd = false
+                    if(this.timer == 0){
+                        this.timer = 30
                     }
+                    google = Google(context, lastAd, fragmentState, adRequestListener, adShowListener, preroll, this)
+                    google.getGoogleAd(true)
                 }
             }
         }
@@ -394,7 +397,7 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
-        myTargetFragment = MyTargetFragment(lastAd, fragmentState, adShowListener!!, this)
+        myTargetFragment = MyTargetFragment(lastAd, fragmentState, adRequestListener, adShowListener, this)
         myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
         loadAd(AdType.MyTarget)
     }
