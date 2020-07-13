@@ -12,7 +12,9 @@ import tv.limehd.adsmodule.interfaces.FragmentState
  * For better comprehension all business logic will be
  * put right here, but not in the LimeAds class
  *
- * @link MyTarget, Google
+ * See also the following classes
+ * [tv.limehd.adsmodule.myTarget.MyTarget]
+ * [tv.limehd.adsmodule.google.Google]
  */
 
 class Ima(private val context: Context,
