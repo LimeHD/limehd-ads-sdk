@@ -42,7 +42,7 @@ class GoogleLoader(
 
     private var isTimeout = true
     private val leftHandler: Handler = Handler()
-    var timeout = TIMEOUT / 1000
+    private var timeout = TIMEOUT / 1000
 
     private var leftRunnable: Runnable = object : Runnable {
         override fun run() {
