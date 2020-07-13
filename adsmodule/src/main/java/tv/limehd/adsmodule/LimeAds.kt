@@ -4,12 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.google.ads.interactivemedia.v3.api.AdEvent
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Runnable
 import org.json.JSONObject
