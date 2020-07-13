@@ -246,9 +246,7 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun isInitialized() : Boolean {
-            return limeAds != null
-        }
+        fun isInitialized() : Boolean = limeAds != null
 
         /**
          * Show fragment with loaded ad
