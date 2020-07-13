@@ -32,7 +32,6 @@ class BackgroundAdManger(
     private val fragmentState: FragmentState,
     private val adShowListener: AdShowListener?,
     private val adRequestListener: AdRequestListener?,
-    private val adTagUrl: String,
     private val preload: PreloadAds,
     private val adsList: List<Ad>,
     private val limeAds: LimeAds
@@ -72,7 +71,7 @@ class BackgroundAdManger(
         mAdsLoader = mSdkFactory.createAdsLoader(context, mSdkSetting, adDisplayContainer)
 
         val adsRequest = mSdkFactory.createAdsRequest()
-        adsRequest.adTagUrl = adTagUrl
+        adsRequest.adTagUrl = Constants.testAdTagUrl
         adsRequest.adDisplayContainer = adDisplayContainer
 
         adsRequest.contentProgressProvider = ContentProgressProvider {

@@ -76,7 +76,7 @@ class LimeAds {
             if(limeAds == null){
                 throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
-            backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, Constants.testAdTagUrl, preload, adsList, limeAds!!)
+            backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!)
             backgroundAdManger.startBackgroundRequests()
             if(!MyTargetFragment.isShowingAd){
                 myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adRequestListener, adShowListener, limeAds!!)
