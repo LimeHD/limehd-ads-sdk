@@ -52,7 +52,6 @@ class LimeAds {
         private lateinit var ima: Ima
         private lateinit var google: Google
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
-        private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
         private lateinit var preroll: Preroll
         private lateinit var preload: PreloadAds
@@ -120,8 +119,6 @@ class LimeAds {
                   isOnline: Boolean,
                   adRequestListener: AdRequestListener? = null,
                   adShowListener: AdShowListener? = null) {
-
-            isGetAdBeingCalled = true
             this.context = context
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
@@ -134,13 +131,13 @@ class LimeAds {
             }
             this.resId = resId
 
+            limeAds?.getCurrentAdStatus(isOnline)
+            limeAds?.populateAdStatusesHashMaps()
+
             val readyBackgroundSkd = limeAds!!.getReadyAd()
 
             if(readyBackgroundSkd.isEmpty()) {
                 Log.d(TAG, "getAd: load ad in main thread")
-
-                limeAds?.getCurrentAdStatus(isOnline)
-                limeAds?.populateAdStatusesHashMaps()
 
                 userClicksCounter++
                 Log.d(TAG, "userClicks: $userClicksCounter")
@@ -273,31 +270,20 @@ class LimeAds {
          */
 
         @JvmStatic
-        @JvmOverloads
-        fun getGoogleInterstitialAd(
-            context: Context? = null,
-            isOnline: Boolean? = null,
-            fragmentState: FragmentState? = null,
-            adRequestListener: AdRequestListener? = null,
-            adShowListener: AdShowListener? = null
-        ) {
-            if(!isGetAdBeingCalled){
-                this.context = context!!
-                this.fragmentState = fragmentState!!
-                this.adRequestListener = adRequestListener
-                this.adShowListener = adShowListener
-
-                limeAds?.getCurrentAdStatus(isOnline!!)
-                limeAds?.populateAdStatusesHashMaps()
-            }
-            limeAds?.let {
-                if(it.isAllowedToRequestGoogleAd){
-                    it.isAllowedToRequestGoogleAd = false
-                    if(it.timer == 0){
-                        it.timer = 30
+        @Throws(NullPointerException::class)
+        fun getGoogleInterstitialAd() {
+            if(!this::context.isInitialized || limeAds == null){
+                throw NullPointerException("You have not initialized LimeAds. Please, do the following: LimeAds.init(...)")
+            } else {
+                with(limeAds!!) {
+                    if(this.isAllowedToRequestGoogleAd){
+                        this.isAllowedToRequestGoogleAd = false
+                        if(this.timer == 0){
+                            this.timer = 30
+                        }
+                        google = Google(context, lastAd, fragmentState, adRequestListener, adShowListener, preroll, this)
+                        google.getGoogleAd(true)
                     }
-                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, preroll, it)
-                    google.getGoogleAd(true)
                 }
             }
         }

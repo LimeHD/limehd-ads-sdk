@@ -19,8 +19,8 @@ import tv.limehd.adsmodule.model.Preroll
 class Google(private val context: Context,
              private val lastAd: String,
              private val fragmentState: FragmentState,
-             private val adRequestListener: AdRequestListener,
-             private val adShowListener: AdShowListener,
+             private val adRequestListener: AdRequestListener?,
+             private val adShowListener: AdShowListener?,
              private val preroll: Preroll,
              private val limeAds: LimeAds) {
 

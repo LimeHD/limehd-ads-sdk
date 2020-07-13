@@ -32,7 +32,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         openGoogleAd.setOnClickListener {
-            LimeAds.getGoogleInterstitialAd()
+            try {
+                LimeAds.getGoogleInterstitialAd()
+            }catch (e: NullPointerException){
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            }
         }
 
         getAd.setOnClickListener {
