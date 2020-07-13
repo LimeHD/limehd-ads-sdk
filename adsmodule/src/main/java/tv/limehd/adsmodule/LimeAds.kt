@@ -186,6 +186,10 @@ class LimeAds {
                     }
                 }
             }else{
+
+                userClicksCounter++
+                Log.d(TAG, "userClicks: $userClicksCounter")
+
                 limeAds?.let {
                     if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
                         if (skipFirst && getAdFunCallAmount == 0) {
