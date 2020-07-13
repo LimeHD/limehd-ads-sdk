@@ -172,58 +172,10 @@ class LimeAds {
                                 AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
                             }
                         }else {
-                            when(readyBackgroundSkd){
-                                AdType.IMA.typeSdk -> {
-                                    // show ima ad
-                                    Log.d(TAG, "getAd: show ima from background")
-                                    viewGroup.visibility = View.VISIBLE
-                                    val adsManager = BackgroundAdManger.imaAdsManager
-                                    adsManager?.addAdEventListener { adEvent ->
-                                        when(adEvent.type){
-                                            AdEvent.AdEventType.LOADED -> {
-                                                adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
-                                            }
-                                            AdEvent.AdEventType.SKIPPED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.skipped), AdType.IMA)
-                                            }
-                                            AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
-
-                                                // should restart BackgroundAdManager
-                                                BackgroundAdManger.clearVariables()
-                                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, adRequestListener, adShowListener)
-
-                                                // should start preroll handler
-                                                limeAds!!.prerollTimerHandler.postDelayed(limeAds!!.prerollTimerRunnable, 1000)
-                                            }
-                                            AdEvent.AdEventType.STARTED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.showing), AdType.IMA)
-                                            }
-
-                                            AdEvent.AdEventType.TAPPED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.clicked), AdType.IMA)
-                                            }
-                                        }
-                                    }
-                                    adsManager!!.init()
-                                    val imaFragment = ImaFragment(adsManager)
-                                    fragmentState.onSuccessState(imaFragment, AdType.IMA)
-                                }
-                                AdType.MyTarget.typeSdk -> {
-                                    // show mytarget ad
-                                    Log.d(TAG, "getAd: show mytarget from background")
-                                    val instreamAd = BackgroundAdManger.myTargetInstreamAd
-                                    myTargetFragment.setInstreamAd(instreamAd!!)
-                                    fragmentManager.beginTransaction().show(myTargetFragment).commit()
-                                    fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
-                                }
-                                AdType.Google.typeSdk -> {
-                                    // show google ad
-                                    Log.d(TAG, "getAd: show google from background")
-                                    val interstitial = BackgroundAdManger.googleInterstitialAd
-                                    interstitial!!.show()
-                                }
-                            }
+                            ReadyBackgroundAdDisplay(
+                                readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
+                                context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
+                            ).showReadyAd()
                         }
                     }
                 }
