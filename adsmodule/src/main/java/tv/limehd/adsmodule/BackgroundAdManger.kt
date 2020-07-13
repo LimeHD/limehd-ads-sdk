@@ -1,5 +1,6 @@
 package tv.limehd.adsmodule
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.View
@@ -14,10 +15,13 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.my.target.instreamads.InstreamAd
+import kotlinx.coroutines.*
 import tv.limehd.adsmodule.interfaces.AdLoader
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
+import tv.limehd.adsmodule.model.Ad
+import tv.limehd.adsmodule.model.PreloadAds
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -26,9 +30,11 @@ class BackgroundAdManger(
     private val context: Context,
     private val resId: Int,
     private val fragmentState: FragmentState,
-    private val adShowListener: AdShowListener,
-    private val adRequestListener: AdRequestListener,
+    private val adShowListener: AdShowListener?,
+    private val adRequestListener: AdRequestListener?,
     private val adTagUrl: String,
+    private val preload: PreloadAds,
+    private val adsList: List<Ad>,
     private val limeAds: LimeAds
 ){
 
@@ -51,7 +57,7 @@ class BackgroundAdManger(
     private lateinit var mSdkSetting: ImaSdkSettings
     private lateinit var mAdsLoader: AdsLoader
 
-    suspend fun loadIma(container: ViewGroup) : Boolean {
+    private suspend fun loadIma(container: ViewGroup) : Boolean {
         Log.d(TAG, "loadIma: called")
 
         container.visibility = View.GONE
@@ -75,7 +81,7 @@ class BackgroundAdManger(
 
         adsRequest.setVastLoadTimeout(Constants.TIMEOUT)
 
-        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
+        adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
         return suspendCoroutine {cont ->
@@ -86,7 +92,7 @@ class BackgroundAdManger(
             }
             mAdsLoader.addAdErrorListener {
                 Log.d(TAG, "loadIma: error")
-                LimeAds.adRequestListener?.onError(it?.error?.message.toString(), AdType.IMA)
+                adRequestListener?.onError(it?.error?.message.toString(), AdType.IMA)
                 cont.resume(false)
             }
         }
@@ -94,9 +100,9 @@ class BackgroundAdManger(
 
     // ***************************************************** MyTarget SDK ********************************************************* //
 
-    suspend fun loadMyTarget() : Boolean {
+    private suspend fun loadMyTarget() : Boolean {
         Log.d(TAG, "loadMyTarget: called")
-        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
+        adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
         val myTargetLoader = MyTargetLoader(context)
         myTargetLoader.loadAd()
         return suspendCoroutine {
@@ -107,18 +113,18 @@ class BackgroundAdManger(
 
                 override fun onLoaded(instreamAd: InstreamAd) {
                     Log.d(TAG, "onLoaded: mytarget loaded")
-                    LimeAds.adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
+                    adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
                     myTargetInstreamAd = instreamAd
                     it.resume(true)
                 }
 
                 override fun onError(error: String) {
-                    LimeAds.adRequestListener?.onError(context.getString(R.string.requestError), AdType.MyTarget)
+                    adRequestListener?.onError(context.getString(R.string.requestError), AdType.MyTarget)
                 }
 
                 override fun onNoAd(error: String) {
                     Log.d(TAG, "onNoAd: mytarget error")
-                    LimeAds.adRequestListener?.onNoAd(context.getString(R.string.noAd), AdType.MyTarget)
+                    adRequestListener?.onNoAd(context.getString(R.string.noAd), AdType.MyTarget)
                     it.resume(false)
                 }
             })
@@ -129,11 +135,11 @@ class BackgroundAdManger(
 
     private lateinit var interstitialAd: InterstitialAd
 
-    suspend fun loadGoogleAd() : Boolean {
+    private suspend fun loadGoogleAd() : Boolean {
         Log.d(TAG, "loadGoogleAd: called")
         interstitialAd = InterstitialAd(context)
         interstitialAd.adUnitId = LimeAds.googleUnitId
-        LimeAds.adRequestListener?.onRequest(context.getString(R.string.requested), AdType.Google)
+        adRequestListener?.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
         return suspendCoroutine {
             interstitialAd.adListener = object : AdListener() {
@@ -146,7 +152,7 @@ class BackgroundAdManger(
                 }
 
                 override fun onAdClicked() {
-                    LimeAds.adShowListener?.onClick(context.getString(R.string.clicked), AdType.Google)
+                    adShowListener?.onClick(context.getString(R.string.clicked), AdType.Google)
                 }
 
                 override fun onAdFailedToLoad(errorType: Int) {
@@ -161,30 +167,30 @@ class BackgroundAdManger(
                     }
                     if(errorType == 3){
                         // No Ad Error
-                        LimeAds.adRequestListener?.onNoAd(errorMessage, AdType.Google)
+                        adRequestListener?.onNoAd(errorMessage, AdType.Google)
                     }else{
                         // Some other error happened
-                        LimeAds.adRequestListener?.onError(errorMessage, AdType.Google)
+                        adRequestListener?.onError(errorMessage, AdType.Google)
                     }
 
-                    LimeAds.adShowListener?.onError(context.getString(R.string.error), AdType.Google)
+                    adShowListener?.onError(context.getString(R.string.error), AdType.Google)
                     it.resume(false)
                 }
 
                 override fun onAdClosed() {
 
-                    LimeAds.adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
+                    adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
 
                     // should restart BackgroundAdManager
                     clearVariables()
-                    LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                    LimeAds.startBackgroundRequests(context, resId, fragmentState, adShowListener)
 
                     // should start preroll handler
                     limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
                 }
 
                 override fun onAdOpened() {
-                    LimeAds.adShowListener?.onShow(context.getString(R.string.showing), AdType.Google)
+                    adShowListener?.onShow(context.getString(R.string.showing), AdType.Google)
                 }
 
                 override fun onAdLoaded() {
@@ -193,6 +199,96 @@ class BackgroundAdManger(
                     it.resume(true)
                 }
             }
+        }
+    }
+
+    /**
+     * Get already requested and cached ad type sdk name
+     *
+     * @return type sdk for ad that's ready
+     */
+
+    private fun getReadyAd() : String {
+        var readySdk = ""
+        if(imaAdsManager != null){
+            readySdk = AdType.IMA.typeSdk
+        }
+        if(myTargetInstreamAd != null){
+            readySdk = AdType.MyTarget.typeSdk
+        }
+        if(googleInterstitialAd != null){
+            readySdk = AdType.Google.typeSdk
+        }
+        return readySdk
+    }
+
+    /**
+     * Function stands for requesting ad in the background while user
+     * doing/watching some movie or something. Because ad usually has failure,
+     * so if user goes to next channel, we request 1 time
+     * But if we do it in background thread, we can request it more than 1 time. And percentage
+     * of getting successful ad is higher
+     *
+     * BASIC ALGORITHM:
+     * Imagine we have 2 ads (Google and Ima)
+     * 1: Request 1st iteration with ads in order that we have in JSONObject
+     * 2: If Google have ERROR_RESULT, then immediately should request from Ima
+     * 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
+     * 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
+     * 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
+     * 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
+     * 4: We have to do this until we don`t have SUCCESS_RESULT
+     */
+
+    fun startBackgroundRequests() {
+        val activity = context as Activity
+        val viewGroup = activity.findViewById(resId) as ViewGroup
+        if(getReadyAd().isEmpty()){
+            backgroundAdLogic(viewGroup)
+        }else{
+            Log.d(TAG, "startBackgroundRequests: ${getReadyAd()} is ready!")
+        }
+    }
+
+    private fun backgroundAdLogic(viewGroup: ViewGroup) {
+        Log.d(TAG, "backgroundAdLogic: started")
+        var result = false
+        // beginning of the block
+        CoroutineScope(Dispatchers.Main).launch {
+            // loop through iterations
+            for (i in 0 until preload.count) {
+                // loop through each ad in the iteration
+                for(ad in adsList){
+                    when(ad.type_sdk){
+                        AdType.IMA.typeSdk -> {
+                            if(result){
+                                this.cancel()
+                            }else {
+                                result = loadIma(viewGroup)
+                            }
+                        }
+                        AdType.MyTarget.typeSdk -> {
+                            if(result){
+                                this.cancel()
+                            }else {
+                                result = loadMyTarget()
+                            }
+                        }
+                        AdType.Google.typeSdk -> {
+                            if(result){
+                                this.cancel()
+                            }else {
+                                result = loadGoogleAd()
+                            }
+                        }
+                    }
+                }
+                // should have timeout after each iteration
+                delay(5000)
+            }
+            // should have block timeout after each block
+            delay(5000)
+            backgroundAdLogic(viewGroup)
         }
     }
 

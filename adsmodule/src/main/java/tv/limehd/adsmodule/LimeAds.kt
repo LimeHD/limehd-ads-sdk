@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.ads.interactivemedia.v3.api.AdEvent
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Runnable
 import org.json.JSONObject
 import tv.limehd.adsmodule.google.Google
 import tv.limehd.adsmodule.ima.Ima
@@ -32,7 +32,6 @@ class LimeAds {
     companion object {
         private const val TAG = "LimeAds"
         private const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
-//        private const val testAdTagUrl = "https://exchange.buzzoola.com/adv/kbDH64c7yFY_jqB7YcKn5Fe1xALB2bNgjXr1P_8yfXuCZKsWdzlR9A/vast2"
         private lateinit var myTargetFragment: MyTargetFragment
         private lateinit var viewGroup: ViewGroup
         lateinit var fragmentState: FragmentState
@@ -42,7 +41,7 @@ class LimeAds {
         private lateinit var json: JSONObject
         lateinit var context: Context
         private var isInitialized = false
-        var adRequestListener: AdRequestListener? = null
+        private var adRequestListener: AdRequestListener? = null
         var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
@@ -65,37 +64,18 @@ class LimeAds {
         lateinit var googleUnitId: String
         @JvmField
         var myTargetBlockId = -1
+        private lateinit var backgroundAdManger: BackgroundAdManger
 
         /**
          * Function stands for requesting ad in the background while user
-         * doing/watching some movie or something. Because ad usually has failure,
-         * so if user goes to next channel, we request 1 time
-         * But if we do it in background thread, we can request it more than 1 time. And percentage
-         * of getting successful ad is higher
-         *
-         * BASIC ALGORITHM:
-         * Imagine we have 2 ads (Google and Ima)
-         * 1: Request 1st iteration with ads in order that we have in JSONObject
-         * 2: If Google have ERROR_RESULT, then immediately should request from Ima
-            * 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
-            * 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
-            * 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
-         * 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
-         * 4: We have to do this until we don`t have SUCCESS_RESULT
+         * doing/watching some movie or something. See more information in
+         * [BackgroundAdManger.startBackgroundRequests]
          */
 
         @JvmStatic
-        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener) {
-            val activity = context as Activity
-            viewGroup = activity.findViewById(resId)
-            val backgroundAdManger = BackgroundAdManger(testAdTagUrl, context, limeAds!!)
-
-            if(limeAds!!.getBackgroundReadyAd().isEmpty()) {
-                limeAds?.backgroundAdLogic(backgroundAdManger)
-            }else{
-                Log.d(TAG, "startBackgroundRequests: ${limeAds!!.getBackgroundReadyAd()} is ready!")
-            }
-
+        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener?) {
+            backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, testAdTagUrl, preload, adsList, limeAds!!)
+            backgroundAdManger.startBackgroundRequests()
             if(!MyTargetFragment.isShowingAd){
                 myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
                 val activityOfFragment = context as FragmentActivity
@@ -154,7 +134,7 @@ class LimeAds {
             }
             this.resId = resId
 
-            val readyBackgroundSkd = limeAds!!.getBackgroundReadyAd()
+            val readyBackgroundSkd = limeAds!!.getReadyAd()
 
             if(readyBackgroundSkd.isEmpty()) {
                 Log.d(TAG, "getAd: load ad in main thread")
@@ -324,7 +304,13 @@ class LimeAds {
 
     }
 
-    private fun getBackgroundReadyAd() : String {
+    /**
+     * Get already requested and cached ad type sdk name
+     *
+     * @return type sdk for ad that's ready
+     */
+
+    fun getReadyAd() : String {
         var readySdk = ""
         if(BackgroundAdManger.imaAdsManager != null){
             readySdk = AdType.IMA.typeSdk
@@ -336,61 +322,6 @@ class LimeAds {
             readySdk = AdType.Google.typeSdk
         }
         return readySdk
-    }
-
-    /**
-     * Here starts Algorithm:
-     *
-     * Imagine we have 2 ads (Google and Ima)
-     * 1: Request 1st iteration with ads in order that we have in JSONObject
-     * 2: If Google have ERROR_RESULT, then immediately should request from Ima
-     * 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
-     * 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
-     * 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
-     * 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
-     * 4: We have to do this until we don`t have SUCCESS_RESULT
-     */
-
-    private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger) {
-        Log.d(TAG, "backgroundAdLogic: start")
-        var result = false
-        // beginning of the block
-        CoroutineScope(Dispatchers.Main).launch {
-            // loop through iterations
-            for (i in 0 until preload.count) {
-                // loop through each ad in the iteration
-                for(ad in adsList){
-                    when(ad.type_sdk){
-                        AdType.IMA.typeSdk -> {
-                            if(result){
-                                this.cancel()
-                            }else {
-                                result = backgroundAdManger.loadIma(viewGroup)
-                            }
-                        }
-                        AdType.MyTarget.typeSdk -> {
-                            if(result){
-                                this.cancel()
-                            }else {
-                                result = backgroundAdManger.loadMyTarget()
-                            }
-                        }
-                        AdType.Google.typeSdk -> {
-                            if(result){
-                                this.cancel()
-                            }else {
-                                result = backgroundAdManger.loadGoogleAd()
-                            }
-                        }
-                    }
-                }
-                // should have timeout after each iteration
-                delay(5000)
-            }
-            // should have block timeout after each block
-            delay(5000)
-            backgroundAdLogic(backgroundAdManger)
-        }
     }
 
     private fun getCurrentAdStatus(isOnline: Boolean) {
