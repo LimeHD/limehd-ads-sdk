@@ -15,11 +15,22 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.my.target.instreamads.InstreamAd
 import tv.limehd.adsmodule.interfaces.AdLoader
+import tv.limehd.adsmodule.interfaces.AdRequestListener
+import tv.limehd.adsmodule.interfaces.AdShowListener
+import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class BackgroundAdManger(private val adTagUrl: String, private val context: Context, private val limeAds: LimeAds){
+class BackgroundAdManger(
+    private val context: Context,
+    private val resId: Int,
+    private val fragmentState: FragmentState,
+    private val adShowListener: AdShowListener,
+    private val adRequestListener: AdRequestListener,
+    private val adTagUrl: String,
+    private val limeAds: LimeAds
+){
 
     companion object {
         private const val TAG = "BackgroundAdManger"
