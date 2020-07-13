@@ -26,6 +26,7 @@ import tv.limehd.adsmodule.interfaces.FragmentState
 class ImaLoader constructor(private val context: Context,
                             private val adTagUrl: String,
                             private val lastAd: String,
+                            private val resId: Int,
                             private val container: ViewGroup,
                             private val adRequestListener: AdRequestListener,
                             private val adShowListener: AdShowListener,
@@ -137,7 +138,7 @@ class ImaLoader constructor(private val context: Context,
 
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()
-                LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, adRequestListener, adShowListener)
+                LimeAds.startBackgroundRequests(context, resId, fragmentState, adRequestListener, adShowListener)
 
                 limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }

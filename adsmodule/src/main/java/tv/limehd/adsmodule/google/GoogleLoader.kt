@@ -25,6 +25,7 @@ import tv.limehd.adsmodule.model.Preroll
 class GoogleLoader(
     private val context: Context,
     private val lastAd: String,
+    private val resId: Int,
     private val fragmentState: FragmentState,
     private val adRequestListener: AdRequestListener?,
     private val adShowListener: AdShowListener?,
@@ -122,7 +123,7 @@ class GoogleLoader(
 
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()
-                LimeAds.startBackgroundRequests(context, LimeAds.resId, fragmentState, adRequestListener, adShowListener)
+                LimeAds.startBackgroundRequests(context, resId, fragmentState, adRequestListener, adShowListener)
 
                 if(isLoadInterstitial){
                     limeAds.timer = 30

@@ -18,6 +18,7 @@ import tv.limehd.adsmodule.model.Preroll
 
 class Google(private val context: Context,
              private val lastAd: String,
+             private val resId: Int,
              private val fragmentState: FragmentState,
              private val adRequestListener: AdRequestListener?,
              private val adShowListener: AdShowListener?,
@@ -34,7 +35,7 @@ class Google(private val context: Context,
 
     fun getGoogleAd(isLoadInterstitial: Boolean) {
         Log.d(TAG, "Load google ad")
-        val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, preroll, limeAds)
+        val googleLoader = GoogleLoader(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, preroll, limeAds)
         googleLoader.loadAd()
     }
 }
