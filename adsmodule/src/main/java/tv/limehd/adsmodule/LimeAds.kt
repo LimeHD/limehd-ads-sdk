@@ -39,7 +39,6 @@ class LimeAds {
         private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
         lateinit var context: Context
-        private var isInitialized = false
         private var adRequestListener: AdRequestListener? = null
         var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
@@ -80,8 +79,8 @@ class LimeAds {
             backgroundAdManger.startBackgroundRequests()
             if(!MyTargetFragment.isShowingAd){
                 myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adRequestListener, adShowListener, limeAds!!)
-                val activityOfFragment = context as FragmentActivity
-                fragmentManager = activityOfFragment.supportFragmentManager
+                val fragmentActivity = context as FragmentActivity
+                fragmentManager = fragmentActivity.supportFragmentManager
                 fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
                 fragmentManager.beginTransaction().hide(myTargetFragment).commit()
             }
@@ -101,9 +100,10 @@ class LimeAds {
             }
             this.json = json
             limeAds = LimeAds()
-            limeAds?.getAdsList()
-            limeAds?.getAdsGlobalModels()
-            isInitialized = true
+            limeAds?.let {
+                it.getAdsList()
+                it.getAdsGlobalModels()
+            }
         }
 
         /**
@@ -246,7 +246,9 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun isInitialized() : Boolean = isInitialized
+        fun isInitialized() : Boolean {
+            return limeAds != null
+        }
 
         /**
          * Show fragment with loaded ad
@@ -366,7 +368,7 @@ class LimeAds {
         skipFirst = preroll.skip_first
     }
 
-    val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
+    private val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
 
     /**
      * Получить/вызвать слудущию рекламу после currentAd
@@ -456,7 +458,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, Constants.testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
+        ima = Ima(context, Constants.testAdTagUrl, lastAd, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 

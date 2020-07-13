@@ -52,7 +52,7 @@ class GoogleLoader(
             }else{
                 if(isTimeout){
                     adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.Google)
-                    if(limeAds.lastAd == AdType.Google.typeSdk){
+                    if(lastAd == AdType.Google.typeSdk){
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
                     }else {
                         if(!isLoadInterstitial) {

@@ -25,6 +25,7 @@ import tv.limehd.adsmodule.interfaces.FragmentState
 
 class ImaLoader constructor(private val context: Context,
                             private val adTagUrl: String,
+                            private val lastAd: String,
                             private val container: ViewGroup,
                             private val adRequestListener: AdRequestListener,
                             private val adShowListener: AdShowListener,
@@ -59,7 +60,7 @@ class ImaLoader constructor(private val context: Context,
             }else{
                 if(isTimeout){
                     adRequestListener.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
-                    if(limeAds.lastAd == AdType.IMA.typeSdk){
+                    if(lastAd == AdType.IMA.typeSdk){
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMA)
                     }else {
                         limeAds.getNextAd(AdType.IMA.typeSdk)
@@ -114,7 +115,7 @@ class ImaLoader constructor(private val context: Context,
         adRequestListener.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         adShowListener.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         if(!isTimeout) {
-            if (limeAds.lastAd == AdType.IMA.typeSdk) {
+            if (lastAd == AdType.IMA.typeSdk) {
                 fragmentState.onErrorState(context.getString(R.string.no_ad_found_at_all), AdType.IMA)
             } else {
                 limeAds.getNextAd(AdType.IMA.typeSdk)

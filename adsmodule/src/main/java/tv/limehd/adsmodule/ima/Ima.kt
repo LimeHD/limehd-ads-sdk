@@ -17,6 +17,7 @@ import tv.limehd.adsmodule.interfaces.FragmentState
 
 class Ima(private val context: Context,
           private val adTagUrl: String,
+          private val lastAd: String,
           private val viewGroup: ViewGroup,
           private val fragmentState: FragmentState,
           private val adRequestListener: AdRequestListener,
@@ -25,7 +26,7 @@ class Ima(private val context: Context,
 ) {
 
     fun loadAd() {
-        val imaLoader = ImaLoader(context, adTagUrl, viewGroup, adRequestListener, adShowListener, limeAds)
+        val imaLoader = ImaLoader(context, lastAd, adTagUrl, viewGroup, adRequestListener, adShowListener, limeAds)
         imaLoader.loadImaAd(fragmentState)
     }
 
