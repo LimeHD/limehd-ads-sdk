@@ -3,6 +3,7 @@ package tv.limehd.adsmodule
 import android.app.Activity
 import android.content.Context
 import android.os.Handler
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -230,6 +231,21 @@ class LimeAds {
                     google.getGoogleAd(true)
                 }
             }
+        }
+
+        /**
+         * Check internet connection speed
+         * In case 0-100 kbps -> false
+         * Otherwise true
+         */
+
+        private fun isConnectionSpeedEnough(context: Context) : Boolean {
+            val currentDeviceConnectionType = Connectivity.getNetworkInfo(context).type
+            val currentDeviceConnectionSubtype = Connectivity.getNetworkInfo(context).subtype
+            if(!Connectivity.isConnectionFast(currentDeviceConnectionType, currentDeviceConnectionSubtype)) {
+                return false
+            }
+            return true
         }
 
     }

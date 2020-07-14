@@ -34,7 +34,7 @@ public class Connectivity {
      * Check if the connection is fast
      *
      * @param type      1 - for the WIFI connection
-     *                  2 - for the MOBILE connection
+     *                  0 - for the MOBILE connection
      * @param subType   LTE, 4G, H, H+ and so on
      * @return          is connection fast
      */
