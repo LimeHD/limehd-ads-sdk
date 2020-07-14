@@ -3,7 +3,6 @@ package tv.limehd.adsmodule
 import android.app.Activity
 import android.content.Context
 import android.os.Handler
-import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -74,14 +73,19 @@ class LimeAds {
             if(limeAds == null){
                 throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
-            backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!)
-            backgroundAdManger.startBackgroundRequests()
-            if(!MyTargetFragment.isShowingAd){
-                myTargetFragment = MyTargetFragment(limeAds!!.lastAd, resId, fragmentState, adRequestListener, adShowListener, limeAds!!)
-                val fragmentActivity = context as FragmentActivity
-                fragmentManager = fragmentActivity.supportFragmentManager
-                fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-                fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+
+            if(isConnectionSpeedEnough(context)){
+                backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!)
+                backgroundAdManger.startBackgroundRequests()
+                if(!MyTargetFragment.isShowingAd){
+                    myTargetFragment = MyTargetFragment(limeAds!!.lastAd, resId, fragmentState, adRequestListener, adShowListener, limeAds!!)
+                    val fragmentActivity = context as FragmentActivity
+                    fragmentManager = fragmentActivity.supportFragmentManager
+                    fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+                    fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+                }
+            }else{
+                Log.d(TAG, "startBackgroundRequests: not called, cause of the internet")
             }
         }
 
@@ -161,20 +165,25 @@ class LimeAds {
                         it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
                         it.isAllowedToRequestAd = false
                         userClicksCounter = 0
-                        if(readyBackgroundSkd.isEmpty()){
-                            Log.d(TAG, "getAd: load ad in main thread")
-                            when (adsList[0].type_sdk) {
-                                AdType.Google.typeSdk -> it.getGoogleAd()
-                                AdType.IMA.typeSdk -> it.getImaAd()
-                                AdType.Yandex.typeSdk -> it.getYandexAd()
-                                AdType.MyTarget.typeSdk -> it.getMyTargetAd()
-                                AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
+
+                        if(isConnectionSpeedEnough(context)) {
+                            if(readyBackgroundSkd.isEmpty()){
+                                Log.d(TAG, "getAd: load ad in main thread")
+                                when (adsList[0].type_sdk) {
+                                    AdType.Google.typeSdk -> it.getGoogleAd()
+                                    AdType.IMA.typeSdk -> it.getImaAd()
+                                    AdType.Yandex.typeSdk -> it.getYandexAd()
+                                    AdType.MyTarget.typeSdk -> it.getMyTargetAd()
+                                    AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
+                                }
+                            }else {
+                                ReadyBackgroundAdDisplay(
+                                    readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
+                                    context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
+                                ).showReadyAd()
                             }
-                        }else {
-                            ReadyBackgroundAdDisplay(
-                                readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
-                                context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
-                            ).showReadyAd()
+                        }else{
+                            Log.d(TAG, "getAd: not called, cause of the internet")
                         }
                     }
                 }
@@ -227,8 +236,12 @@ class LimeAds {
                     if(this.timer == 0){
                         this.timer = 30
                     }
-                    google = Google(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
-                    google.getGoogleAd(true)
+                    if(isConnectionSpeedEnough(context)) {
+                        google = Google(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
+                        google.getGoogleAd(true)
+                    }else{
+                        Log.d(TAG, "getGoogleInterstitialAd: not called, cause of the internet")
+                    }
                 }
             }
         }
