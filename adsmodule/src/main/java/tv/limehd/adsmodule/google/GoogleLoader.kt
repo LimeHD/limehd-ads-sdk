@@ -121,16 +121,16 @@ class GoogleLoader(
                 Log.d(TAG, "onAdClosed: called")
                 adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
 
-                // should restart BackgroundAdManager
-                BackgroundAdManger.clearVariables()
-                LimeAds.startBackgroundRequests(context, resId, fragmentState, adRequestListener, adShowListener)
-
                 if(isLoadInterstitial){
                     limeAds.timer = 30
                     limeAds.googleTimerHandler.postDelayed(limeAds.googleTimerRunnable, 1000)
                 }else{
                     LimeAds.prerollTimer = preroll.epg_timer
                     limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
+
+                    // should restart BackgroundAdManager
+                    BackgroundAdManger.clearVariables()
+                    LimeAds.startBackgroundRequests(context, resId, fragmentState, adRequestListener, adShowListener)
                 }
             }
 
