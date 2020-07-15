@@ -186,3 +186,8 @@ private FragmentState fragmentStateCallback = new FragmentState() {
     };
 ```
 
+### 5. Работа с фоновыми запросами
+Функция необходима, в тот момент когда нужно начать фоновые запросы. Фоновые запросы помогают повысить шанс получения успешной рекламы, потому что часто реклама не приходит
+``` js
+LimeAds.startBackgroundRequests(context, R.id.main_container, fragmentStateCallback, adRequestCallback, adShowCallback);
+```
