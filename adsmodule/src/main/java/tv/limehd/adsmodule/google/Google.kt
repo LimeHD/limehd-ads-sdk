@@ -12,15 +12,17 @@ import tv.limehd.adsmodule.model.Preroll
  * Class with GoogleAd logic
  * For better comprehension all business logic will be
  * put right here, but not in the LimeAds class
- *
- * @link MyTarget, Ima
+ * See also the following classes
+ * [tv.limehd.adsmodule.myTarget.MyTarget]
+ * [tv.limehd.adsmodule.ima.Ima]
  */
 
 class Google(private val context: Context,
              private val lastAd: String,
+             private val resId: Int,
              private val fragmentState: FragmentState,
-             private val adRequestListener: AdRequestListener,
-             private val adShowListener: AdShowListener,
+             private val adRequestListener: AdRequestListener?,
+             private val adShowListener: AdShowListener?,
              private val preroll: Preroll,
              private val limeAds: LimeAds) {
 
@@ -34,7 +36,7 @@ class Google(private val context: Context,
 
     fun getGoogleAd(isLoadInterstitial: Boolean) {
         Log.d(TAG, "Load google ad")
-        val googleLoader = GoogleLoader(context, lastAd, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, preroll, limeAds)
+        val googleLoader = GoogleLoader(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, isLoadInterstitial, preroll, limeAds)
         googleLoader.loadAd()
     }
 }

@@ -12,11 +12,15 @@ import tv.limehd.adsmodule.interfaces.FragmentState
  * For better comprehension all business logic will be
  * put right here, but not in the LimeAds class
  *
- * @link MyTarget, Google
+ * See also the following classes
+ * [tv.limehd.adsmodule.myTarget.MyTarget]
+ * [tv.limehd.adsmodule.google.Google]
  */
 
 class Ima(private val context: Context,
           private val adTagUrl: String,
+          private val lastAd: String,
+          private val resId: Int,
           private val viewGroup: ViewGroup,
           private val fragmentState: FragmentState,
           private val adRequestListener: AdRequestListener,
@@ -25,7 +29,7 @@ class Ima(private val context: Context,
 ) {
 
     fun loadAd() {
-        val imaLoader = ImaLoader(context, adTagUrl, viewGroup, adRequestListener, adShowListener, limeAds)
+        val imaLoader = ImaLoader(context, lastAd, adTagUrl, resId, viewGroup, adRequestListener, adShowListener, limeAds)
         imaLoader.loadImaAd(fragmentState)
     }
 
