@@ -23,8 +23,8 @@ class Ima(private val context: Context,
           private val resId: Int,
           private val viewGroup: ViewGroup,
           private val fragmentState: FragmentState,
-          private val adRequestListener: AdRequestListener,
-          private val adShowListener: AdShowListener,
+          private val adRequestListener: AdRequestListener?,
+          private val adShowListener: AdShowListener?,
           private val limeAds: LimeAds
 ) {
 

@@ -27,7 +27,7 @@ class MyTarget(
     private val fragmentManager: FragmentManager,
     private val fragmentState: FragmentState,
     private val lastAd: String,
-    private val adRequestListener: AdRequestListener,
+    private val adRequestListener: AdRequestListener?,
     private val limeAds: LimeAds
 ) {
 
@@ -38,26 +38,26 @@ class MyTarget(
     fun loadAd() {
         val myTargetLoader = MyTargetLoader(context)
         fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-        adRequestListener.onRequest(context.getString(R.string.requested), AdType.MyTarget)
+        adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
         myTargetLoader.loadAd()
         myTargetLoader.setAdLoader(object : AdLoader {
             override fun onRequest() {
-                adRequestListener.onRequest(context.getString(R.string.requested), AdType.MyTarget)
+                adRequestListener?.onRequest(context.getString(R.string.requested), AdType.MyTarget)
             }
 
             override fun onLoaded(instreamAd: InstreamAd) {
-                adRequestListener.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
+                adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.MyTarget)
                 myTargetFragment.setInstreamAd(instreamAd)
                 fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
             }
 
             override fun onError(error: String) {
-                adRequestListener.onError(error, AdType.MyTarget)
+                adRequestListener?.onError(error, AdType.MyTarget)
             }
 
             override fun onNoAd(error: String) {
                 Log.d(TAG, "MyTarget onNoAd called $error")
-                adRequestListener.onNoAd(error, AdType.MyTarget)
+                adRequestListener?.onNoAd(error, AdType.MyTarget)
                 fragmentManager.beginTransaction().remove(myTargetFragment).commit()
                 if(lastAd == AdType.MyTarget.typeSdk){
                     fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.MyTarget)

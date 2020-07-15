@@ -29,8 +29,8 @@ class ImaLoader constructor(
     private val lastAd: String,
     private val resId: Int,
     private val container: ViewGroup,
-    private val adRequestListener: AdRequestListener,
-    private val adShowListener: AdShowListener,
+    private val adRequestListener: AdRequestListener?,
+    private val adShowListener: AdShowListener?,
     private val limeAds: LimeAds
 ) : AdsLoader.AdsLoadedListener, AdErrorEvent.AdErrorListener, AdEvent.AdEventListener {
 
@@ -61,7 +61,7 @@ class ImaLoader constructor(
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
-                    adRequestListener.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
+                    adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.IMA)
                     if(lastAd == AdType.IMA.typeSdk){
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMA)
                     }else {
@@ -97,7 +97,7 @@ class ImaLoader constructor(
 
         adsRequest.setVastLoadTimeout(TIMEOUT)
 
-        adRequestListener.onRequest(context.getString(R.string.requested), AdType.IMA)
+        adRequestListener?.onRequest(context.getString(R.string.requested), AdType.IMA)
         mAdsLoader.requestAds(adsRequest)
 
         leftHandler.postDelayed(leftRunnable, 1000)
@@ -114,8 +114,8 @@ class ImaLoader constructor(
 
     override fun onAdError(adErrorEvent: AdErrorEvent?) {
         Log.d(TAG, "Ima onAdError called with ${adErrorEvent?.error?.errorCodeNumber}")
-        adRequestListener.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
-        adShowListener.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
+        adRequestListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
+        adShowListener?.onError(adErrorEvent?.error?.message.toString(), AdType.IMA)
         if(!isTimeout) {
             if (lastAd == AdType.IMA.typeSdk) {
                 fragmentState.onErrorState(context.getString(R.string.no_ad_found_at_all), AdType.IMA)
@@ -129,13 +129,13 @@ class ImaLoader constructor(
         when(adEvent?.type){
             AdEvent.AdEventType.LOADED -> {
                 Log.d(TAG, "loaded")
-                adRequestListener.onLoaded(context.getString(R.string.loaded), AdType.IMA)
+                adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
                 imaFragment = ImaFragment(adsManager)
                 fragmentState.onSuccessState(imaFragment, AdType.IMA)
             }
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                 Log.d(TAG, "ALL_ADS_COMPLETED")
-                adShowListener.onComplete(context.getString(R.string.completed), AdType.IMA)
+                adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
 
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()
@@ -145,7 +145,7 @@ class ImaLoader constructor(
             }
             AdEvent.AdEventType.CLICKED -> {
                 Log.d(TAG, "CLICKED")
-                adShowListener.onClick(context.getString(R.string.clicked), AdType.IMA)
+                adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
             }
             AdEvent.AdEventType.COMPLETED -> {
                 Log.d(TAG, "COMPLETED")
@@ -182,16 +182,16 @@ class ImaLoader constructor(
             }
             AdEvent.AdEventType.SKIPPED -> {
                 Log.d(TAG, "SKIPPED")
-                adShowListener.onSkip(context.getString(R.string.skipped), AdType.IMA)
+                adShowListener?.onSkip(context.getString(R.string.skipped), AdType.IMA)
             }
             AdEvent.AdEventType.STARTED -> {
                 Log.d(TAG, "STARTED")
                 container.visibility = View.VISIBLE
-                adShowListener.onShow(context.getString(R.string.showing), AdType.IMA)
+                adShowListener?.onShow(context.getString(R.string.showing), AdType.IMA)
             }
             AdEvent.AdEventType.TAPPED -> {
                 Log.d(TAG, "TAPPED")
-                adShowListener.onClick(context.getString(R.string.clicked), AdType.IMA)
+                adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
             }
             AdEvent.AdEventType.ICON_TAPPED -> {
                 Log.d(TAG, "ICON_TAPPED")

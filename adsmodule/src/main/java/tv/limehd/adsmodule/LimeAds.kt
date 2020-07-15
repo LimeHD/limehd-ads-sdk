@@ -68,8 +68,9 @@ class LimeAds {
          */
 
         @JvmStatic
+        @JvmOverloads
         @Throws(NullPointerException::class)
-        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adRequestListener: AdRequestListener?, adShowListener: AdShowListener?) {
+        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adRequestListener: AdRequestListener? = null, adShowListener: AdShowListener? = null) {
             if(limeAds == null){
                 throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
@@ -368,7 +369,7 @@ class LimeAds {
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
         myTargetFragment = MyTargetFragment(lastAd, resId, fragmentState, adRequestListener, adShowListener, this)
-        myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
+        myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener, this)
         loadAd(AdType.MyTarget)
     }
 
