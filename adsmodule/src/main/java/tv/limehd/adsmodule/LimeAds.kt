@@ -231,11 +231,11 @@ class LimeAds {
             }
             with(limeAds!!) {
                 if(this.isAllowedToRequestGoogleAd){
-                    this.isAllowedToRequestGoogleAd = false
-                    if(this.timer == 0){
-                        this.timer = 30
-                    }
                     if(isConnectionSpeedEnough(context)) {
+                        this.isAllowedToRequestGoogleAd = false
+                        if(this.timer == 0){
+                            this.timer = 30
+                        }
                         google = Google(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
                         google.getGoogleAd(true)
                     }else{
