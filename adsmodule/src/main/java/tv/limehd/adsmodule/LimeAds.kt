@@ -13,7 +13,7 @@ import kotlinx.coroutines.Runnable
 import org.json.JSONObject
 import tv.limehd.adsmodule.google.Google
 import tv.limehd.adsmodule.ima.Ima
-import tv.limehd.adsmodule.ima.ImaFragment
+import tv.limehd.adsmodule.ima.vast2.ImaFragment
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState

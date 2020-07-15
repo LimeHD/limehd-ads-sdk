@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.google.ads.interactivemedia.v3.api.AdEvent
-import tv.limehd.adsmodule.ima.ImaFragment
+import tv.limehd.adsmodule.ima.vast2.ImaFragment
 import tv.limehd.adsmodule.interfaces.AdRequestListener
 import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
@@ -81,7 +81,8 @@ class ReadyBackgroundAdDisplay(
                     }
                 }
                 adsManager!!.init()
-                val imaFragment = ImaFragment(adsManager)
+                val imaFragment =
+                    ImaFragment(adsManager)
                 fragmentState.onSuccessState(imaFragment, AdType.IMA)
             }
             AdType.MyTarget.typeSdk -> {

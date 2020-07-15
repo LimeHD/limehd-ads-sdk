@@ -1,4 +1,4 @@
-package tv.limehd.adsmodule.ima
+package tv.limehd.adsmodule.ima.vast2
 
 import android.content.Context
 import android.os.Handler
@@ -130,7 +130,8 @@ class ImaLoader constructor(
             AdEvent.AdEventType.LOADED -> {
                 Log.d(TAG, "loaded")
                 adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
-                imaFragment = ImaFragment(adsManager)
+                imaFragment =
+                    ImaFragment(adsManager)
                 fragmentState.onSuccessState(imaFragment, AdType.IMA)
             }
             AdEvent.AdEventType.ALL_ADS_COMPLETED -> {

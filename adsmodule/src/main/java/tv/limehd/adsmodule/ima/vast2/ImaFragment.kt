@@ -1,4 +1,4 @@
-package tv.limehd.adsmodule.ima
+package tv.limehd.adsmodule.ima.vast2
 
 import android.os.Bundle
 import android.view.LayoutInflater
