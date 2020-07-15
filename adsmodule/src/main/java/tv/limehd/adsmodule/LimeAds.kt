@@ -161,12 +161,11 @@ class LimeAds {
                         Log.d(TAG, "getAd: skip first ad")
                         getAdFunCallAmount++
                     } else {
-                        prerollTimer = preroll.epg_timer
-                        it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
-                        it.isAllowedToRequestAd = false
-                        userClicksCounter = 0
-
                         if(isConnectionSpeedEnough(context)) {
+                            prerollTimer = preroll.epg_timer
+                            it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                            it.isAllowedToRequestAd = false
+                            userClicksCounter = 0
                             if(readyBackgroundSkd.isEmpty()){
                                 Log.d(TAG, "getAd: load ad in main thread")
                                 when (adsList[0].type_sdk) {
