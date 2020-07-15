@@ -70,7 +70,7 @@ class GoogleLoader(
         interstitialAd.adUnitId = LimeAds.googleUnitId
         adRequestListener?.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
-        leftHandler.postDelayed(leftRunnable, 1000)
+//        leftHandler.postDelayed(leftRunnable, 1000)
         interstitialAd.adListener = object : AdListener() {
             override fun onAdImpression() {
                 Log.d(TAG, "onAdImpression: called")
