@@ -15,19 +15,21 @@ import tv.limehd.adsmodule.interfaces.FragmentState
  * Class with MyTargetAd logic
  * For better comprehension all business logic will be
  * put right here, but not in the LimeAds class
- *
- * @link Google, Ima
+ * See also the following classes
+ * [tv.limehd.adsmodule.ima.Ima]
+ * [tv.limehd.adsmodule.google.Google]
  */
 
-class MyTarget(private val context: Context,
-               private val resId: Int,
-               private val myTargetFragment: MyTargetFragment,
-               private val fragmentManager: FragmentManager,
-               private val fragmentState: FragmentState,
-               private val lastAd: String,
-               private val adRequestListener: AdRequestListener,
-               private val limeAds: LimeAds
-               ) {
+class MyTarget(
+    private val context: Context,
+    private val resId: Int,
+    private val myTargetFragment: MyTargetFragment,
+    private val fragmentManager: FragmentManager,
+    private val fragmentState: FragmentState,
+    private val lastAd: String,
+    private val adRequestListener: AdRequestListener,
+    private val limeAds: LimeAds
+) {
 
     companion object {
         private const val TAG = "MyTarget"

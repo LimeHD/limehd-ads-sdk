@@ -25,9 +25,10 @@ import tv.limehd.adsmodule.model.Preroll
 class GoogleLoader(
     private val context: Context,
     private val lastAd: String,
+    private val resId: Int,
     private val fragmentState: FragmentState,
-    private val adRequestListener: AdRequestListener,
-    private val adShowListener: AdShowListener,
+    private val adRequestListener: AdRequestListener?,
+    private val adShowListener: AdShowListener?,
     private val isLoadInterstitial: Boolean,
     private val preroll: Preroll,
     private val limeAds: LimeAds
@@ -41,7 +42,7 @@ class GoogleLoader(
 
     private var isTimeout = true
     private val leftHandler: Handler = Handler()
-    var timeout = TIMEOUT / 1000
+    private var timeout = TIMEOUT / 1000
 
     private var leftRunnable: Runnable = object : Runnable {
         override fun run() {
@@ -51,8 +52,8 @@ class GoogleLoader(
                 leftHandler.postDelayed(this, 1000)
             }else{
                 if(isTimeout){
-                    adRequestListener.onError(context.resources.getString(R.string.timeout_occurred), AdType.Google)
-                    if(limeAds.lastAd == AdType.Google.typeSdk){
+                    adRequestListener?.onError(context.resources.getString(R.string.timeout_occurred), AdType.Google)
+                    if(lastAd == AdType.Google.typeSdk){
                         fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
                     }else {
                         if(!isLoadInterstitial) {
@@ -67,7 +68,7 @@ class GoogleLoader(
     fun loadAd() {
         interstitialAd = InterstitialAd(context)
         interstitialAd.adUnitId = LimeAds.googleUnitId
-        adRequestListener.onRequest(context.getString(R.string.requested), AdType.Google)
+        adRequestListener?.onRequest(context.getString(R.string.requested), AdType.Google)
         interstitialAd.loadAd(AdRequest.Builder().build())
         leftHandler.postDelayed(leftRunnable, 1000)
         interstitialAd.adListener = object : AdListener() {
@@ -77,12 +78,12 @@ class GoogleLoader(
 
             override fun onAdLeftApplication() {
                 Log.d(TAG, "onAdLeftApplication: called")
-                adShowListener.onSkip(context.getString(R.string.skipped), AdType.Google)
+                adShowListener?.onSkip(context.getString(R.string.skipped), AdType.Google)
             }
 
             override fun onAdClicked() {
                 Log.d(TAG, "onAdClicked: called")
-                adShowListener.onClick(context.getString(R.string.clicked), AdType.Google)
+                adShowListener?.onClick(context.getString(R.string.clicked), AdType.Google)
             }
 
             override fun onAdFailedToLoad(errorType: Int) {
@@ -100,10 +101,10 @@ class GoogleLoader(
                 }
                 if(errorType == 3){
                     // No Ad Error
-                    adRequestListener.onNoAd(errorMessage, AdType.Google)
+                    adRequestListener?.onNoAd(errorMessage, AdType.Google)
                 }else{
                     // Some other error happened
-                    adRequestListener.onError(errorMessage, AdType.Google)
+                    adRequestListener?.onError(errorMessage, AdType.Google)
                 }
                 if(!isTimeout) {
                     if (lastAd == AdType.Google.typeSdk) {
@@ -118,11 +119,7 @@ class GoogleLoader(
 
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
-                adShowListener.onComplete(context.getString(R.string.completed), AdType.Google)
-
-                // should restart BackgroundAdManager
-                BackgroundAdManger.clearVariables()
-                LimeAds.startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
+                adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
 
                 if(isLoadInterstitial){
                     limeAds.timer = 30
@@ -130,18 +127,22 @@ class GoogleLoader(
                 }else{
                     LimeAds.prerollTimer = preroll.epg_timer
                     limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
+
+                    // should restart BackgroundAdManager
+                    BackgroundAdManger.clearVariables()
+                    LimeAds.startBackgroundRequests(context, resId, fragmentState, adRequestListener, adShowListener)
                 }
             }
 
             override fun onAdOpened() {
                 Log.d(TAG, "onAdOpened: called")
-                adShowListener.onShow(context.getString(R.string.showing), AdType.Google)
+                adShowListener?.onShow(context.getString(R.string.showing), AdType.Google)
             }
 
             override fun onAdLoaded() {
                 Log.d(TAG, "onAdLoaded: called")
                 isTimeout = false
-                adRequestListener.onLoaded(context.getString(R.string.loaded), AdType.Google)
+                adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.Google)
                 if(interstitialAd.isLoaded){
                     interstitialAd.show()
                 }

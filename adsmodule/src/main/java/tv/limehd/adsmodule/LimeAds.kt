@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.google.ads.interactivemedia.v3.api.AdEvent
 import com.google.gson.GsonBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Runnable
 import org.json.JSONObject
 import tv.limehd.adsmodule.google.Google
 import tv.limehd.adsmodule.ima.Ima
@@ -31,19 +29,16 @@ class LimeAds {
 
     companion object {
         private const val TAG = "LimeAds"
-        private const val testAdTagUrl = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator="
-//        private const val testAdTagUrl = "https://exchange.buzzoola.com/adv/kbDH64c7yFY_jqB7YcKn5Fe1xALB2bNgjXr1P_8yfXuCZKsWdzlR9A/vast2"
         private lateinit var myTargetFragment: MyTargetFragment
         private lateinit var viewGroup: ViewGroup
-        lateinit var fragmentState: FragmentState
-        var resId: Int = -1
+        private lateinit var fragmentState: FragmentState
+        private var resId: Int = -1
         private var adsList = listOf<Ad>()
         private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
-        lateinit var context: Context
-        private var isInitialized = false
-        var adRequestListener: AdRequestListener? = null
-        var adShowListener: AdShowListener? = null
+        private lateinit var context: Context
+        private var adRequestListener: AdRequestListener? = null
+        private var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
         private var currentAdStatus: AdStatus = AdStatus.Online
         private val myTargetAdStatus: HashMap<String, Int> = HashMap()
@@ -53,7 +48,6 @@ class LimeAds {
         private lateinit var ima: Ima
         private lateinit var google: Google
         private lateinit var loadedAdStatusMap: HashMap<String, Int>
-        private var isGetAdBeingCalled = false
         private lateinit var interstitial: Interstitial
         private lateinit var preroll: Preroll
         private lateinit var preload: PreloadAds
@@ -65,43 +59,33 @@ class LimeAds {
         lateinit var googleUnitId: String
         @JvmField
         var myTargetBlockId = -1
+        private lateinit var backgroundAdManger: BackgroundAdManger
 
         /**
          * Function stands for requesting ad in the background while user
-         * doing/watching some movie or something. Because ad usually has failure,
-         * so if user goes to next channel, we request 1 time
-         * But if we do it in background thread, we can request it more than 1 time. And percentage
-         * of getting successful ad is higher
-         *
-         * BASIC ALGORITHM:
-         * Imagine we have 2 ads (Google and Ima)
-         * 1: Request 1st iteration with ads in order that we have in JSONObject
-         * 2: If Google have ERROR_RESULT, then immediately should request from Ima
-            * 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
-            * 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
-            * 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
-         * 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
-         * 4: We have to do this until we don`t have SUCCESS_RESULT
+         * doing/watching some movie or something. See more information in
+         * [BackgroundAdManger.startBackgroundRequests]
          */
 
         @JvmStatic
-        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adShowListener: AdShowListener) {
-            val activity = context as Activity
-            viewGroup = activity.findViewById(resId)
-            val backgroundAdManger = BackgroundAdManger(testAdTagUrl, context, limeAds!!)
-
-            if(limeAds!!.getBackgroundReadyAd().isEmpty()) {
-                limeAds?.backgroundAdLogic(backgroundAdManger)
-            }else{
-                Log.d(TAG, "startBackgroundRequests: ${limeAds!!.getBackgroundReadyAd()} is ready!")
+        @Throws(NullPointerException::class)
+        fun startBackgroundRequests(context: Context, resId: Int, fragmentState: FragmentState, adRequestListener: AdRequestListener?, adShowListener: AdShowListener?) {
+            if(limeAds == null){
+                throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
 
-            if(!MyTargetFragment.isShowingAd){
-                myTargetFragment = MyTargetFragment(limeAds!!.lastAd, fragmentState, adShowListener, limeAds!!)
-                val activityOfFragment = context as FragmentActivity
-                fragmentManager = activityOfFragment.supportFragmentManager
-                fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-                fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+            if(isConnectionSpeedEnough(context)){
+                backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!)
+                backgroundAdManger.startBackgroundRequests()
+                if(!MyTargetFragment.isShowingAd){
+                    myTargetFragment = MyTargetFragment(limeAds!!.lastAd, resId, fragmentState, adRequestListener, adShowListener, limeAds!!)
+                    val fragmentActivity = context as FragmentActivity
+                    fragmentManager = fragmentActivity.supportFragmentManager
+                    fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
+                    fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+                }
+            }else{
+                Log.d(TAG, "startBackgroundRequests: not called, cause of the internet")
             }
         }
 
@@ -119,9 +103,10 @@ class LimeAds {
             }
             this.json = json
             limeAds = LimeAds()
-            limeAds?.getAdsList()
-            limeAds?.getAdsGlobalModels()
-            isInitialized = true
+            limeAds?.let {
+                it.getAdsList()
+                it.getAdsGlobalModels()
+            }
         }
 
         /**
@@ -130,10 +115,13 @@ class LimeAds {
          * Get and Save isOnline and isArchive for each ad in JSONObject. Function checks
          * is ad allowed to request. Because of the timer in JSONObject -> preroll -> epg_timer. Also ad can be loaded if
          * user has clicked specific amount of times (JSONObject -> preroll -> epg_interval)
+         * Another feature is that this function call background ad if these loaded. For more information check
+         * this [BackgroundAdManger] class out
          */
 
         @JvmStatic
         @JvmOverloads
+        @Throws(NullPointerException::class, IllegalArgumentException::class)
         fun getAd(context: Context,
                   resId: Int,
                   fragmentState: FragmentState,
@@ -141,117 +129,60 @@ class LimeAds {
                   adRequestListener: AdRequestListener? = null,
                   adShowListener: AdShowListener? = null) {
 
-            isGetAdBeingCalled = true
+            if(limeAds == null){
+                throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
+            }
+
             this.context = context
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
             val activity = context as Activity
             this.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
-            val activityOfFragment = context as FragmentActivity
+            val fragmentActivity = context as FragmentActivity
             if(!::fragmentManager.isInitialized){
-                this.fragmentManager = activityOfFragment.supportFragmentManager
+                this.fragmentManager = fragmentActivity.supportFragmentManager
             }
             this.resId = resId
 
-            val readyBackgroundSkd = limeAds!!.getBackgroundReadyAd()
+            limeAds?.let {
+                it.getCurrentAdStatus(isOnline)
+                it.populateAdStatusesHashMaps()
+            }
 
-            if(readyBackgroundSkd.isEmpty()) {
-                Log.d(TAG, "getAd: load ad in main thread")
+            userClicksCounter++
+            Log.d(TAG, "userClicks: $userClicksCounter")
 
-                limeAds?.getCurrentAdStatus(isOnline)
-                limeAds?.populateAdStatusesHashMaps()
+            val readyBackgroundSkd = limeAds!!.getReadyAd()
 
-                userClicksCounter++
-                Log.d(TAG, "userClicks: $userClicksCounter")
-
-                limeAds?.let {
-                    if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
-                        if (skipFirst && getAdFunCallAmount == 0) {
-                            Log.d(TAG, "getAd: skip first ad")
-                            getAdFunCallAmount++
-                        } else {
+            limeAds?.let {
+                if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
+                    if (skipFirst && getAdFunCallAmount == 0) {
+                        Log.d(TAG, "getAd: skip first ad")
+                        getAdFunCallAmount++
+                    } else {
+                        if(isConnectionSpeedEnough(context)) {
                             prerollTimer = preroll.epg_timer
                             it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
                             it.isAllowedToRequestAd = false
                             userClicksCounter = 0
-                            when (adsList[0].type_sdk) {
-                                AdType.Google.typeSdk -> limeAds?.getGoogleAd()
-                                AdType.IMA.typeSdk -> limeAds?.getImaAd()
-                                AdType.Yandex.typeSdk -> limeAds?.getYandexAd()
-                                AdType.MyTarget.typeSdk -> limeAds?.getMyTargetAd()
-                                AdType.IMADEVICE.typeSdk -> limeAds?.getImaDeviceAd()
+                            if(readyBackgroundSkd.isEmpty()){
+                                Log.d(TAG, "getAd: load ad in main thread")
+                                when (adsList[0].type_sdk) {
+                                    AdType.Google.typeSdk -> it.getGoogleAd()
+                                    AdType.IMA.typeSdk -> it.getImaAd()
+                                    AdType.Yandex.typeSdk -> it.getYandexAd()
+                                    AdType.MyTarget.typeSdk -> it.getMyTargetAd()
+                                    AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
+                                }
+                            }else {
+                                ReadyBackgroundAdDisplay(
+                                    readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
+                                    context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
+                                ).showReadyAd()
                             }
-                        }
-                    }
-                }
-            }else{
-
-                userClicksCounter++
-                Log.d(TAG, "userClicks: $userClicksCounter")
-
-                limeAds?.let {
-                    if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
-                        if (skipFirst && getAdFunCallAmount == 0) {
-                            Log.d(TAG, "getAd: skip first ad")
-                            getAdFunCallAmount++
-                        } else {
-                            prerollTimer = preroll.epg_timer
-                            it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
-                            it.isAllowedToRequestAd = false
-                            userClicksCounter = 0
-                            when(readyBackgroundSkd){
-                                AdType.IMA.typeSdk -> {
-                                    // show ima ad
-                                    Log.d(TAG, "getAd: show ima from background")
-                                    viewGroup.visibility = View.VISIBLE
-                                    val adsManager = BackgroundAdManger.imaAdsManager
-                                    adsManager?.addAdEventListener { adEvent ->
-                                        when(adEvent.type){
-                                            AdEvent.AdEventType.LOADED -> {
-                                                adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
-                                            }
-                                            AdEvent.AdEventType.SKIPPED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.skipped), AdType.IMA)
-                                            }
-                                            AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
-
-                                                // should restart BackgroundAdManager
-                                                BackgroundAdManger.clearVariables()
-                                                startBackgroundRequests(context, LimeAds.resId, LimeAds.fragmentState, LimeAds.adShowListener!!)
-
-                                                // should start preroll handler
-                                                limeAds!!.prerollTimerHandler.postDelayed(limeAds!!.prerollTimerRunnable, 1000)
-                                            }
-                                            AdEvent.AdEventType.STARTED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.showing), AdType.IMA)
-                                            }
-
-                                            AdEvent.AdEventType.TAPPED -> {
-                                                adShowListener?.onComplete(context.getString(R.string.clicked), AdType.IMA)
-                                            }
-                                        }
-                                    }
-                                    adsManager!!.init()
-                                    val imaFragment = ImaFragment(adsManager)
-                                    fragmentState.onSuccessState(imaFragment, AdType.IMA)
-                                }
-                                AdType.MyTarget.typeSdk -> {
-                                    // show mytarget ad
-                                    Log.d(TAG, "getAd: show mytarget from background")
-                                    val instreamAd = BackgroundAdManger.myTargetInstreamAd
-                                    myTargetFragment.setInstreamAd(instreamAd!!)
-                                    fragmentManager.beginTransaction().show(myTargetFragment).commit()
-                                    fragmentState.onSuccessState(myTargetFragment, AdType.MyTarget)
-                                }
-                                AdType.Google.typeSdk -> {
-                                    // show google ad
-                                    Log.d(TAG, "getAd: show google from background")
-                                    val interstitial = BackgroundAdManger.googleInterstitialAd
-                                    interstitial!!.show()
-                                }
-                            }
+                        }else{
+                            Log.d(TAG, "getAd: not called, cause of the internet")
                         }
                     }
                 }
@@ -266,7 +197,7 @@ class LimeAds {
          */
 
         @JvmStatic
-        fun isInitialized() : Boolean = isInitialized
+        fun isInitialized() : Boolean = limeAds != null
 
         /**
          * Show fragment with loaded ad
@@ -293,38 +224,51 @@ class LimeAds {
          */
 
         @JvmStatic
-        @JvmOverloads
-        fun getGoogleInterstitialAd(
-            context: Context? = null,
-            isOnline: Boolean? = null,
-            fragmentState: FragmentState? = null,
-            adRequestListener: AdRequestListener? = null,
-            adShowListener: AdShowListener? = null
-        ) {
-            if(!isGetAdBeingCalled){
-                this.context = context!!
-                this.fragmentState = fragmentState!!
-                this.adRequestListener = adRequestListener
-                this.adShowListener = adShowListener
-
-                limeAds?.getCurrentAdStatus(isOnline!!)
-                limeAds?.populateAdStatusesHashMaps()
+        @Throws(NullPointerException::class)
+        fun getGoogleInterstitialAd() {
+            if(!this::context.isInitialized || limeAds == null){
+                throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
-            limeAds?.let {
-                if(it.isAllowedToRequestGoogleAd){
-                    it.isAllowedToRequestGoogleAd = false
-                    if(it.timer == 0){
-                        it.timer = 30
+            with(limeAds!!) {
+                if(this.isAllowedToRequestGoogleAd){
+                    this.isAllowedToRequestGoogleAd = false
+                    if(this.timer == 0){
+                        this.timer = 30
                     }
-                    google = Google(this.context, it.lastAd, this.fragmentState, this.adRequestListener!!, this.adShowListener!!, preroll, it)
-                    google.getGoogleAd(true)
+                    if(isConnectionSpeedEnough(context)) {
+                        google = Google(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
+                        google.getGoogleAd(true)
+                    }else{
+                        Log.d(TAG, "getGoogleInterstitialAd: not called, cause of the internet")
+                    }
                 }
             }
         }
 
+        /**
+         * Check internet connection speed
+         * In case 0-100 kbps -> false
+         * Otherwise true
+         */
+
+        private fun isConnectionSpeedEnough(context: Context) : Boolean {
+            val currentDeviceConnectionType = Connectivity.getNetworkInfo(context).type
+            val currentDeviceConnectionSubtype = Connectivity.getNetworkInfo(context).subtype
+            if(!Connectivity.isConnectionFast(currentDeviceConnectionType, currentDeviceConnectionSubtype)) {
+                return false
+            }
+            return true
+        }
+
     }
 
-    private fun getBackgroundReadyAd() : String {
+    /**
+     * Get already requested and cached ad type sdk name
+     *
+     * @return type sdk for ad that's ready
+     */
+
+    fun getReadyAd() : String {
         var readySdk = ""
         if(BackgroundAdManger.imaAdsManager != null){
             readySdk = AdType.IMA.typeSdk
@@ -336,61 +280,6 @@ class LimeAds {
             readySdk = AdType.Google.typeSdk
         }
         return readySdk
-    }
-
-    /**
-     * Here starts Algorithm:
-     *
-     * Imagine we have 2 ads (Google and Ima)
-     * 1: Request 1st iteration with ads in order that we have in JSONObject
-     * 2: If Google have ERROR_RESULT, then immediately should request from Ima
-     * 2.1: If Ima have SUCCESS_RESULT, then we save this Ima ad to phone cache
-     * 2.2: If Ima also have ERROR_RESULT, then we should wait for the TIMEOUT and after that go to 2nd iteration in the 1st block
-     * 2.3: Do the same stuff in 2) point. If all (COUNT) iterations are finished, then wait for the BLOCK_TIMEOUT and after that go to 2nd block
-     * 3: If Google have SUCCESS_RESULT, then we save this Google ad to phone cache
-     * 4: We have to do this until we don`t have SUCCESS_RESULT
-     */
-
-    private fun backgroundAdLogic(backgroundAdManger: BackgroundAdManger) {
-        Log.d(TAG, "backgroundAdLogic: start")
-        var result = false
-        // beginning of the block
-        CoroutineScope(Dispatchers.Main).launch {
-            // loop through iterations
-            for (i in 0 until preload.count) {
-                // loop through each ad in the iteration
-                for(ad in adsList){
-                    when(ad.type_sdk){
-                        AdType.IMA.typeSdk -> {
-                            if(result){
-                                this.cancel()
-                            }else {
-                                result = backgroundAdManger.loadIma(viewGroup)
-                            }
-                        }
-                        AdType.MyTarget.typeSdk -> {
-                            if(result){
-                                this.cancel()
-                            }else {
-                                result = backgroundAdManger.loadMyTarget()
-                            }
-                        }
-                        AdType.Google.typeSdk -> {
-                            if(result){
-                                this.cancel()
-                            }else {
-                                result = backgroundAdManger.loadGoogleAd()
-                            }
-                        }
-                    }
-                }
-                // should have timeout after each iteration
-                delay(5000)
-            }
-            // should have block timeout after each block
-            delay(5000)
-            backgroundAdLogic(backgroundAdManger)
-        }
     }
 
     private fun getCurrentAdStatus(isOnline: Boolean) {
@@ -447,7 +336,7 @@ class LimeAds {
         skipFirst = preroll.skip_first
     }
 
-    val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
+    private val lastAd: String get() = adsList.last().type_sdk      // last ad type sdk in JSONObject
 
     /**
      * Получить/вызвать слудущию рекламу после currentAd
@@ -478,7 +367,7 @@ class LimeAds {
 
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
-        myTargetFragment = MyTargetFragment(lastAd, fragmentState, adShowListener!!, this)
+        myTargetFragment = MyTargetFragment(lastAd, resId, fragmentState, adRequestListener, adShowListener, this)
         myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener!!, this)
         loadAd(AdType.MyTarget)
     }
@@ -537,7 +426,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, testAdTagUrl, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
+        ima = Ima(context, Constants.testAdTagUrl, lastAd, resId, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 
@@ -547,7 +436,7 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "getGoogleAd: called")
-        google = Google(context, lastAd, fragmentState, adRequestListener!!, adShowListener!!, preroll, this)
+        google = Google(context, lastAd, resId, fragmentState, adRequestListener!!, adShowListener!!, preroll, this)
         loadAd(AdType.Google)
     }
 

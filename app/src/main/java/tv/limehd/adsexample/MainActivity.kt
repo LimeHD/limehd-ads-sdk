@@ -32,15 +32,34 @@ class MainActivity : AppCompatActivity() {
         }
 
         openGoogleAd.setOnClickListener {
-            LimeAds.getGoogleInterstitialAd()
+            try {
+                LimeAds.getGoogleInterstitialAd()
+            }catch (e: NullPointerException){
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            }
         }
 
         getAd.setOnClickListener {
-            LimeAds.getAd(this, R.id.main_container, fragmentStateCallback, true, adRequestCallback, adShowCallback)
+            try {
+                LimeAds.getAd(
+                    this,
+                    R.id.main_container,
+                    fragmentStateCallback,
+                    true,
+                    adRequestCallback,
+                    adShowCallback
+                )
+            }catch (e: NullPointerException){
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            }
         }
 
         startBackgroundRequests.setOnClickListener {
-            LimeAds.startBackgroundRequests(this, R.id.main_container, fragmentStateCallback, adShowCallback)
+            try {
+                LimeAds.startBackgroundRequests(this, R.id.main_container, fragmentStateCallback, adRequestCallback, adShowCallback)
+            }catch (e: NullPointerException){
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            }
         }
 
     }
