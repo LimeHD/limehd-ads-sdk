@@ -87,10 +87,10 @@ try {
 }
 ```
 ### 1. Получить рекламу от библиотеки
-- **context**: Context Activity, Fragment. На котором иниц-ется библиотека
-- **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
-- **fragmentStateCallback**: Callback с положительным и отрицательным результатом
-- **isOnline**: Boolean, если TRUE -> Онлайн, если FALSE -> Архив
+- @NotNull **context**: Context Activity, Fragment. На котором иниц-ется библиотека
+- @NotNull **R.id.main_container**: Место, куда приложение хочет вставить фрагмент с рекламой
+- @NotNull **fragmentStateCallback**: Callback с положительным и отрицательным результатом
+- @NotNull **isOnline**: Boolean, если TRUE -> Онлайн, если FALSE -> Архив
 - @Nullable **adRequestCallback**: Листенер для логов запроса рекламы
 - @Nullable **adShowCallback**: Листенер для логов показа рекламы
 ``` js
@@ -98,7 +98,7 @@ LimeAds.getAd(context, R.id.main_container, fragmentStateCallback, isOnline, adR
 ```
 
 ### 2. Получить рекламу от межстраницы Google
-Функция нужна когда пользователь вышел из полноэкранного режима, чтобы показать межстраничку Google
+Функция нужна когда пользователь вышел из полноэкранного режима, чтобы показать межстраничку Google. Функция должна быть вызвана после инициализации библиотеки. Иначе выброситься exception
 ``` js
 LimeAds.getGoogleInterstitialAd()
 ```
@@ -186,3 +186,8 @@ private FragmentState fragmentStateCallback = new FragmentState() {
     };
 ```
 
+### 5. Работа с фоновыми запросами
+Функция необходима, в тот момент когда нужно начать фоновые запросы. Фоновые запросы помогают повысить шанс получения успешной рекламы, потому что часто реклама не приходит. Функция должна быть вызвана после инициализации библиотеки. Иначе выброситься exception
+``` js
+LimeAds.startBackgroundRequests(@NotNull context, @NotNull R.id.main_container, @NotNull fragmentStateCallback, @Nullable adRequestCallback, @Nullable adShowCallback);
+```
