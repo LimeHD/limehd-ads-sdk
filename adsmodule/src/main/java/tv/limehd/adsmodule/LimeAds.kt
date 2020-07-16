@@ -78,6 +78,7 @@ class LimeAds {
             if(isConnectionSpeedEnough(context)){
                 backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!)
                 backgroundAdManger.startBackgroundRequests()
+                /*
                 if(!MyTargetFragment.isShowingAd){
                     myTargetFragment = MyTargetFragment(limeAds!!.lastAd, resId, fragmentState, adRequestListener, adShowListener, limeAds!!)
                     val fragmentActivity = context as FragmentActivity
@@ -85,6 +86,7 @@ class LimeAds {
                     fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
                     fragmentManager.beginTransaction().hide(myTargetFragment).commit()
                 }
+                */
             }else{
                 Log.d(TAG, "startBackgroundRequests: not called, cause of the internet")
             }
