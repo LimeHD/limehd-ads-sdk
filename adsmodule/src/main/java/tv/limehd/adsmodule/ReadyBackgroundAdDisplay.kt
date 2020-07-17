@@ -53,7 +53,7 @@ class ReadyBackgroundAdDisplay(
                             adRequestListener?.onLoaded(context.getString(R.string.loaded), AdType.IMA)
                         }
                         AdEvent.AdEventType.SKIPPED -> {
-                            adShowListener?.onComplete(context.getString(R.string.skipped), AdType.IMA)
+                            adShowListener?.onSkip(context.getString(R.string.skipped), AdType.IMA)
                         }
                         AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                             adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
@@ -72,11 +72,11 @@ class ReadyBackgroundAdDisplay(
                             limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
                         }
                         AdEvent.AdEventType.STARTED -> {
-                            adShowListener?.onComplete(context.getString(R.string.showing), AdType.IMA)
+                            adShowListener?.onShow(context.getString(R.string.showing), AdType.IMA)
                         }
 
                         AdEvent.AdEventType.TAPPED -> {
-                            adShowListener?.onComplete(context.getString(R.string.clicked), AdType.IMA)
+                            adShowListener?.onClick(context.getString(R.string.clicked), AdType.IMA)
                         }
                     }
                 }
