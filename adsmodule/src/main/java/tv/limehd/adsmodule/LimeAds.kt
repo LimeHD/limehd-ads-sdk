@@ -76,12 +76,12 @@ class LimeAds {
             }
 
             if(isConnectionSpeedEnough(context)){
-                backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!)
+                myTargetFragment = MyTargetFragment(limeAds!!.lastAd, resId, fragmentState, adRequestListener, adShowListener, limeAds!!)
+                val fragmentActivity = context as FragmentActivity
+                fragmentManager = fragmentActivity.supportFragmentManager
+                backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!, fragmentManager, myTargetFragment)
                 backgroundAdManger.startBackgroundRequests()
                 if(!MyTargetFragment.isShowingAd){
-                    myTargetFragment = MyTargetFragment(limeAds!!.lastAd, resId, fragmentState, adRequestListener, adShowListener, limeAds!!)
-                    val fragmentActivity = context as FragmentActivity
-                    fragmentManager = fragmentActivity.supportFragmentManager
                     fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
                     fragmentManager.beginTransaction().hide(myTargetFragment).commit()
                 }

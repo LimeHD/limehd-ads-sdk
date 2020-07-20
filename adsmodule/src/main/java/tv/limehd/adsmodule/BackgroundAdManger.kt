@@ -3,11 +3,10 @@ package tv.limehd.adsmodule
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
-import com.google.ads.interactivemedia.v3.api.AdsLoader
-import com.google.ads.interactivemedia.v3.api.AdsManager
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory
-import com.google.ads.interactivemedia.v3.api.ImaSdkSettings
+import androidx.fragment.app.FragmentManager
+import com.google.ads.interactivemedia.v3.api.*
 import com.google.ads.interactivemedia.v3.api.player.ContentProgressProvider
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate
 import com.google.android.gms.ads.AdListener
@@ -21,6 +20,7 @@ import tv.limehd.adsmodule.interfaces.AdShowListener
 import tv.limehd.adsmodule.interfaces.FragmentState
 import tv.limehd.adsmodule.model.Ad
 import tv.limehd.adsmodule.model.PreloadAds
+import tv.limehd.adsmodule.myTarget.MyTargetFragment
 import tv.limehd.adsmodule.myTarget.MyTargetLoader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -33,7 +33,9 @@ class BackgroundAdManger(
     private val adRequestListener: AdRequestListener?,
     private val preload: PreloadAds,
     private val adsList: List<Ad>,
-    private val limeAds: LimeAds
+    private val limeAds: LimeAds,
+    private val fragmentManager: FragmentManager,
+    private val myTargetFragment: MyTargetFragment
 ){
 
     companion object {
@@ -59,6 +61,9 @@ class BackgroundAdManger(
         Log.d(TAG, "loadIma: called")
 
         // container.visibility = View.GONE
+
+        val activity = context as Activity
+        val adUiContainer = activity.findViewById<ViewGroup>(resId)
 
         mSdkFactory = ImaSdkFactory.getInstance()
         mSdkSetting = mSdkFactory.createImaSdkSettings()
@@ -86,6 +91,41 @@ class BackgroundAdManger(
             mAdsLoader.addAdsLoadedListener {
                 Log.d(TAG, "loadIma: ima loaded")
                 imaAdsManager = it!!.adsManager
+
+                imaAdsManager?.addAdEventListener { adEvent ->
+                    when(adEvent.type){
+                        AdEvent.AdEventType.LOADED -> {
+                            Log.d(TAG, "loadIma: LOADED")
+                        }
+                        AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
+                            adUiContainer.visibility = View.GONE
+                            try {
+                                fragmentManager.beginTransaction().remove(fragmentManager.fragments[7]).commitNow()
+                            }catch (e: Exception){
+                                Log.d(TAG, "loadIma: ${e.message}")
+                            }
+                            Log.d(TAG, "loadIma: ALL_ADS_COMPLETED")
+                        }
+                        AdEvent.AdEventType.COMPLETED -> {
+                            Log.d(TAG, "loadIma: COMPLETED")
+                        }
+                        AdEvent.AdEventType.SKIPPED -> {
+                            try {
+                                fragmentManager.beginTransaction().remove(fragmentManager.fragments[7]).commitNow()
+                            }catch (e: Exception){
+                                Log.d(TAG, "loadIma: ${e.message}")
+                            }
+                            Log.d(TAG, "loadIma: SKIPPED")
+                        }
+                        AdEvent.AdEventType.TAPPED -> {
+                            Log.d(TAG, "loadIma: CLICKED")
+                        }
+                    }
+                }
+                imaAdsManager?.addAdErrorListener { adErrorEvent ->
+                    Log.d(TAG, "loadIma: ERROR ${adErrorEvent.error.message}")
+                }
+
                 cont.resume(true)
             }
             mAdsLoader.addAdErrorListener {
