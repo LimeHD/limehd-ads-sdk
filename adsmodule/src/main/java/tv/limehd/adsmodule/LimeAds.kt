@@ -60,6 +60,7 @@ class LimeAds {
         @JvmField
         var myTargetBlockId = -1
         private lateinit var backgroundAdManger: BackgroundAdManger
+        lateinit var adUiContainer: ViewGroup
 
         /**
          * Function stands for requesting ad in the background while user
@@ -138,6 +139,7 @@ class LimeAds {
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
             val activity = context as Activity
+            adUiContainer = activity.findViewById(resId)
             this.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
             val fragmentActivity = context as FragmentActivity

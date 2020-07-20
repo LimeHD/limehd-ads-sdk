@@ -62,9 +62,6 @@ class BackgroundAdManger(
 
         // container.visibility = View.GONE
 
-        val activity = context as Activity
-        val adUiContainer = activity.findViewById<ViewGroup>(resId)
-
         mSdkFactory = ImaSdkFactory.getInstance()
         mSdkSetting = mSdkFactory.createImaSdkSettings()
         mSdkSetting.language = "ru"
@@ -98,7 +95,7 @@ class BackgroundAdManger(
                             Log.d(TAG, "loadIma: LOADED")
                         }
                         AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
-                            adUiContainer.visibility = View.GONE
+                            LimeAds.adUiContainer.visibility = View.GONE
                             try {
                                 fragmentManager.beginTransaction().remove(fragmentManager.fragments[7]).commitNow()
                             }catch (e: Exception){

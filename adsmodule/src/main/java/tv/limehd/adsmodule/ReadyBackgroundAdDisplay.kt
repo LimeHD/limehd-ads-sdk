@@ -87,6 +87,7 @@ class ReadyBackgroundAdDisplay(
             AdType.MyTarget.typeSdk -> {
                 // show mytarget ad
                 Log.d(TAG, "getAd: show mytarget from background")
+                viewGroup.visibility = View.VISIBLE
                 val instreamAd = BackgroundAdManger.myTargetInstreamAd
                 myTargetFragment.setInstreamAd(instreamAd!!)
                 fragmentManager.beginTransaction().show(myTargetFragment).commit()
