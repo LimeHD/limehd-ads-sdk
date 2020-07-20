@@ -213,7 +213,7 @@ class BackgroundAdManger(
                 }
 
                 override fun onAdClosed() {
-
+                    LimeAds.adUiContainer.visibility = View.GONE
                     adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
 
                     // should restart BackgroundAdManager
