@@ -93,6 +93,7 @@ class MyTargetFragment(
         // Skip button
         buttonSkip.setOnClickListener {
             adShowListener?.onSkip(this.getString(R.string.skipped), AdType.MyTarget)
+            mInstreamAd.skip()
         }
         // Ad Click
         rootContainer.setOnClickListener {
@@ -177,7 +178,7 @@ class MyTargetFragment(
             }
 
             override fun onBannerTimeLeftChange(p0: Float, p1: Float, p2: InstreamAd) {
-                Log.d(TAG, "onBannerTimeLeftChange called")
+
             }
 
             override fun onError(error: String, p1: InstreamAd) {
