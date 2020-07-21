@@ -163,6 +163,7 @@ class LimeAds {
                     if (skipFirst && getAdFunCallAmount == 0) {
                         Log.d(TAG, "getAd: skip first ad")
                         getAdFunCallAmount++
+                        adRequestListener?.onEarlyRequest()
                     } else {
                         startGetAdLogic(readyBackgroundSkd)
                     }
