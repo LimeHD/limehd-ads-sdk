@@ -208,8 +208,8 @@ class LimeAds {
 
         @JvmStatic
         @Throws(NullPointerException::class)
-        fun getGoogleInterstitialAd() {
-            if(!this::context.isInitialized || limeAds == null){
+        fun getGoogleInterstitialAd(context: Context, fragmentState: FragmentState, adRequestListener: AdRequestListener?, adShowListener: AdShowListener?) {
+            if(limeAds == null){
                 throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
             with(limeAds!!) {
@@ -449,7 +449,7 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "getGoogleAd: called")
-        google = Google(context, lastAd, resId, fragmentState, adRequestListener!!, adShowListener!!, preroll, this)
+        google = Google(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
         loadAd(AdType.Google)
     }
 
