@@ -164,30 +164,10 @@ class LimeAds {
                         Log.d(TAG, "getAd: skip first ad")
                         getAdFunCallAmount++
                     } else {
-                        if(isConnectionSpeedEnough(context)) {
-                            prerollTimer = preroll.epg_timer
-                            it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
-                            it.isAllowedToRequestAd = false
-                            userClicksCounter = 0
-                            if(readyBackgroundSkd.isEmpty()){
-                                Log.d(TAG, "getAd: load ad in main thread")
-                                when (adsList[0].type_sdk) {
-                                    AdType.Google.typeSdk -> it.getGoogleAd()
-                                    AdType.IMA.typeSdk -> it.getImaAd()
-                                    AdType.Yandex.typeSdk -> it.getYandexAd()
-                                    AdType.MyTarget.typeSdk -> it.getMyTargetAd()
-                                    AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
-                                }
-                            }else {
-                                ReadyBackgroundAdDisplay(
-                                    readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
-                                    context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
-                                ).showReadyAd()
-                            }
-                        }else{
-                            Log.d(TAG, "getAd: not called, cause of the internet")
-                        }
+                        startGetAdLogic(readyBackgroundSkd)
                     }
+                }else {
+                    startGetAdLogic(readyBackgroundSkd)
                 }
             }
         }
@@ -261,6 +241,36 @@ class LimeAds {
                 return false
             }
             return true
+        }
+
+        private fun startGetAdLogic(readyBackgroundSkd: String) {
+            limeAds?.let {
+                if (isConnectionSpeedEnough(context)) {
+                    prerollTimer = preroll.epg_timer
+                    it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                    it.isAllowedToRequestAd = false
+                    userClicksCounter = 0
+                    if (readyBackgroundSkd.isEmpty()) {
+                        Log.d(TAG, "getAd: load ad in main thread")
+                        when (adsList[0].type_sdk) {
+                            AdType.Google.typeSdk -> it.getGoogleAd()
+                            AdType.IMA.typeSdk -> it.getImaAd()
+                            AdType.Yandex.typeSdk -> it.getYandexAd()
+                            AdType.MyTarget.typeSdk -> it.getMyTargetAd()
+                            AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
+                            else -> {
+                            }
+                        }
+                    } else {
+                        ReadyBackgroundAdDisplay(
+                            readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
+                            context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
+                        ).showReadyAd()
+                    }
+                } else {
+                    Log.d(TAG, "getAd: not called, cause of the internet")
+                }
+            }
         }
 
     }
