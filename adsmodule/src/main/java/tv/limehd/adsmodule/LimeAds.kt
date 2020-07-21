@@ -83,8 +83,8 @@ class LimeAds {
                 backgroundAdManger = BackgroundAdManger(context, resId, fragmentState, adShowListener, adRequestListener, preload, adsList, limeAds!!, fragmentManager, myTargetFragment)
                 backgroundAdManger.startBackgroundRequests()
                 if(!MyTargetFragment.isShowingAd){
-                    fragmentManager.beginTransaction().replace(resId, myTargetFragment).commit()
-                    fragmentManager.beginTransaction().hide(myTargetFragment).commit()
+                    fragmentManager.beginTransaction().replace(resId, myTargetFragment).commitAllowingStateLoss()
+                    fragmentManager.beginTransaction().hide(myTargetFragment).commitAllowingStateLoss()
                 }
             }else{
                 Log.d(TAG, "startBackgroundRequests: not called, cause of the internet")
