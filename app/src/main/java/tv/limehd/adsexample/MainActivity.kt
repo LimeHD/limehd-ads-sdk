@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         openGoogleAd.setOnClickListener {
             try {
-                LimeAds.getGoogleInterstitialAd()
+                LimeAds.getGoogleInterstitialAd(this, fragmentStateCallback, adRequestCallback, adShowCallback)
             }catch (e: NullPointerException){
                 Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             }
@@ -91,6 +91,10 @@ class MainActivity : AppCompatActivity() {
 
         override fun onNoAd(message: String, owner: AdType) {
             Log.d(TAG, "$message from ${owner.typeSdk}")
+        }
+
+        override fun onEarlyRequest() {
+            Log.d(TAG, "onEarlyRequest: called")
         }
 
    }

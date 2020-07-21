@@ -17,4 +17,6 @@ interface AdRequestListener {
 
     fun onNoAd(message: String, owner: AdType)
 
+    fun onEarlyRequest()
+
 }
