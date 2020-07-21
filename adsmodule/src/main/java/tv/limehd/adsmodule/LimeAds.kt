@@ -158,6 +158,10 @@ class LimeAds {
 
             val readyBackgroundSkd = limeAds!!.getReadyAd()
 
+            if(!limeAds?.isAllowedToRequestAd!! && userClicksCounter < 5){
+                adRequestListener?.onEarlyRequest()
+            }
+
             limeAds?.let {
                 if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
                     if (skipFirst && getAdFunCallAmount == 0) {
