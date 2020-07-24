@@ -548,7 +548,7 @@ class LimeAds {
     //********************************************* PREROLL TIMER HANDLER ****************************************************** //
 
     val prerollTimerHandler: Handler = Handler()
-    var isAllowedToRequestAd = true
+    var isAllowedToRequestAd = false
     val prerollTimerRunnable: Runnable = object : Runnable {
         override fun run() {
             if (prerollTimer > 0) {
