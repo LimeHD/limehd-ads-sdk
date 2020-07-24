@@ -142,6 +142,17 @@ class MyTargetFragment(
 
             override fun onBannerPause(p0: InstreamAd, p1: InstreamAd.InstreamAdBanner) {
                 Log.d(TAG, "onBannerPause called")
+                isShowingAd = false
+                // should restart BackgroundAdManager
+                BackgroundAdManger.clearVariables()
+                LimeAds.startBackgroundRequests(context!!, resId, fragmentState, adRequestListener, adShowListener)
+                if(this@MyTargetFragment::leftHandler.isInitialized) {
+                    leftHandler.removeCallbacks(leftRunnable)
+                }
+                if(this@MyTargetFragment::skipHandler.isInitialized) {
+                    skipHandler.removeCallbacks(skipRunnable)
+                }
+                limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)
             }
 
             override fun onBannerStart(instreamAd: InstreamAd, instreamAdBanner: InstreamAd.InstreamAdBanner) {
