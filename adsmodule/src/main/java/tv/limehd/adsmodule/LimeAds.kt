@@ -204,8 +204,19 @@ class LimeAds {
                             userClicksCounter = 0
                             if(readyBackgroundSkd.isEmpty()){
                                 Log.d(TAG, "getAd: load ad in main thread")
-                                if(isDisposeCalled!! && isDisposeAdImaAd!!){
-                                    it.getGoogleAd()
+                                if(isDisposeCalled != null && isDisposeAdImaAd != null) {
+                                    if (isDisposeCalled!! && isDisposeAdImaAd!!) {
+                                        it.getGoogleAd()
+                                    } else {
+                                        when (adsList[0].type_sdk) {
+                                            AdType.Google.typeSdk -> it.getGoogleAd()
+                                            AdType.IMA.typeSdk -> it.getImaAd()
+                                            AdType.Yandex.typeSdk -> it.getYandexAd()
+                                            AdType.MyTarget.typeSdk -> it.getMyTargetAd()
+                                            AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
+                                            else -> Log.d(TAG, "getAd: else branch in when expression")
+                                        }
+                                    }
                                 }else {
                                     when (adsList[0].type_sdk) {
                                         AdType.Google.typeSdk -> it.getGoogleAd()
