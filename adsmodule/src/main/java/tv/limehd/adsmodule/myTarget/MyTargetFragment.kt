@@ -108,7 +108,12 @@ class MyTargetFragment(
 
     private fun setListener() {
         mInstreamAdPlayer = mInstreamAd.player!!
-        videoContainer.removeAllViews()
+        try {
+            videoContainer.removeAllViews()
+        }catch (e: Exception) {
+            Log.d(TAG, "setListener: ${e.printStackTrace()}")
+            adRequestListener?.onEarlyRequest()
+        }
         videoContainer.addView(mInstreamAdPlayer.view)
         mInstreamAd.listener = object : InstreamAd.InstreamAdListener {
             override fun onLoad(p0: InstreamAd) {

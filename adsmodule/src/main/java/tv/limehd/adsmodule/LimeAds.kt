@@ -173,6 +173,10 @@ class LimeAds {
                 adRequestListener?.onEarlyRequest()
             }
 
+            if(prerollTimer <= 0) {
+                limeAds?.isAllowedToRequestAd = true
+            }
+
             limeAds?.let {
                 if ((it.isAllowedToRequestAd || userClicksCounter >= 5) && prerollTimer <= 0) {
                     if (skipFirst && getAdFunCallAmount == 0) {
