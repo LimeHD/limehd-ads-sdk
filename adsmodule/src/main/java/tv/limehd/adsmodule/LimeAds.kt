@@ -163,16 +163,39 @@ class LimeAds {
             }
 
             limeAds?.let {
-                if (it.isAllowedToRequestAd || userClicksCounter >= 5) {
+                if ((it.isAllowedToRequestAd || userClicksCounter >= 5) && prerollTimer <= 0) {
                     if (skipFirst && getAdFunCallAmount == 0) {
                         Log.d(TAG, "getAd: skip first ad")
                         getAdFunCallAmount++
                         adRequestListener?.onEarlyRequest()
                     } else {
-                        startGetAdLogic(readyBackgroundSkd)
+                        if(isConnectionSpeedEnough(context)) {
+                            prerollTimer = preroll.epg_timer
+                            it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
+                            it.isAllowedToRequestAd = false
+                            userClicksCounter = 0
+                            if(readyBackgroundSkd.isEmpty()){
+                                Log.d(TAG, "getAd: load ad in main thread")
+                                when (adsList[0].type_sdk) {
+                                    AdType.Google.typeSdk -> it.getGoogleAd()
+                                    AdType.IMA.typeSdk -> it.getImaAd()
+                                    AdType.Yandex.typeSdk -> it.getYandexAd()
+                                    AdType.MyTarget.typeSdk -> it.getMyTargetAd()
+                                    AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
+                                    else -> Log.d(TAG, "getAd: else branch in when expression")
+                                }
+                            }else {
+                                ReadyBackgroundAdDisplay(
+                                    readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
+                                    context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
+                                ).showReadyAd()
+                            }
+                        }else{
+                            Log.d(TAG, "getAd: not called, cause of the internet")
+                        }
                     }
                 }else {
-                    startGetAdLogic(readyBackgroundSkd)
+                    adRequestListener?.onEarlyRequest()
                 }
             }
         }
@@ -250,36 +273,6 @@ class LimeAds {
             return true
         }
 
-        private fun startGetAdLogic(readyBackgroundSkd: String) {
-            limeAds?.let {
-                if (isConnectionSpeedEnough(context)) {
-                    prerollTimer = preroll.epg_timer
-                    it.prerollTimerHandler.removeCallbacks(it.prerollTimerRunnable)
-                    it.isAllowedToRequestAd = false
-                    userClicksCounter = 0
-                    if (readyBackgroundSkd.isEmpty()) {
-                        Log.d(TAG, "getAd: load ad in main thread")
-                        when (adsList[0].type_sdk) {
-                            AdType.Google.typeSdk -> it.getGoogleAd()
-                            AdType.IMA.typeSdk -> it.getImaAd()
-                            AdType.Yandex.typeSdk -> it.getYandexAd()
-                            AdType.MyTarget.typeSdk -> it.getMyTargetAd()
-                            AdType.IMADEVICE.typeSdk -> it.getImaDeviceAd()
-                            else -> {
-                            }
-                        }
-                    } else {
-                        ReadyBackgroundAdDisplay(
-                            readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
-                            context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
-                        ).showReadyAd()
-                    }
-                } else {
-                    Log.d(TAG, "getAd: not called, cause of the internet")
-                }
-            }
-        }
-
     }
 
     /**
@@ -351,7 +344,6 @@ class LimeAds {
         interstitial = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("interstitial").toString(), Interstitial::class.java)
         preroll = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preroll").toString(), Preroll::class.java)
         preload = gson.fromJson(json.getJSONObject("ads_global").getJSONObject("preload_ads").toString(), PreloadAds::class.java)
-        prerollTimer = preroll.epg_timer
         prerollEpgInterval = preroll.epg_interval
         skipFirst = preroll.skip_first
     }
