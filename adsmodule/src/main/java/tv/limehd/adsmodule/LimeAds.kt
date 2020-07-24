@@ -27,16 +27,18 @@ import tv.limehd.adsmodule.myTarget.MyTargetFragment
 
 class LimeAds {
 
+    private var viewGroup: ViewGroup? = null
+    private var context: Context? = null
+    var adUiContainer: ViewGroup? = null
+
     companion object {
         private const val TAG = "LimeAds"
         private lateinit var myTargetFragment: MyTargetFragment
-        private lateinit var viewGroup: ViewGroup
         private lateinit var fragmentState: FragmentState
         private var resId: Int = -1
         private var adsList = listOf<Ad>()
         private var limeAds: LimeAds? = null
         private lateinit var json: JSONObject
-        private lateinit var context: Context
         private var adRequestListener: AdRequestListener? = null
         private var adShowListener: AdShowListener? = null
         private lateinit var fragmentManager: FragmentManager
@@ -60,7 +62,16 @@ class LimeAds {
         @JvmField
         var myTargetBlockId = -1
         private lateinit var backgroundAdManger: BackgroundAdManger
-        lateinit var adUiContainer: ViewGroup
+
+        @JvmStatic
+        fun dispose() {
+            limeAds?.context = null
+            limeAds?.adUiContainer = null
+            limeAds?.viewGroup = null
+            if(limeAds?.getReadyAd() == AdType.IMA.typeSdk) {
+                BackgroundAdManger.clearVariables()
+            }
+        }
 
         /**
          * Function stands for requesting ad in the background while user
@@ -135,12 +146,12 @@ class LimeAds {
                 throw NullPointerException(Constants.libraryIsNotInitExceptionMessage)
             }
 
-            this.context = context
+            limeAds?.context = context
             this.adRequestListener = adRequestListener
             this.adShowListener = adShowListener
             val activity = context as Activity
-            adUiContainer = activity.findViewById(resId)
-            this.viewGroup = activity.findViewById(resId)
+            limeAds?.adUiContainer = activity.findViewById(resId)
+            limeAds?.viewGroup = activity.findViewById(resId)
             this.fragmentState = fragmentState
             val fragmentActivity = context as FragmentActivity
             if(!::fragmentManager.isInitialized){
@@ -186,7 +197,7 @@ class LimeAds {
                                 }
                             }else {
                                 ReadyBackgroundAdDisplay(
-                                    readyBackgroundSkd, viewGroup, adRequestListener, adShowListener,
+                                    readyBackgroundSkd, limeAds?.viewGroup!!, adRequestListener, adShowListener,
                                     context, resId, fragmentState, limeAds!!, myTargetFragment, fragmentManager
                                 ).showReadyAd()
                             }
@@ -308,16 +319,16 @@ class LimeAds {
             val archive = ad.is_arh
             when(ad.type_sdk){
                 AdType.MyTarget.typeSdk -> {
-                    myTargetAdStatus[context.getString(R.string.isOnline)] = online
-                    myTargetAdStatus[context.getString(R.string.isArchive)] = archive
+                    myTargetAdStatus[context!!.getString(R.string.isOnline)] = online
+                    myTargetAdStatus[context!!.getString(R.string.isArchive)] = archive
                 }
                 AdType.IMA.typeSdk -> {
-                    imaAdStatus[context.getString(R.string.isOnline)] = online
-                    imaAdStatus[context.getString(R.string.isArchive)] = archive
+                    imaAdStatus[context!!.getString(R.string.isOnline)] = online
+                    imaAdStatus[context!!.getString(R.string.isArchive)] = archive
                 }
                 AdType.Google.typeSdk -> {
-                    googleAdStatus[context.getString(R.string.isOnline)] = online
-                    googleAdStatus[context.getString(R.string.isArchive)] = archive
+                    googleAdStatus[context!!.getString(R.string.isOnline)] = online
+                    googleAdStatus[context!!.getString(R.string.isArchive)] = archive
                 }
             }
         }
@@ -380,7 +391,7 @@ class LimeAds {
     private fun getMyTargetAd() {
         Log.d(TAG, "Load mytarget ad")
         myTargetFragment = MyTargetFragment(lastAd, resId, fragmentState, adRequestListener, adShowListener, this)
-        myTarget = MyTarget(context, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener, this)
+        myTarget = MyTarget(context!!, resId, myTargetFragment, fragmentManager, fragmentState, lastAd, adRequestListener, this)
         loadAd(AdType.MyTarget)
     }
 
@@ -406,7 +417,7 @@ class LimeAds {
         }else{
             Log.d(TAG, "$adStatus == 0, not loading ${adType.typeSdk}")
             if(lastAd == adType.typeSdk){
-                fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), adType)
+                fragmentState.onErrorState(context!!.resources.getString(R.string.no_ad_found_at_all), adType)
             }else {
                 getNextAd(adType.typeSdk)
             }
@@ -426,9 +437,9 @@ class LimeAds {
             is AdType.Google -> loadedAdStatusMap = googleAdStatus
         }
         if(currentAdStatus == AdStatus.Online){
-            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isOnline))
+            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context!!.getString(R.string.isOnline))
         }else if(currentAdStatus == AdStatus.Archive){
-            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context.getString(R.string.isArchive))
+            loadOrLoadNextOrThrowExceptionByAdStatus(adType, context!!.getString(R.string.isArchive))
         }
     }
 
@@ -438,7 +449,7 @@ class LimeAds {
 
     private fun getImaAd() {
         Log.d(TAG, "Load IMA ad")
-        ima = Ima(context, Constants.testAdTagUrl, lastAd, resId, viewGroup, fragmentState, adRequestListener!!, adShowListener!!, this)
+        ima = Ima(context!!, Constants.testAdTagUrl, lastAd, resId, viewGroup!!, fragmentState, adRequestListener!!, adShowListener!!, this)
         loadAd(AdType.IMA)
     }
 
@@ -448,7 +459,7 @@ class LimeAds {
 
     private fun getGoogleAd() {
         Log.d(TAG, "getGoogleAd: called")
-        google = Google(context, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
+        google = Google(context!!, lastAd, resId, fragmentState, adRequestListener, adShowListener, preroll, this)
         loadAd(AdType.Google)
     }
 
@@ -465,7 +476,7 @@ class LimeAds {
         Log.d(TAG, "YandexAd onNoAd called")
 
         if(lastAd == AdType.Yandex.typeSdk){
-            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Yandex)
+            fragmentState.onErrorState(context!!.resources.getString(R.string.no_ad_found_at_all), AdType.Yandex)
         }else {
             getNextAd(AdType.Yandex.typeSdk)
         }
@@ -480,7 +491,7 @@ class LimeAds {
         Log.d(TAG, "Ima-Device onNoAd called")
 
         if(lastAd == AdType.IMADEVICE.typeSdk){
-            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.IMADEVICE)
+            fragmentState.onErrorState(context!!.resources.getString(R.string.no_ad_found_at_all), AdType.IMADEVICE)
         }else {
             getNextAd(AdType.IMADEVICE.typeSdk)
         }

@@ -119,7 +119,7 @@ class MyTargetFragment(
 
                 isShowingAd = false
 
-                LimeAds.adUiContainer.visibility = View.GONE
+                limeAds.adUiContainer?.visibility = View.GONE
 
                 // should restart BackgroundAdManager
                 BackgroundAdManger.clearVariables()

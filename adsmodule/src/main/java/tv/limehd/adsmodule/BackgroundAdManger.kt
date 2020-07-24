@@ -95,7 +95,7 @@ class BackgroundAdManger(
                             Log.d(TAG, "loadIma: LOADED")
                         }
                         AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
-                            LimeAds.adUiContainer.visibility = View.GONE
+                            limeAds.adUiContainer?.visibility = View.GONE
                             try {
                                 fragmentManager.beginTransaction().remove(fragmentManager.fragments[7]).commitNow()
                             }catch (e: Exception){
@@ -213,7 +213,7 @@ class BackgroundAdManger(
                 }
 
                 override fun onAdClosed() {
-                    LimeAds.adUiContainer.visibility = View.GONE
+
                     adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
 
                     // should restart BackgroundAdManager
