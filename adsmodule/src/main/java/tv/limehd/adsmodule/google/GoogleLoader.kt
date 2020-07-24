@@ -106,11 +106,26 @@ class GoogleLoader(
                     // Some other error happened
                     adRequestListener?.onError(errorMessage, AdType.Google)
                 }
-                if(!isTimeout) {
-                    if (lastAd == AdType.Google.typeSdk) {
-                        fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
-                    } else {
-                        if(!isLoadInterstitial) {
+
+                if (lastAd == AdType.Google.typeSdk) {
+                    Log.d(TAG, "onAdFailedToLoad: last ad from google. should have error state")
+                    limeAds.isAllowedToRequestAd = true
+                    LimeAds.userClicksCounter = 0
+                    LimeAds.prerollTimer = 0
+                    LimeAds.isDisposeAdImaAd = false
+                    LimeAds.isDisposeCalled = false
+                    fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
+                } else {
+                    if(!isLoadInterstitial) {
+                        Log.d(TAG, "onAdFailedToLoad: error from google. should load next ad")
+                        if(LimeAds.isDisposeCalled!! && LimeAds.isDisposeAdImaAd!!) {
+                            limeAds.isAllowedToRequestAd = true
+                            LimeAds.userClicksCounter = 0
+                            LimeAds.prerollTimer = 0
+                            LimeAds.isDisposeAdImaAd = false
+                            LimeAds.isDisposeCalled = false
+                            fragmentState.onErrorState(context.resources.getString(R.string.no_ad_found_at_all), AdType.Google)
+                        }else {
                             limeAds.getNextAd(AdType.Google.typeSdk)
                         }
                     }
@@ -119,6 +134,8 @@ class GoogleLoader(
 
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
+                LimeAds.isDisposeAdImaAd = false
+                LimeAds.isDisposeCalled = false
                 adShowListener?.onCompleteInterstitial()
 
                 if(isLoadInterstitial){
