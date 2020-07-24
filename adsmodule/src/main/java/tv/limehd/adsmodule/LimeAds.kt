@@ -62,13 +62,19 @@ class LimeAds {
         @JvmField
         var myTargetBlockId = -1
         private lateinit var backgroundAdManger: BackgroundAdManger
+        @JvmField
+        var isDisposeCalled: Boolean? = null
+        @JvmField
+        var isDisposeAdImaAd: Boolean? = null
 
         @JvmStatic
         fun dispose() {
+            isDisposeCalled = true
             limeAds?.context = null
             limeAds?.adUiContainer = null
             limeAds?.viewGroup = null
             if(limeAds?.getReadyAd() == AdType.IMA.typeSdk) {
+                isDisposeAdImaAd = true
                 BackgroundAdManger.clearVariables()
             }
         }
