@@ -19,4 +19,6 @@ interface AdRequestListener {
 
     fun onEarlyRequest()
 
+    fun onEarlyRequestInterstitial()
+
 }

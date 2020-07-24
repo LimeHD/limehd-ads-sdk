@@ -229,6 +229,8 @@ class LimeAds {
                     }else{
                         Log.d(TAG, "getGoogleInterstitialAd: not called, cause of the internet")
                     }
+                }else {
+                    adRequestListener?.onEarlyRequestInterstitial()
                 }
             }
         }
