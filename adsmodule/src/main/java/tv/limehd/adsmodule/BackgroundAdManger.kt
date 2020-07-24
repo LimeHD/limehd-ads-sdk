@@ -88,7 +88,7 @@ class BackgroundAdManger(
             mAdsLoader.addAdsLoadedListener {
                 Log.d(TAG, "loadIma: ima loaded")
                 imaAdsManager = it!!.adsManager
-
+                LimeAds.imaAdsManager = imaAdsManager
                 imaAdsManager?.addAdEventListener { adEvent ->
                     when(adEvent.type){
                         AdEvent.AdEventType.LOADED -> {

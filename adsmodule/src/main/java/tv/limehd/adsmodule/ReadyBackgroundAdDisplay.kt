@@ -58,15 +58,17 @@ class ReadyBackgroundAdDisplay(
                         AdEvent.AdEventType.ALL_ADS_COMPLETED -> {
                             adShowListener?.onComplete(context.getString(R.string.completed), AdType.IMA)
 
-                            // should restart BackgroundAdManager
-                            BackgroundAdManger.clearVariables()
-                            LimeAds.startBackgroundRequests(
-                                context,
-                                resId,
-                                fragmentState,
-                                adRequestListener,
-                                adShowListener
-                            )
+                            if(!LimeAds.isDisposeCalled!!) {
+                                // should restart BackgroundAdManager
+                                BackgroundAdManger.clearVariables()
+                                LimeAds.startBackgroundRequests(
+                                    context,
+                                    resId,
+                                    fragmentState,
+                                    adRequestListener,
+                                    adShowListener
+                                )
+                            }
 
                             // should start preroll handler
                             limeAds.prerollTimerHandler.postDelayed(limeAds.prerollTimerRunnable, 1000)

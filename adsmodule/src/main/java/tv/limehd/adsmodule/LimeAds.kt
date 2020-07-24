@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.google.ads.interactivemedia.v3.api.AdsManager
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Runnable
 import org.json.JSONObject
@@ -66,13 +67,19 @@ class LimeAds {
         var isDisposeCalled: Boolean? = null
         @JvmField
         var isDisposeAdImaAd: Boolean? = null
+        var imaAdsManager: AdsManager? = null
 
         @JvmStatic
         fun dispose() {
+            Log.d(TAG, "dispose: called")
             isDisposeCalled = true
             limeAds?.context = null
             limeAds?.adUiContainer = null
             limeAds?.viewGroup = null
+            // if any ad is playing now, should stop and destroy it
+            if(imaAdsManager != null){
+                imaAdsManager?.destroy()
+            }
             if(limeAds?.getReadyAd() == AdType.IMA.typeSdk) {
                 isDisposeAdImaAd = true
                 BackgroundAdManger.clearVariables()
