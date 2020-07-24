@@ -119,7 +119,7 @@ class GoogleLoader(
 
             override fun onAdClosed() {
                 Log.d(TAG, "onAdClosed: called")
-                adShowListener?.onComplete(context.getString(R.string.completed), AdType.Google)
+                adShowListener?.onCompleteInterstitial()
 
                 if(isLoadInterstitial){
                     limeAds.timer = 30

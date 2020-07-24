@@ -18,4 +18,6 @@ interface AdShowListener {
     fun onSkip(message: String, owner: AdType)
 
     fun onClick(message: String, owner: AdType)
+
+    fun onCompleteInterstitial()
 }
